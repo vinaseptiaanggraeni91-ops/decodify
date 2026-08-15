@@ -1,0 +1,591 @@
+{% extends "base.html" %}
+
+{% block title %}Playfair Cipher - CryptoLab{% endblock %}
+
+{% block extra_css %}
+<style>
+    .cipher-container {
+        max-width: 1000px;
+        margin: 0 auto;
+    }
+
+    .cipher-header {
+        text-align: center;
+        margin-bottom: 3rem;
+    }
+
+    .cipher-icon {
+        font-size: 4rem;
+        --webkit-background-clip: text;
+        margin-bottom: 1rem;
+    }
+
+    .cipher-title {
+        font-size: 2.5rem;
+        font-weight: 800;
+        margin-bottom: 0.5rem;
+    }
+
+    .premium-badge {
+        display: inline-block;
+        background: linear-gradient(135deg, #f59e0b, #d97706);
+        color: white;
+        padding: 0.5rem 1rem;
+        border-radius: 20px;
+        font-size: 0.875rem;
+        font-weight: 700;
+        margin-left: 1rem;
+    }
+
+    .cipher-desc {
+        color: var(--text-muted);
+        font-size: 1.1rem;
+    }
+
+    .cipher-card {
+        background: rgba(30, 41, 59, 0.5);
+        backdrop-filter: blur(10px);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 16px;
+        padding: 2rem;
+        margin-bottom: 2rem;
+    }
+
+    .form-group {
+        margin-bottom: 1.5rem;
+    }
+
+    .form-label {
+        display: block;
+        margin-bottom: 0.5rem;
+        font-weight: 600;
+        color: var(--text);
+    }
+
+    .form-textarea, .form-input {
+        width: 100%;
+        padding: 1rem;
+        background: rgba(15, 23, 42, 0.5);
+        border: 2px solid rgba(255, 255, 255, 0.1);
+        border-radius: 10px;
+        color: var(--text);
+        font-size: 1rem;
+        font-family: 'Courier New', monospace;
+        transition: all 0.3s;
+    }
+
+    .form-textarea {
+        min-height: 120px;
+        resize: vertical;
+    }
+
+    .form-textarea:focus, .form-input:focus {
+        outline: none;
+        border-color: var(--primary);
+        background: rgba(15, 23, 42, 0.8);
+    }
+
+    .button-group {
+        display: flex;
+        gap: 1rem;
+        flex-wrap: wrap;
+    }
+
+    .btn {
+        flex: 1;
+        min-width: 150px;
+        padding: 1rem;
+        border: none;
+        border-radius: 10px;
+        font-weight: 700;
+        cursor: pointer;
+        transition: all 0.3s;
+        font-size: 1rem;
+    }
+
+    .btn-encrypt {
+        background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+        color: white;
+    }
+
+    .btn-encrypt:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 10px 30px rgba(99, 102, 241, 0.4);
+    }
+
+    .btn-decrypt {
+        background: linear-gradient(135deg, var(--secondary), #be185d);
+        color: white;
+    }
+
+    .btn-decrypt:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 10px 30px rgba(236, 72, 153, 0.4);
+    }
+
+    .btn-show-matrix {
+        background: linear-gradient(135deg, #10b981, #059669);
+        color: white;
+    }
+
+    .btn-show-matrix:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 10px 30px rgba(16, 185, 129, 0.4);
+    }
+
+    .result-box {
+        background: rgba(15, 23, 42, 0.8);
+        border: 2px solid rgba(99, 102, 241, 0.3);
+        border-radius: 10px;
+        padding: 1.5rem;
+        font-family: 'Courier New', monospace;
+        font-size: 1rem;
+        display: none;
+        min-height: 120px;
+        word-break: break-all;
+    }
+
+    .result-box.show {
+        display: block;
+        animation: fadeIn 0.3s ease;
+    }
+
+    /* MATRIX DISPLAY - REQUIREMENT DOSEN: HIDE KEY */
+    .matrix-display {
+        background: rgba(15, 23, 42, 0.8);
+        border: 2px solid rgba(99, 102, 241, 0.3);
+        border-radius: 10px;
+        padding: 1.5rem;
+        display: none;
+        text-align: center;
+    }
+
+    .matrix-display.show {
+        display: block;
+        animation: fadeIn 0.3s ease;
+    }
+
+    .matrix-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 1.5rem;
+        padding-bottom: 1rem;
+        border-bottom: 2px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .matrix-title {
+        font-size: 1.2rem;
+        font-weight: 700;
+        color: var(--primary);
+    }
+
+    .toggle-switch {
+        position: relative;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.75rem;
+    }
+
+    .toggle-switch input {
+        position: absolute;
+        opacity: 0;
+        width: 0;
+        height: 0;
+    }
+
+    .toggle-slider {
+        position: relative;
+        display: inline-block;
+        width: 50px;
+        height: 26px;
+        background: rgba(239, 68, 68, 0.3);
+        border-radius: 26px;
+        cursor: pointer;
+        transition: all 0.3s;
+    }
+
+    .toggle-slider:before {
+        content: "";
+        position: absolute;
+        height: 20px;
+        width: 20px;
+        left: 3px;
+        bottom: 3px;
+        background: white;
+        border-radius: 50%;
+        transition: all 0.3s;
+    }
+
+    .toggle-switch input:checked + .toggle-slider {
+        background: linear-gradient(135deg, #10b981, #059669);
+    }
+
+    .toggle-switch input:checked + .toggle-slider:before {
+        transform: translateX(24px);
+    }
+
+    .toggle-label {
+        font-weight: 600;
+        color: var(--text);
+        user-select: none;
+    }
+
+    .matrix-container {
+        display: inline-block;
+        margin: 1rem auto;
+    }
+
+    .matrix-row {
+        display: flex;
+        justify-content: center;
+        gap: 5px;
+        margin-bottom: 5px;
+    }
+
+    .matrix-cell {
+        width: 50px;
+        height: 50px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.3rem;
+        font-weight: 700;
+        font-family: 'Courier New', monospace;
+        border: 2px solid rgba(99, 102, 241, 0.3);
+        border-radius: 8px;
+        background: rgba(99, 102, 241, 0.1);
+        color: var(--text);
+        transition: all 0.3s;
+    }
+
+    /* REQUIREMENT DOSEN: KEY HIDDEN STATE */
+    .matrix-cell.hidden {
+        background: #000 !important;
+        color: #000 !important;
+        user-select: none;
+        cursor: not-allowed;
+        border-color: rgba(239, 68, 68, 0.5);
+    }
+
+    .matrix-cell:not(.hidden):hover {
+        background: rgba(99, 102, 241, 0.3);
+        transform: scale(1.1);
+    }
+
+    /* SECURITY WARNINGS */
+    .security-alert {
+        padding: 1rem;
+        border-radius: 8px;
+        margin-bottom: 1rem;
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        animation: fadeIn 0.3s ease;
+    }
+
+    .security-alert.warning {
+        background: rgba(245, 158, 11, 0.2);
+        border: 2px solid rgba(245, 158, 11, 0.5);
+        color: #fbbf24;
+    }
+
+    .security-alert.danger {
+        background: rgba(239, 68, 68, 0.2);
+        border: 2px solid rgba(239, 68, 68, 0.5);
+        color: #f87171;
+    }
+
+    .security-alert.success {
+        background: rgba(16, 185, 129, 0.2);
+        border: 2px solid rgba(16, 185, 129, 0.5);
+        color: #34d399;
+    }
+
+    .alert-icon {
+        font-size: 1.5rem;
+    }
+
+    .matrix-info {
+        margin-top: 1rem;
+        padding: 1rem;
+        background: rgba(99, 102, 241, 0.1);
+        border-radius: 8px;
+        font-size: 0.9rem;
+        color: var(--text-muted);
+        line-height: 1.6;
+    }
+
+    @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(-10px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+
+    .info-box {
+        background: rgba(99, 102, 241, 0.1);
+        border-left: 4px solid var(--primary);
+        padding: 1rem;
+        border-radius: 8px;
+        margin-bottom: 2rem;
+    }
+
+    .info-title {
+        font-weight: 700;
+        margin-bottom: 0.5rem;
+        color: var(--primary);
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="cipher-container">
+    <div class="cipher-header">
+        <div class="cipher-icon">
+            <i class="fas fa-table-cells"></i>
+        </div>
+        <h1 class="cipher-title">
+            Playfair Cipher
+            <span class="premium-badge"><i class="fas fa-crown"></i> Premium</span>
+        </h1>
+        <p class="cipher-desc">
+            Enkripsi digraph menggunakan matriks 5x5
+        </p>
+    </div>
+
+    <div class="info-box">
+        <div class="info-title"><i class="fas fa-info-circle"></i> Cara Kerja</div>
+        <p>Playfair Cipher mengenkripsi pasangan huruf (digraph) menggunakan matriks 5x5 yang dibuat dari keyword. Huruf I dan J digabung menjadi satu.</p>
+    </div>
+
+    <div class="cipher-card">
+        <div class="form-group">
+            <label class="form-label">
+                <i class="fas fa-edit"></i> Masukkan Teks
+            </label>
+            <textarea 
+                id="inputText" 
+                class="form-textarea" 
+                placeholder="Ketik teks yang ingin dienkripsi atau didekripsi..."
+            ></textarea>
+        </div>
+
+        <div class="form-group">
+            <label class="form-label">
+                <i class="fas fa-key"></i> Keyword
+            </label>
+            <input 
+                type="text" 
+                id="keyInput" 
+                class="form-input" 
+                placeholder="Masukkan keyword (contoh: PLAYFAIR)"
+            >
+        </div>
+
+        <div class="button-group">
+            <button class="btn btn-encrypt" onclick="performPlayfair('encrypt')">
+                <i class="fas fa-lock"></i> Encrypt
+            </button>
+            <button class="btn btn-decrypt" onclick="performPlayfair('decrypt')">
+                <i class="fas fa-unlock"></i> Decrypt
+            </button>
+            <button class="btn btn-show-matrix" onclick="showMatrix()">
+                <i class="fas fa-table"></i> Show Matrix
+            </button>
+        </div>
+    </div>
+
+    <div class="cipher-card">
+        <div class="form-group">
+            <label class="form-label">
+                <i class="fas fa-check-circle"></i> Hasil
+            </label>
+            <div id="resultBox" class="result-box"></div>
+        </div>
+    </div>
+
+    <!-- MATRIX DISPLAY - REQUIREMENT DOSEN -->
+    <div class="matrix-display" id="matrixDisplay">
+        <div class="matrix-header">
+            <span class="matrix-title">
+                <i class="fas fa-table"></i> Playfair Matrix 5x5
+            </span>
+            <label class="toggle-switch">
+                <span class="toggle-label" id="toggleLabel">
+                    <i class="fas fa-eye-slash"></i> Key Hidden
+                </span>
+                <input type="checkbox" id="toggleMatrix" onchange="toggleMatrixVisibility()">
+                <span class="toggle-slider"></span>
+            </label>
+        </div>
+
+        <!-- SECURITY ALERTS -->
+        <div id="securityAlert"></div>
+
+        <!-- MATRIX CONTENT -->
+        <div id="matrixContent"></div>
+
+        <!-- INFO -->
+        <div class="matrix-info">
+            <strong><i class="fas fa-shield-halved"></i> Catatan Keamanan:</strong><br>
+            • Matriks key disembunyikan secara default untuk keamanan<br>
+            • Aktifkan toggle untuk melihat matriks (gunakan dengan hati-hati)<br>
+            • Jangan tampilkan key di tempat umum atau saat sharing screen<br>
+            • Huruf I dan J digabung menjadi satu dalam matriks 5x5
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    let matrixVisible = false;
+    let currentMatrix = null;
+
+    async function performPlayfair(mode) {
+        const text = document.getElementById('inputText').value;
+        const key = document.getElementById('keyInput').value;
+        
+        if (!text.trim()) {
+            alert('Masukkan teks terlebih dahulu!');
+            return;
+        }
+
+        if (!key.trim()) {
+            alert('Masukkan keyword terlebih dahulu!');
+            return;
+        }
+
+        try {
+            const response = await fetch('/api/playfair', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ 
+                    text, 
+                    key, 
+                    mode,
+                    show_matrix: false  // REQUIREMENT DOSEN: Jangan tampilkan matrix otomatis
+                })
+            });
+
+            const data = await response.json();
+            
+            const resultBox = document.getElementById('resultBox');
+            resultBox.textContent = data.result;
+            resultBox.classList.add('show');
+        } catch (error) {
+            alert('Terjadi kesalahan: ' + error.message);
+        }
+    }
+
+    async function showMatrix() {
+        const key = document.getElementById('keyInput').value;
+        
+        if (!key.trim()) {
+            alert('Masukkan keyword terlebih dahulu!');
+            return;
+        }
+
+        try {
+            const response = await fetch('/api/playfair/matrix', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ key })
+            });
+
+            const data = await response.json();
+            currentMatrix = data.matrix;
+            
+            displayMatrix(data.matrix);
+            
+            // Reset toggle ke hidden setiap kali generate matrix baru
+            document.getElementById('toggleMatrix').checked = false;
+            matrixVisible = false;
+            updateToggleLabel();
+            showSecurityAlert('warning');
+        } catch (error) {
+            alert('Terjadi kesalahan: ' + error.message);
+        }
+    }
+
+    function displayMatrix(matrix) {
+        const matrixDisplay = document.getElementById('matrixDisplay');
+        const matrixContent = document.getElementById('matrixContent');
+        
+        let html = '<div class="matrix-container">';
+        matrix.forEach(row => {
+            html += '<div class="matrix-row">';
+            row.forEach(cell => {
+                html += `<div class="matrix-cell hidden">${cell}</div>`;
+            });
+            html += '</div>';
+        });
+        html += '</div>';
+        
+        matrixContent.innerHTML = html;
+        matrixDisplay.classList.add('show');
+        
+        // Scroll ke matrix
+        matrixDisplay.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
+
+    function toggleMatrixVisibility() {
+        matrixVisible = !matrixVisible;
+        const cells = document.querySelectorAll('.matrix-cell');
+        
+        cells.forEach(cell => {
+            if (matrixVisible) {
+                cell.classList.remove('hidden');
+            } else {
+                cell.classList.add('hidden');
+            }
+        });
+        
+        updateToggleLabel();
+        showSecurityAlert(matrixVisible ? 'danger' : 'success');
+    }
+
+    function updateToggleLabel() {
+        const label = document.getElementById('toggleLabel');
+        if (matrixVisible) {
+            label.innerHTML = '<i class="fas fa-eye"></i> Key Visible';
+        } else {
+            label.innerHTML = '<i class="fas fa-eye-slash"></i> Key Hidden';
+        }
+    }
+
+    function showSecurityAlert(type) {
+        const alertDiv = document.getElementById('securityAlert');
+        
+        if (type === 'warning') {
+            alertDiv.innerHTML = `
+                <div class="security-alert warning">
+                    <i class="fas fa-exclamation-triangle alert-icon"></i>
+                    <div>
+                        <strong>Keamanan:</strong> Matriks key disembunyikan untuk keamanan. 
+                        Aktifkan toggle untuk melihat.
+                    </div>
+                </div>
+            `;
+        } else if (type === 'danger') {
+            alertDiv.innerHTML = `
+                <div class="security-alert danger">
+                    <i class="fas fa-eye alert-icon"></i>
+                    <div>
+                        <strong>Perhatian!</strong> Matriks key sedang ditampilkan. 
+                        Pastikan tidak ada yang melihat layar Anda!
+                    </div>
+                </div>
+            `;
+        } else if (type === 'success') {
+            alertDiv.innerHTML = `
+                <div class="security-alert success">
+                    <i class="fas fa-shield-halved alert-icon"></i>
+                    <div>
+                        <strong>Aman:</strong> Matriks key telah disembunyikan kembali.
+                    </div>
+                </div>
+            `;
+        }
+    }
+</script>
+{% endblock %}

@@ -1,0 +1,1020 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Register - DecoDify | Bergabung dan Belajar Kriptografi</title>
+    
+    <!-- Fonts & Icons -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Bootstrap 5 -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    
+    <style>
+        :root {
+            --primary: #6366f1;
+            --primary-dark: #4f46e5;
+            --secondary: #8b5cf6;
+            --accent: #ec4899;
+            --dark: #0f172a;
+            --darker: #0a0f1f;
+            --light: #f8fafc;
+            --gray: #64748b;
+            --success: #22c55e;
+            --danger: #ef4444;
+            --warning: #f59e0b;
+            
+            --glass-bg: rgba(255, 255, 255, 0.03);
+            --glass-border: rgba(255, 255, 255, 0.08);
+            --glass-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            
+            --gradient-primary: linear-gradient(135deg, #6366f1 0%, #8b5cf6 50%, #ec4899 100%);
+            --gradient-dark: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+            --gradient-glass: linear-gradient(135deg, rgba(255, 255, 255, 0.05) 0%, rgba(255, 255, 255, 0.02) 100%);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--darker);
+            color: var(--light);
+            min-height: 100vh;
+            background-image: 
+                radial-gradient(circle at 20% 30%, rgba(99, 102, 241, 0.08) 0%, transparent 50%),
+                radial-gradient(circle at 80% 70%, rgba(139, 92, 246, 0.05) 0%, transparent 50%);
+            overflow-x: hidden;
+        }
+
+        /* Navigation */
+        .navbar {
+            background: rgba(15, 23, 42, 0.85);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            padding: 1rem 0;
+            position: fixed;
+            top: 0;
+            width: 100%;
+            z-index: 1000;
+        }
+
+        .navbar-brand {
+            font-weight: 800;
+            font-size: 1.8rem;
+            background: var(--gradient-primary);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        /* Main Container */
+        .register-container {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            padding: 100px 2rem 2rem;
+        }
+
+        .register-wrapper {
+            max-width: 1200px;
+            margin: 0 auto;
+            width: 100%;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 3rem;
+            align-items: center;
+        }
+
+        /* Left Panel */
+        .register-left {
+            padding: 3rem 2rem;
+        }
+
+        .register-logo {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .logo-icon {
+            width: 60px;
+            height: 60px;
+            border-radius: 16px;
+            background: var(--gradient-primary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.8rem;
+            color: white;
+            box-shadow: 0 10px 30px -5px rgba(99, 102, 241, 0.4);
+        }
+
+        .logo-text h1 {
+            font-size: 2.5rem;
+            font-weight: 900;
+            background: var(--gradient-primary);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .logo-text p {
+            color: #94a3b8;
+            font-size: 0.9rem;
+            margin-top: 0.25rem;
+        }
+
+        .register-hero {
+            margin: 3rem 0;
+        }
+
+        .register-hero h2 {
+            font-size: 3rem;
+            font-weight: 900;
+            line-height: 1.1;
+            margin-bottom: 1.5rem;
+            background: linear-gradient(to right, #f8fafc, #94a3b8);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .register-hero p {
+            font-size: 1.1rem;
+            color: #cbd5e1;
+            line-height: 1.6;
+            margin-bottom: 2rem;
+        }
+
+        /* Benefits List */
+        .benefits-list {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+            margin: 2rem 0;
+        }
+
+        .benefit-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 1rem;
+            padding: 1rem;
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 16px;
+            transition: all 0.3s ease;
+        }
+
+        .benefit-item:hover {
+            background: rgba(99, 102, 241, 0.05);
+            border-color: rgba(99, 102, 241, 0.2);
+            transform: translateX(5px);
+        }
+
+        .benefit-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 12px;
+            background: rgba(99, 102, 241, 0.1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            color: #818cf8;
+            flex-shrink: 0;
+        }
+
+        .benefit-content h4 {
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            color: #f8fafc;
+        }
+
+        .benefit-content p {
+            font-size: 0.9rem;
+            color: #94a3b8;
+            line-height: 1.5;
+        }
+
+        /* Right Panel - Form */
+        .register-form-container {
+            background: rgba(15, 23, 42, 0.6);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 32px;
+            padding: 3rem;
+            box-shadow: 
+                0 20px 40px rgba(0, 0, 0, 0.2),
+                inset 0 1px 0 rgba(255, 255, 255, 0.05);
+        }
+
+        .form-header {
+            text-align: center;
+            margin-bottom: 2.5rem;
+        }
+
+        .form-header h2 {
+            font-size: 2.2rem;
+            font-weight: 800;
+            margin-bottom: 0.5rem;
+            background: linear-gradient(to right, #f8fafc, #94a3b8);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .form-header p {
+            color: #94a3b8;
+            font-size: 1rem;
+        }
+
+        /* Flash Messages */
+        .flash-messages {
+            margin-bottom: 1.5rem;
+        }
+
+        .flash-message {
+            padding: 1rem;
+            border-radius: 12px;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            font-size: 0.95rem;
+        }
+
+        .flash-error {
+            background: rgba(239, 68, 68, 0.1);
+            border: 1px solid rgba(239, 68, 68, 0.2);
+            color: #fca5a5;
+        }
+
+        .flash-success {
+            background: rgba(34, 197, 94, 0.1);
+            border: 1px solid rgba(34, 197, 94, 0.2);
+            color: #86efac;
+        }
+
+        /* Form Elements */
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-label {
+            display: block;
+            font-size: 0.95rem;
+            font-weight: 600;
+            color: #e2e8f0;
+            margin-bottom: 0.75rem;
+        }
+
+        .input-group {
+            position: relative;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 1rem 1.25rem;
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 16px;
+            color: white;
+            font-size: 1rem;
+            font-family: 'Inter', sans-serif;
+            transition: all 0.3s ease;
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        .form-input::placeholder {
+            color: #64748b;
+        }
+
+        .input-icon {
+            position: absolute;
+            right: 1.25rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #64748b;
+            font-size: 1rem;
+        }
+
+        .toggle-password {
+            background: none;
+            border: none;
+            color: #64748b;
+            cursor: pointer;
+            font-size: 1rem;
+            padding: 0.25rem;
+            transition: color 0.3s;
+        }
+
+        .toggle-password:hover {
+            color: var(--primary);
+        }
+
+        /* Password Strength */
+        .password-strength {
+            height: 6px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 3px;
+            margin-top: 0.75rem;
+            overflow: hidden;
+        }
+
+        .strength-bar {
+            height: 100%;
+            width: 0%;
+            transition: all 0.3s ease;
+            border-radius: 3px;
+        }
+
+        .strength-weak {
+            background: linear-gradient(to right, #ef4444, #f97316);
+            width: 33%;
+        }
+
+        .strength-medium {
+            background: linear-gradient(to right, #f59e0b, #eab308);
+            width: 66%;
+        }
+
+        .strength-strong {
+            background: linear-gradient(to right, #10b981, #22c55e);
+            width: 100%;
+        }
+
+        .strength-text {
+            font-size: 0.75rem;
+            margin-top: 0.5rem;
+            text-align: right;
+            font-weight: 600;
+        }
+
+        .strength-text.weak { color: #ef4444; }
+        .strength-text.medium { color: #f59e0b; }
+        .strength-text.strong { color: #10b981; }
+
+        /* Requirement List */
+        .requirement-list {
+            margin-top: 1rem;
+        }
+
+        .requirement-item {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.85rem;
+            margin-bottom: 0.5rem;
+            color: #94a3b8;
+        }
+
+        .requirement-item.valid {
+            color: #10b981;
+        }
+
+        .requirement-item.invalid {
+            color: #ef4444;
+        }
+
+        /* Checkbox */
+        .checkbox-group {
+            display: flex;
+            align-items: flex-start;
+            gap: 1rem;
+            margin: 2rem 0;
+        }
+
+        .custom-checkbox {
+            width: 20px;
+            height: 20px;
+            border-radius: 6px;
+            border: 2px solid #475569;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.2s;
+            flex-shrink: 0;
+            margin-top: 0.25rem;
+        }
+
+        .custom-checkbox.checked {
+            background: var(--primary);
+            border-color: var(--primary);
+        }
+
+        .custom-checkbox.checked::after {
+            content: '✓';
+            color: white;
+            font-size: 12px;
+            font-weight: bold;
+        }
+
+        .checkbox-label {
+            color: #cbd5e1;
+            font-size: 0.9rem;
+            line-height: 1.5;
+        }
+
+        .checkbox-label a {
+            color: var(--primary);
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        .checkbox-label a:hover {
+            text-decoration: underline;
+        }
+
+        /* Submit Button */
+        .submit-btn {
+            width: 100%;
+            padding: 1.25rem;
+            background: var(--gradient-primary);
+            color: white;
+            border: none;
+            border-radius: 16px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.75rem;
+        }
+
+        .submit-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 15px 40px -5px rgba(99, 102, 241, 0.4);
+        }
+
+        .submit-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        /* Divider */
+        .divider {
+            position: relative;
+            margin: 2rem 0;
+            text-align: center;
+        }
+
+        .divider::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 0;
+            right: 0;
+            height: 1px;
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .divider span {
+            position: relative;
+            background: var(--darker);
+            padding: 0 1.5rem;
+            color: #94a3b8;
+            font-size: 0.9rem;
+        }
+
+        /* Social Buttons */
+        .social-buttons {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .social-btn {
+            padding: 1rem;
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            color: #cbd5e1;
+            font-size: 0.95rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.75rem;
+        }
+
+        .social-btn:hover {
+            background: rgba(255, 255, 255, 0.05);
+            border-color: rgba(255, 255, 255, 0.2);
+            transform: translateY(-2px);
+        }
+
+        /* Login Link */
+        .login-link {
+            text-align: center;
+            margin-top: 2rem;
+            color: #94a3b8;
+        }
+
+        .login-link a {
+            color: var(--primary);
+            text-decoration: none;
+            font-weight: 600;
+            margin-left: 0.5rem;
+        }
+
+        .login-link a:hover {
+            text-decoration: underline;
+        }
+
+        /* Back Link */
+        .back-link {
+            text-align: center;
+            margin-top: 1.5rem;
+        }
+
+        .back-link a {
+            color: #64748b;
+            text-decoration: none;
+            font-size: 0.9rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: color 0.3s;
+        }
+
+        .back-link a:hover {
+            color: #cbd5e1;
+        }
+
+        /* Responsive */
+        @media (max-width: 1024px) {
+            .register-wrapper {
+                grid-template-columns: 1fr;
+                gap: 2rem;
+            }
+            
+            .register-left {
+                padding: 2rem 1rem;
+            }
+            
+            .register-hero h2 {
+                font-size: 2.5rem;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .register-container {
+                padding: 90px 1rem 2rem;
+            }
+            
+            .register-form-container {
+                padding: 2rem;
+            }
+            
+            .social-buttons {
+                grid-template-columns: 1fr;
+            }
+            
+            .register-hero h2 {
+                font-size: 2.2rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .register-form-container {
+                padding: 1.5rem;
+            }
+            
+            .form-header h2 {
+                font-size: 1.8rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg">
+        <div class="container">
+            <a class="navbar-brand" href="/">
+                <i class="fas fa-shield-halved"></i>
+                DecoDify
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <i class="fas fa-bars text-white"></i>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="/">Home</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/login">Login</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Register Container -->
+    <div class="register-container">
+        <div class="register-wrapper">
+            <!-- Left Panel - Hero & Benefits -->
+            <div class="register-left">
+                <div class="register-logo">
+                    <div class="logo-icon">
+                        <i class="fas fa-shield-halved"></i>
+                    </div>
+                    <div class="logo-text">
+                        <h1>DecoDify</h1>
+                        <p>Master the Art of Encryption</p>
+                    </div>
+                </div>
+                
+                <div class="register-hero">
+                    <h2>Start Your <span style="background: var(--gradient-primary); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">Crypto</span> Journey</h2>
+                    <p>Bergabunglah dengan komunitas pembelajar kriptografi. Akses tools interaktif, kursus terstruktur, dan bimbingan dari para ahli.</p>
+                </div>
+                
+                <div class="benefits-list">
+                    <div class="benefit-item">
+                        <div class="benefit-icon">
+                            <i class="fas fa-lock"></i>
+                        </div>
+                        <div class="benefit-content">
+                            <h4>15+ Cipher Algorithms</h4>
+                            <p>Belajar dari Caesar hingga enkripsi modern dengan tools interaktif</p>
+                        </div>
+                    </div>
+                    
+                    <div class="benefit-item">
+                        <div class="benefit-icon">
+                            <i class="fas fa-graduation-cap"></i>
+                        </div>
+                        <div class="benefit-content">
+                            <h4>Pembelajaran Interaktif</h4>
+                            <p>Latihan langsung dengan feedback real-time dan progress tracking</p>
+                        </div>
+                    </div>
+                    
+                    <div class="benefit-item">
+                        <div class="benefit-icon">
+                            <i class="fas fa-trophy"></i>
+                        </div>
+                        <div class="benefit-content">
+                            <h4>Pengalaman Gamified</h4>
+                            <p>Dapatkan XP, buka achievement, dan naikkan level keahlian</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div style="margin-top: 3rem; padding: 1.5rem; background: rgba(99, 102, 241, 0.05); border-radius: 16px; border: 1px solid rgba(99, 102, 241, 0.1);">
+                    <h4 style="font-size: 1.1rem; font-weight: 600; margin-bottom: 0.5rem; color: #f8fafc;">
+                        <i class="fas fa-rocket" style="color: #818cf8; margin-right: 0.5rem;"></i>
+                        Siap Memulai?
+                    </h4>
+                </div>
+            </div>
+            
+            <!-- Right Panel - Registration Form -->
+            <div class="register-form-container">
+                <div class="form-header">
+                    <h2>Buat Akun</h2>
+                    <p>Isi detail Anda untuk memulai</p>
+                </div>
+                
+                <!-- Flash Messages -->
+                <div class="flash-messages">
+                    {% with messages = get_flashed_messages(with_categories=true) %}
+                        {% if messages %}
+                            {% for category, message in messages %}
+                                <div class="flash-message flash-{{ category }}">
+                                    <i class="fas fa-{% if category == 'error' %}exclamation-circle{% elif category == 'success' %}check-circle{% endif %}"></i>
+                                    <span>{{ message }}</span>
+                                </div>
+                            {% endfor %}
+                        {% endif %}
+                    {% endwith %}
+                </div>
+                
+                <!-- Registration Form -->
+                <form method="POST" action="/register" id="registerForm">
+                    <!-- Username -->
+                    <div class="form-group">
+                        <label class="form-label">
+                            <i class="fas fa-user" style="margin-right: 0.5rem; color: #818cf8;"></i>
+                            Username
+                        </label>
+                        <div class="input-group">
+                            <input type="text" 
+                                   name="username" 
+                                   id="username"
+                                   class="form-input"
+                                   required
+                                   minlength="3"
+                                   maxlength="30"
+                                   placeholder="Pilih username Anda"
+                                   autocomplete="username">
+                            <div class="input-icon">
+                                <i class="fas fa-user"></i>
+                            </div>
+                        </div>
+                        <p style="color: #64748b; font-size: 0.8rem; margin-top: 0.5rem;">3-30 karakter, hanya huruf dan angka</p>
+                    </div>
+                    
+                    <!-- Email -->
+                    <div class="form-group">
+                        <label class="form-label">
+                            <i class="fas fa-envelope" style="margin-right: 0.5rem; color: #818cf8;"></i>
+                            Email
+                        </label>
+                        <div class="input-group">
+                            <input type="email" 
+                                   name="email" 
+                                   id="email"
+                                   class="form-input"
+                                   required
+                                   placeholder="anda@contoh.com"
+                                   autocomplete="email">
+                            <div class="input-icon">
+                                <i class="fas fa-envelope"></i>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Password -->
+                    <div class="form-group">
+                        <label class="form-label">
+                            <i class="fas fa-lock" style="margin-right: 0.5rem; color: #818cf8;"></i>
+                            Password
+                        </label>
+                        <div class="input-group">
+                            <input type="password" 
+                                   name="password" 
+                                   id="password"
+                                   class="form-input"
+                                   required
+                                   minlength="6"
+                                   placeholder="Buat password yang kuat"
+                                   autocomplete="new-password"
+                                   oninput="checkPasswordStrength()">
+                            <button type="button" 
+                                    class="toggle-password input-icon"
+                                    onclick="togglePassword('password')">
+                                <i class="fas fa-eye" id="toggleIcon-password"></i>
+                            </button>
+                        </div>
+                        
+                        <!-- Password Strength -->
+                        <div class="password-strength">
+                            <div class="strength-bar" id="strengthBar"></div>
+                        </div>
+                        <div class="strength-text" id="strengthText"></div>
+                        
+                        <!-- Password Requirements -->
+                        <div class="requirement-list" id="passwordRequirements">
+                            <div class="requirement-item invalid" id="req-length">
+                                <i class="fas fa-circle" style="font-size: 0.5rem;"></i>
+                                <span>Minimal 6 karakter</span>
+                            </div>
+                            <div class="requirement-item invalid" id="req-uppercase">
+                                <i class="fas fa-circle" style="font-size: 0.5rem;"></i>
+                                <span>Minimal satu huruf besar</span>
+                            </div>
+                            <div class="requirement-item invalid" id="req-lowercase">
+                                <i class="fas fa-circle" style="font-size: 0.5rem;"></i>
+                                <span>Minimal satu huruf kecil</span>
+                            </div>
+                            <div class="requirement-item invalid" id="req-number">
+                                <i class="fas fa-circle" style="font-size: 0.5rem;"></i>
+                                <span>Minimal satu angka</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Confirm Password -->
+                    <div class="form-group">
+                        <label class="form-label">
+                            <i class="fas fa-shield-alt" style="margin-right: 0.5rem; color: #818cf8;"></i>
+                            Konfirmasi Password
+                        </label>
+                        <div class="input-group">
+                            <input type="password" 
+                                   name="confirm_password" 
+                                   id="confirm_password"
+                                   class="form-input"
+                                   required
+                                   placeholder="Masukkan kembali password Anda"
+                                   autocomplete="new-password"
+                                   oninput="checkPasswordMatch()">
+                            <button type="button" 
+                                    class="toggle-password input-icon"
+                                    onclick="togglePassword('confirm_password')">
+                                <i class="fas fa-eye" id="toggleIcon-confirm_password"></i>
+                            </button>
+                        </div>
+                        <div id="passwordMatch" style="margin-top: 0.5rem;"></div>
+                    </div>
+                    
+                    <!-- Terms Agreement -->
+                    <div class="checkbox-group">
+                        <div class="custom-checkbox" id="termsCheckbox" onclick="toggleTerms()"></div>
+                        <label class="checkbox-label" onclick="toggleTerms()">
+                            Saya setuju dengan <a href="#">Syarat Layanan</a> dan <a href="#">Kebijakan Privasi</a> DecoDify
+                            <input type="checkbox" name="terms" id="terms" class="hidden" required style="display: none;">
+                        </label>
+                    </div>
+                    
+                    <!-- Submit Button -->
+                    <button type="submit" 
+                            id="submitBtn"
+                            class="submit-btn"
+                            disabled>
+                        <i class="fas fa-user-plus"></i>
+                        Buat Akun
+                    </button>
+                </form>
+                
+                
+                <!-- Login Link -->
+                <div class="login-link">
+                    Sudah punya akun? 
+                    <a href="/login">Masuk di sini</a>
+                </div>
+                
+                <!-- Back Link -->
+                <div class="back-link">
+                    <a href="/">
+                        <i class="fas fa-arrow-left"></i>
+                        Kembali ke Beranda
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap & JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <script>
+        // Toggle Password Visibility
+        function togglePassword(fieldId) {
+            const field = document.getElementById(fieldId);
+            const icon = document.getElementById(`toggleIcon-${fieldId}`);
+            
+            if (field.type === 'password') {
+                field.type = 'text';
+                icon.classList.remove('fa-eye');
+                icon.classList.add('fa-eye-slash');
+            } else {
+                field.type = 'password';
+                icon.classList.remove('fa-eye-slash');
+                icon.classList.add('fa-eye');
+            }
+        }
+        
+        // Toggle Terms Checkbox
+        function toggleTerms() {
+            const checkbox = document.getElementById('termsCheckbox');
+            const hiddenCheckbox = document.getElementById('terms');
+            
+            checkbox.classList.toggle('checked');
+            hiddenCheckbox.checked = !hiddenCheckbox.checked;
+            
+            validateForm();
+        }
+        
+        // Check Password Strength
+        function checkPasswordStrength() {
+            const password = document.getElementById('password').value;
+            const bar = document.getElementById('strengthBar');
+            const text = document.getElementById('strengthText');
+            
+            let strength = 0;
+            const requirements = {
+                length: password.length >= 6,
+                uppercase: /[A-Z]/.test(password),
+                lowercase: /[a-z]/.test(password),
+                number: /[0-9]/.test(password),
+            };
+            
+            // Update requirement indicators
+            Object.keys(requirements).forEach((req, index) => {
+                const element = document.getElementById(`req-${req}`);
+                if (requirements[req]) {
+                    element.classList.remove('invalid');
+                    element.classList.add('valid');
+                    element.querySelector('i').className = 'fas fa-check';
+                    strength++;
+                } else {
+                    element.classList.remove('valid');
+                    element.classList.add('invalid');
+                    element.querySelector('i').className = 'fas fa-circle';
+                }
+            });
+            
+            // Update strength bar
+            bar.className = 'strength-bar';
+            if (strength === 0) {
+                bar.style.width = '0%';
+                text.textContent = '';
+                text.className = 'strength-text';
+            } else if (strength <= 2) {
+                bar.classList.add('strength-weak');
+                text.textContent = 'Password lemah';
+                text.className = 'strength-text weak';
+            } else if (strength <= 3) {
+                bar.classList.add('strength-medium');
+                text.textContent = 'Password sedang';
+                text.className = 'strength-text medium';
+            } else {
+                bar.classList.add('strength-strong');
+                text.textContent = 'Password kuat';
+                text.className = 'strength-text strong';
+            }
+            
+            validateForm();
+        }
+        
+        // Check Password Match
+        function checkPasswordMatch() {
+            const password = document.getElementById('password').value;
+            const confirm = document.getElementById('confirm_password').value;
+            const matchDiv = document.getElementById('passwordMatch');
+            
+            if (!confirm) {
+                matchDiv.innerHTML = '';
+                return;
+            }
+            
+            if (password === confirm) {
+                matchDiv.innerHTML = '<div style="color: #10b981; font-size: 0.9rem; display: flex; align-items: center; gap: 0.5rem;"><i class="fas fa-check-circle"></i> <span>Password cocok</span></div>';
+            } else {
+                matchDiv.innerHTML = '<div style="color: #ef4444; font-size: 0.9rem; display: flex; align-items: center; gap: 0.5rem;"><i class="fas fa-times-circle"></i> <span>Password tidak cocok</span></div>';
+            }
+            
+            validateForm();
+        }
+        
+        // Form Validation
+        function validateForm() {
+            const username = document.getElementById('username').value.trim();
+            const email = document.getElementById('email').value.trim();
+            const password = document.getElementById('password').value;
+            const confirm = document.getElementById('confirm_password').value;
+            const terms = document.getElementById('terms').checked;
+            const submitBtn = document.getElementById('submitBtn');
+            
+            // Basic validation
+            const isValid = username.length >= 3 && 
+                           email.includes('@') && 
+                           password.length >= 6 && 
+                           password === confirm && 
+                           terms;
+            
+            // Update submit button state
+            submitBtn.disabled = !isValid;
+            
+            return isValid;
+        }
+        
+        // Auto-hide flash messages
+        document.addEventListener('DOMContentLoaded', function() {
+            // Initialize form validation
+            validateForm();
+            
+            // Add real-time validation
+            const inputs = ['username', 'email', 'password', 'confirm_password'];
+            inputs.forEach(id => {
+                document.getElementById(id).addEventListener('input', validateForm);
+            });
+            
+            // Auto-hide flash messages
+            const flashMessages = document.querySelectorAll('.flash-message');
+            flashMessages.forEach(msg => {
+                setTimeout(() => {
+                    msg.style.opacity = '0';
+                    setTimeout(() => msg.remove(), 300);
+                }, 5000);
+            });
+        });
+    </script>
+</body>
+</html>

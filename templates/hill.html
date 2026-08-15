@@ -1,0 +1,409 @@
+{% extends "base.html" %}
+
+{% block title %}Hill Cipher - CryptoLab{% endblock %}
+
+{% block extra_css %}
+<style>
+    .cipher-container {
+        max-width: 1000px;
+        margin: 0 auto;
+    }
+
+    .cipher-header {
+        text-align: center;
+        margin-bottom: 3rem;
+    }
+
+    .cipher-icon {
+        font-size: 4rem;
+        --webkit-background-clip: text;
+        margin-bottom: 1rem;
+    }
+
+    .cipher-title {
+        font-size: 2.5rem;
+        font-weight: 800;
+        margin-bottom: 0.5rem;
+    }
+
+    .premium-badge {
+        display: inline-block;
+        background: linear-gradient(135deg, #f59e0b, #d97706);
+        color: white;
+        padding: 0.5rem 1rem;
+        border-radius: 20px;
+        font-size: 0.875rem;
+        font-weight: 700;
+        margin-left: 1rem;
+    }
+
+    .cipher-desc {
+        color: var(--text-muted);
+        font-size: 1.1rem;
+    }
+
+    .cipher-card {
+        background: rgba(30, 41, 59, 0.5);
+        backdrop-filter: blur(10px);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 16px;
+        padding: 2rem;
+        margin-bottom: 2rem;
+    }
+
+    .form-group {
+        margin-bottom: 1.5rem;
+    }
+
+    .form-label {
+        display: block;
+        margin-bottom: 0.5rem;
+        font-weight: 600;
+        color: var(--text);
+    }
+
+    .form-textarea, .form-input {
+        width: 100%;
+        padding: 1rem;
+        background: rgba(15, 23, 42, 0.5);
+        border: 2px solid rgba(255, 255, 255, 0.1);
+        border-radius: 10px;
+        color: var(--text);
+        font-size: 1rem;
+        font-family: 'Courier New', monospace;
+        transition: all 0.3s;
+    }
+
+    .form-textarea {
+        min-height: 120px;
+        resize: vertical;
+    }
+
+    .form-textarea:focus, .form-input:focus {
+        outline: none;
+        border-color: var(--primary);
+        background: rgba(15, 23, 42, 0.8);
+    }
+
+    .matrix-size-selector {
+        display: flex;
+        gap: 1rem;
+        margin-bottom: 1rem;
+    }
+
+    .size-btn {
+        flex: 1;
+        padding: 0.75rem;
+        background: rgba(99, 102, 241, 0.2);
+        border: 2px solid rgba(99, 102, 241, 0.3);
+        border-radius: 8px;
+        color: var(--text);
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s;
+    }
+
+    .size-btn.active {
+        background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+        border-color: var(--primary);
+        color: white;
+    }
+
+    .matrix-input-grid {
+        display: grid;
+        gap: 0.5rem;
+        margin-bottom: 1rem;
+    }
+
+    .matrix-2x2 {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .matrix-3x3 {
+        grid-template-columns: repeat(3, 1fr);
+    }
+
+    .matrix-input-grid input {
+        padding: 0.75rem;
+        background: rgba(15, 23, 42, 0.5);
+        border: 2px solid rgba(255, 255, 255, 0.1);
+        border-radius: 8px;
+        color: var(--text);
+        text-align: center;
+        font-size: 1rem;
+        font-weight: 700;
+    }
+
+    .button-group {
+        display: flex;
+        gap: 1rem;
+        flex-wrap: wrap;
+    }
+
+    .btn {
+        flex: 1;
+        min-width: 150px;
+        padding: 1rem;
+        border: none;
+        border-radius: 10px;
+        font-weight: 700;
+        cursor: pointer;
+        transition: all 0.3s;
+        font-size: 1rem;
+    }
+
+    .btn-encrypt {
+        background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+        color: white;
+    }
+
+    .btn-encrypt:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 10px 30px rgba(99, 102, 241, 0.4);
+    }
+
+    .btn-decrypt {
+        background: linear-gradient(135deg, var(--secondary), #be185d);
+        color: white;
+    }
+
+    .btn-decrypt:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 10px 30px rgba(236, 72, 153, 0.4);
+    }
+
+    .btn-example {
+        background: linear-gradient(135deg, #10b981, #059669);
+        color: white;
+    }
+
+    .btn-example:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 10px 30px rgba(16, 185, 129, 0.4);
+    }
+
+    .result-box {
+        background: rgba(15, 23, 42, 0.8);
+        border: 2px solid rgba(99, 102, 241, 0.3);
+        border-radius: 10px;
+        padding: 1.5rem;
+        min-height: 120px;
+        font-family: 'Courier New', monospace;
+        font-size: 1rem;
+        word-break: break-all;
+        display: none;
+    }
+
+    .result-box.show {
+        display: block;
+        animation: fadeIn 0.3s ease;
+    }
+
+    @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(-10px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+
+    .info-box {
+        background: rgba(99, 102, 241, 0.1);
+        border-left: 4px solid var(--primary);
+        padding: 1rem;
+        border-radius: 8px;
+        margin-bottom: 2rem;
+    }
+
+    .info-title {
+        font-weight: 700;
+        margin-bottom: 0.5rem;
+        color: var(--primary);
+    }
+
+    .warning-box {
+        background: rgba(245, 158, 11, 0.1);
+        border-left: 4px solid var(--warning);
+        padding: 1rem;
+        border-radius: 8px;
+        margin-top: 1rem;
+        font-size: 0.9rem;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="cipher-container">
+    <div class="cipher-header">
+        <div class="cipher-icon">
+            <i class="fas fa-mountain"></i>
+        </div>
+        <h1 class="cipher-title">
+            Hill Cipher
+            <span class="premium-badge"><i class="fas fa-crown"></i> Premium</span>
+        </h1>
+        <p class="cipher-desc">
+            Enkripsi matematis menggunakan matriks aljabar linear
+        </p>
+    </div>
+
+    <div class="info-box">
+        <div class="info-title"><i class="fas fa-info-circle"></i> Cara Kerja</div>
+        <p>Hill Cipher menggunakan perkalian matriks untuk enkripsi. Matriks kunci harus invertible (determinan coprime dengan 26).</p>
+    </div>
+
+    <div class="cipher-card">
+        <div class="form-group">
+            <label class="form-label">
+                <i class="fas fa-edit"></i> Masukkan Teks
+            </label>
+            <textarea 
+                id="inputText" 
+                class="form-textarea" 
+                placeholder="Ketik teks yang ingin dienkripsi atau didekripsi..."
+            ></textarea>
+        </div>
+
+        <div class="form-group">
+            <label class="form-label">
+                <i class="fas fa-table"></i> Ukuran Matriks Kunci
+            </label>
+            <div class="matrix-size-selector">
+                <button class="size-btn active" onclick="setMatrixSize(2)">2x2</button>
+                <button class="size-btn" onclick="setMatrixSize(3)">3x3</button>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label class="form-label">
+                <i class="fas fa-grip"></i> Matriks Kunci (Masukkan angka 0-25)
+            </label>
+            <div id="matrixGrid" class="matrix-input-grid matrix-2x2">
+                <input type="number" id="m00" value="7" min="0" max="25">
+                <input type="number" id="m01" value="8" min="0" max="25">
+                <input type="number" id="m10" value="11" min="0" max="25">
+                <input type="number" id="m11" value="11" min="0" max="25">
+            </div>
+            <div class="warning-box">
+                <strong>⚠️ Penting:</strong> Tidak semua matriks bisa digunakan. Determinan matriks harus coprime dengan 26.
+            </div>
+        </div>
+
+        <div class="button-group">
+            <button class="btn btn-encrypt" onclick="performHill('encrypt')">
+                <i class="fas fa-lock"></i> Encrypt
+            </button>
+            <button class="btn btn-decrypt" onclick="performHill('decrypt')">
+                <i class="fas fa-unlock"></i> Decrypt
+            </button>
+            <button class="btn btn-example" onclick="useExampleKey()">
+                <i class="fas fa-wand-magic-sparkles"></i> Use Example
+            </button>
+        </div>
+    </div>
+
+    <div class="cipher-card">
+        <div class="form-group">
+            <label class="form-label">
+                <i class="fas fa-check-circle"></i> Hasil
+            </label>
+            <div id="resultBox" class="result-box"></div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    let currentSize = 2;
+
+    function setMatrixSize(size) {
+        currentSize = size;
+        
+        // Update button states
+        document.querySelectorAll('.size-btn').forEach(btn => {
+            btn.classList.remove('active');
+        });
+        event.target.classList.add('active');
+
+        // Update matrix grid
+        const grid = document.getElementById('matrixGrid');
+        grid.className = 'matrix-input-grid matrix-' + size + 'x' + size;
+        grid.innerHTML = '';
+
+        for (let i = 0; i < size; i++) {
+            for (let j = 0; j < size; j++) {
+                const input = document.createElement('input');
+                input.type = 'number';
+                input.id = 'm' + i + j;
+                input.min = '0';
+                input.max = '25';
+                input.value = '0';
+                grid.appendChild(input);
+            }
+        }
+
+        useExampleKey();
+    }
+
+    function useExampleKey() {
+        if (currentSize === 2) {
+            document.getElementById('m00').value = '7';
+            document.getElementById('m01').value = '8';
+            document.getElementById('m10').value = '11';
+            document.getElementById('m11').value = '11';
+        } else {
+            document.getElementById('m00').value = '6';
+            document.getElementById('m01').value = '24';
+            document.getElementById('m02').value = '1';
+            document.getElementById('m10').value = '13';
+            document.getElementById('m11').value = '16';
+            document.getElementById('m12').value = '10';
+            document.getElementById('m20').value = '20';
+            document.getElementById('m21').value = '17';
+            document.getElementById('m22').value = '15';
+        }
+    }
+
+    function getKeyMatrix() {
+        const matrix = [];
+        for (let i = 0; i < currentSize; i++) {
+            const row = [];
+            for (let j = 0; j < currentSize; j++) {
+                const val = parseInt(document.getElementById('m' + i + j).value);
+                row.push(val);
+            }
+            matrix.push(row);
+        }
+        return matrix;
+    }
+
+    async function performHill(mode) {
+        const text = document.getElementById('inputText').value;
+        const keyMatrix = getKeyMatrix();
+        
+        if (!text.trim()) {
+            alert('Masukkan teks terlebih dahulu!');
+            return;
+        }
+
+        try {
+            const response = await fetch('/api/hill', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ text, key_matrix: keyMatrix, mode })
+            });
+
+            const data = await response.json();
+            
+            if (data.error) {
+                alert('Error: ' + data.error);
+                return;
+            }
+            
+            const resultBox = document.getElementById('resultBox');
+            resultBox.textContent = data.result;
+            resultBox.classList.add('show');
+        } catch (error) {
+            alert('Terjadi kesalahan: ' + error.message);
+        }
+    }
+</script>
+{% endblock %}

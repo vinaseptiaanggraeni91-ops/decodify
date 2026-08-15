@@ -1,0 +1,672 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Belajar - DecoDify</title>
+    
+    <!-- CSS Files -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/dashboard.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    
+    <style>
+        /* Tambahan CSS untuk perbaikan */
+        .learn-cards-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 24px;
+            margin-bottom: 32px;
+        }
+        
+        @media (max-width: 1200px) {
+            .learn-cards-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .learn-cards-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        .learn-card {
+            background: var(--card-bg);
+            border-radius: 16px;
+            padding: 24px;
+            transition: all 0.3s ease;
+            border: 1px solid var(--border-color);
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+        }
+        
+        .learn-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+        }
+        
+        .nav-item.active {
+            background: var(--primary-color-dark);
+            color: white !important;
+        }
+        
+        .nav-item.active .nav-icon {
+            color: white;
+        }
+        
+        .nav-item.active .nav-badge {
+            background: white;
+            color: var(--primary-color-dark);
+        }
+        
+        /* Pastikan tema gelap berfungsi */
+        body.dark-theme {
+            --primary-color-dark: #1a365d;
+            --card-bg: #2d3748;
+            --border-color: #4a5568;
+        }
+        
+        /* Sidebar styling improvement */
+        .dashboard-sidebar {
+            width: 280px;
+            transition: all 0.3s ease;
+        }
+        
+        .sidebar-nav {
+            flex-grow: 1;
+        }
+        
+        .nav-item {
+            position: relative;
+            padding: 12px 16px;
+            margin: 4px 8px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            text-decoration: none;
+            color: var(--text-secondary);
+            transition: all 0.2s ease;
+        }
+        
+        .nav-item:hover:not(.active) {
+            background: var(--hover-bg);
+        }
+        
+        .nav-indicator {
+            position: absolute;
+            left: 0;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 4px;
+            height: 0;
+            background: var(--primary-color);
+            border-radius: 0 2px 2px 0;
+            transition: height 0.3s ease;
+        }
+        
+        .nav-item.active .nav-indicator {
+            height: 70%;
+        }
+    </style>
+</head>
+<body class="dark-theme"> <!-- Mulai dengan tema gelap -->
+    <!-- Loading Overlay -->
+    <div class="loading-overlay" id="loadingOverlay">
+        <div class="loader-container">
+            <div class="loader-spinner">
+                <div class="spinner-ring"></div>
+                <div class="spinner-ring"></div>
+                <div class="spinner-ring"></div>
+            </div>
+            <div class="loader-text">
+                <span class="loading-dots">Memuat Pusat Pembelajaran</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="dashboard-container">
+        <!-- Mobile Navigation Toggle -->
+        <button class="mobile-nav-toggle" id="mobileNavToggle">
+            <i class="fas fa-bars"></i>
+        </button>
+
+        <div class="dashboard-layout">
+            <!-- Sidebar Navigation -->
+            <aside class="dashboard-sidebar" id="sidebar">
+                <div class="sidebar-inner">
+                    <!-- User Profile Card -->
+                    <div class="user-profile-card">
+                        <div class="profile-header">
+                            <div class="avatar-container">
+                                <div class="avatar-wrapper">
+                                    {% if user_avatar %}
+                                    <img src="{{ user_avatar }}" alt="Avatar" class="avatar-img">
+                                    {% else %}
+                                    <div class="avatar-img">
+                                        <i class="fas fa-user-secret"></i>
+                                    </div>
+                                    {% endif %}
+                                    <div class="avatar-status online"></div>
+                                    <div class="avatar-ring"></div>
+                                </div>
+                                <button class="profile-edit" aria-label="Edit Profile">
+                                    <i class="fas fa-pencil-alt"></i>
+                                </button>
+                            </div>
+                            <div class="profile-info">
+                                <h3 class="user-name">{{ username }}</h3>
+                                <div class="user-badges">
+                                    {% if is_premium %}
+                                    <span class="user-badge premium">
+                                        <i class="fas fa-crown"></i>
+                                        Premium
+                                    </span>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Navigation Menu -->
+                    <nav class="sidebar-nav">
+                        <ul class="nav-list">
+                            <li>
+                                <a href="/dashboard" class="nav-item {% if request.endpoint == 'dashboard' %}active{% endif %}" data-section="dashboard">
+                                    <div class="nav-icon">
+                                        <i class="fas fa-home"></i>
+                                    </div>
+                                    <span class="nav-label">Dashboard</span>
+                                    <div class="nav-indicator"></div>
+                                </a>
+                            </li>
+                            <li>
+                                <a href="/learn" class="nav-item {% if request.endpoint == 'learn' %}active{% endif %}">
+                                    <div class="nav-icon">
+                                        <i class="fas fa-graduation-cap"></i>
+                                    </div>
+                                    <span class="nav-label">Belajar</span>
+                                </a>
+                            </li>
+                            <li>
+                                <a href="/ciphers" class="nav-item {% if request.endpoint == 'ciphers' %}active{% endif %}">
+                                    <div class="nav-icon">
+                                        <i class="fas fa-lock"></i>
+                                    </div>
+                                    <span class="nav-label">Cipher</span>
+                                </a>
+                            </li>
+                            <li>
+                                <a href="/challenges" class="nav-item {% if request.endpoint == 'challenges' %}active{% endif %}">
+                                    <div class="nav-icon">
+                                        <i class="fas fa-flag-checkered"></i>
+                                    </div>
+                                    <span class="nav-label">Tantangan</span>
+                                </a>
+                            </li>
+                            <li>
+                                <a href="/certificates" class="nav-item {% if request.endpoint == 'certificates' %}active{% endif %}">
+                                    <div class="nav-icon">
+                                        <i class="fas fa-certificate"></i>
+                                    </div>
+                                    <span class="nav-label">Sertifikat</span>
+                                </a>
+                            </li>
+                            <li>
+                                <a href="/achievements" class="nav-item {% if request.endpoint == 'achievements' %}active{% endif %}">
+                                    <div class="nav-icon">
+                                        <i class="fas fa-trophy"></i>
+                                    </div>
+                                    <span class="nav-label">Pencapaian</span>
+                                </a>
+                            </li>
+                            <li>
+                                <a href="/forum" class="nav-item {% if request.endpoint == 'forum' %}active{% endif %}">
+                                    <div class="nav-icon">
+                                        <i class="fas fa-comments"></i>
+                                    </div>
+                                    <span class="nav-label">Forum Q&A</span>
+                                </a>
+                            </li>
+                            <li class="nav-divider"></li>
+                            <li>
+                                <a href="/settings" class="nav-item {% if request.endpoint == 'settings' %}active{% endif %}">
+                                    <div class="nav-icon">
+                                        <i class="fas fa-cog"></i>
+                                    </div>
+                                    <span class="nav-label">Pengaturan</span>
+                                </a>
+                            </li>
+                        </ul>
+                    </nav>
+
+                    <!-- Upgrade Card -->
+                    {% if not is_premium %}
+                    <div class="upgrade-card">
+                        <div class="upgrade-icon">
+                            <i class="fas fa-gem"></i>
+                        </div>
+                        <div class="upgrade-content">
+                            <h4>Upgrade ke Premium</h4>
+                            <p>Akses semua fitur eksklusif</p>
+                        </div>
+                        <button class="upgrade-btn" id="upgradeBtn">
+                            <i class="fas fa-arrow-up"></i>
+                        </button>
+                    </div>
+                    {% else %}
+                    <div class="premium-status-card">
+                        <div class="premium-icon">
+                            <i class="fas fa-crown"></i>
+                        </div>
+                        <div class="premium-content">
+                            <h4>Premium Member</h4>
+                            <p>Akses penuh teraktivasi</p>
+                        </div>
+                    </div>
+                    {% endif %}
+                </div>
+            </aside>
+
+            <!-- Main Content -->
+            <main class="dashboard-main">
+                <!-- Header Bar -->
+                <div class="main-header">
+                    <div class="header-search">
+                        <i class="fas fa-search"></i>
+                        <input type="text" placeholder="Cari materi, video, atau istilah..." class="search-input" id="globalSearch">
+                    </div>
+                    <div class="header-actions">
+                        <button class="header-action" aria-label="Notifications" id="notificationsBtn">
+                            <i class="fas fa-bell"></i>
+                            <span class="notification-badge">{{ unread_notifications }}</span>
+                        </button>
+                        <button class="header-action" aria-label="Messages" id="messagesBtn">
+                            <i class="fas fa-envelope"></i>
+                        </button>
+                        <div class="weather-info">
+                            <i class="fas fa-cloud-sun"></i>
+                            <span>{{ weather_temp }}°C</span>
+                        </div>
+                        <button class="header-action theme-toggle" id="themeToggle" aria-label="Toggle Theme">
+                            <i class="fas fa-sun"></i> <!-- Sudah tema gelap, jadi icon sun -->
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Learn Page Content -->
+                <div class="learn-container">
+                    <!-- Page Header -->
+                    <div class="learn-header">
+                        <div>
+                            <h1><i class="fas fa-graduation-cap"></i> Pusat Pembelajaran</h1>
+                            <p>Pilih metode belajar yang sesuai dengan gaya Anda</p>
+                        </div>
+                        <div class="learn-stats">
+                            <div class="learn-stat-pill">
+                                <i class="fas fa-book-open"></i>
+                                <span>{{ completed_modules }}/{{ total_modules }} Modul</span>
+                            </div>
+                            <div class="learn-stat-pill">
+                                <i class="fas fa-clock"></i>
+                                <span>{{ total_study_hours }} Jam Belajar</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Learn Cards Grid - PERBAIKAN: 3 card dalam 1 baris -->
+                    <div class="learn-cards-grid">
+                        <!-- Learning Modules Card -->
+                        <div class="learn-card">
+                            <div class="learn-card-header">
+                                <div class="learn-card-icon primary">
+                                    <i class="fas fa-book-open"></i>
+                                </div>
+                                <span class="learn-card-badge">
+                                    <i class="fas fa-fire"></i> {{ streak_days }} day streak
+                                </span>
+                            </div>
+                            <h3 class="learn-card-title">Learning Modules</h3>
+                            <p class="learn-card-description">
+                                Pelajari kriptografi secara sistematis melalui modul-modul interaktif. Mulai dari cipher dasar hingga kriptografi modern dengan penjelasan mendalam dan latihan praktis.
+                            </p>
+                            
+                            <div class="learn-card-stats">
+                                <div class="learn-card-stat">
+                                    <div class="learn-card-stat-value">{{ module_count }}</div>
+                                    <div class="learn-card-stat-label">Module</div>
+                                </div>
+                                <div class="learn-card-stat">
+                                    <div class="learn-card-stat-value">{{ completed_modules }}</div>
+                                    <div class="learn-card-stat-label">Completed</div>
+                                </div>
+                                <div class="learn-card-stat">
+                                    <div class="learn-card-stat-value">{{ progress }}%</div>
+                                    <div class="learn-card-stat-label">Progress</div>
+                                </div>
+                            </div>
+                            
+                            <a href="/learn/modules" class="btn-learn">
+                                <i class="fas fa-arrow-right"></i> Jelajahi Learning Modules
+                            </a>
+                        </div>
+
+                        <!-- Video Courses Card -->
+                        <div class="learn-card">
+                            <div class="learn-card-header">
+                                <div class="learn-card-icon success">
+                                    <i class="fas fa-video"></i>
+                                </div>
+                                <span class="learn-card-badge">
+                                    <i class="fas fa-crown"></i> {{ premium_videos }} premium
+                                </span>
+                            </div>
+                            <h3 class="learn-card-title">Video Courses</h3>
+                            <p class="learn-card-description">
+                                Tonton video pembelajaran dari ahli kriptografi. Visualisasi konsep yang kompleks menjadi lebih mudah dipahami dengan penjelasan langkah demi langkah.
+                            </p>
+                            
+                            <div class="learn-card-stats">
+                                <div class="learn-card-stat">
+                                    <div class="learn-card-stat-value">{{ video_count }}</div>
+                                    <div class="learn-card-stat-label">Video</div>
+                                </div>
+                                <div class="learn-card-stat">
+                                    <div class="learn-card-stat-value">{{ video_hours }}h</div>
+                                    <div class="learn-card-stat-label">Duration</div>
+                                </div>
+                                <div class="learn-card-stat">
+                                    <div class="learn-card-stat-value">{{ video_rating }}</div>
+                                    <div class="learn-card-stat-label">Rating</div>
+                                </div>
+                            </div>
+                            
+                            <a href="/learn/videos" class="btn-learn">
+                                <i class="fas fa-arrow-right"></i> Jelajahi Video Courses
+                            </a>
+                        </div>
+
+                        <!-- Glossarium Card -->
+                        <div class="learn-card">
+                            <div class="learn-card-header">
+                                <div class="learn-card-icon warning">
+                                    <i class="fas fa-book"></i>
+                                </div>
+                                <span class="learn-card-badge">
+                                    <i class="fas fa-star"></i> Updated daily
+                                </span>
+                            </div>
+                            <h3 class="learn-card-title">Glossarium</h3>
+                            <p class="learn-card-description">
+                                Kamus lengkap istilah-istilah kriptografi. Temukan definisi, contoh, dan penerapan praktis dari setiap konsep dalam dunia kriptografi dan keamanan informasi.
+                            </p>
+                            
+                            <div class="learn-card-stats">
+                                <div class="learn-card-stat">
+                                    <div class="learn-card-stat-value">{{ term_count }}</div>
+                                    <div class="learn-card-stat-label">Terms</div>
+                                </div>
+                                <div class="learn-card-stat">
+                                    <div class="learn-card-stat-value">{{ categories }}</div>
+                                    <div class="learn-card-stat-label">Categories</div>
+                                </div>
+                                <div class="learn-card-stat">
+                                    <div class="learn-card-stat-value">{{ examples_count }}</div>
+                                    <div class="learn-card-stat-label">Examples</div>
+                                </div>
+                            </div>
+                            
+                            <a href="/learn/glossary" class="btn-learn">
+                                <i class="fas fa-arrow-right"></i> Jelajahi Glossarium
+                            </a>
+                        </div>
+                    </div>
+
+                    <!-- Progress Overview -->
+                    <div class="progress-overview">
+                        <div class="progress-header">
+                            <h3 class="progress-title">Progress Pembelajaran</h3>
+                            <span class="learn-card-badge">
+                                <i class="fas fa-trophy"></i> Level {{ user_level }}
+                            </span>
+                        </div>
+                        
+                        <div class="progress-stats">
+                            <div class="progress-stat-item">
+                                <div class="progress-stat-value">{{ user_xp }}</div>
+                                <div class="progress-stat-label">Total XP</div>
+                            </div>
+                            <div class="progress-stat-item">
+                                <div class="progress-stat-value">{{ streak_days }}</div>
+                                <div class="progress-stat-label">Streak Days</div>
+                            </div>
+                            <div class="progress-stat-item">
+                                <div class="progress-stat-value">{{ completed_ciphers }}/{{ cipher_count }}</div>
+                                <div class="progress-stat-label">Ciphers Mastered</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <!-- Upgrade Modal -->
+    <div class="upgrade-modal" id="upgradeModal">
+        <!-- Modal content tetap sama... -->
+    </div>
+
+    <!-- Success Toast -->
+    <div class="toast-container" id="toastContainer"></div>
+
+    <!-- JavaScript -->
+    <script>
+        // Simulate loading
+        window.addEventListener('load', function() {
+            setTimeout(() => {
+                document.getElementById('loadingOverlay').style.opacity = '0';
+                setTimeout(() => {
+                    document.getElementById('loadingOverlay').style.display = 'none';
+                }, 300);
+            }, 800);
+        });
+
+        // Theme toggle functionality - Mulai dengan tema gelap
+        document.getElementById('themeToggle').addEventListener('click', function() {
+            document.body.classList.toggle('dark-theme');
+            const icon = this.querySelector('i');
+            if (document.body.classList.contains('dark-theme')) {
+                icon.className = 'fas fa-sun';
+                showToast('Tema gelap diaktifkan', 'success');
+            } else {
+                icon.className = 'fas fa-moon';
+                showToast('Tema terang diaktifkan', 'success');
+            }
+        });
+
+        // Mobile navigation toggle
+        document.getElementById('mobileNavToggle').addEventListener('click', function() {
+            document.getElementById('sidebar').classList.toggle('active');
+        });
+
+        // Highlight active menu item
+        document.addEventListener('DOMContentLoaded', function() {
+            const currentPath = window.location.pathname;
+            const navItems = document.querySelectorAll('.nav-item');
+            
+            navItems.forEach(item => {
+                const href = item.getAttribute('href');
+                if (href === currentPath) {
+                    item.classList.add('active');
+                } else {
+                    item.classList.remove('active');
+                }
+            });
+            
+            // Pastikan menu Belajar aktif jika di halaman learn
+            if (currentPath === '/learn') {
+                document.querySelector('a[href="/learn"]').classList.add('active');
+            }
+        });
+
+        // Upgrade modal functionality
+        const upgradeBtns = document.querySelectorAll('#upgradeBtn');
+        const upgradeModal = document.getElementById('upgradeModal');
+        const modalClose = upgradeModal.querySelector('.modal-close');
+
+        upgradeBtns.forEach(btn => {
+            btn.addEventListener('click', function() {
+                upgradeModal.classList.add('active');
+            });
+        });
+
+        modalClose.addEventListener('click', function() {
+            upgradeModal.classList.remove('active');
+        });
+
+        // Close modal when clicking outside
+        if (upgradeModal.querySelector('.modal-backdrop')) {
+            upgradeModal.querySelector('.modal-backdrop').addEventListener('click', function() {
+                upgradeModal.classList.remove('active');
+            });
+        }
+
+        // Plan selection
+        document.querySelectorAll('.plan-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                const plan = this.dataset.plan;
+                showToast(`Upgrading to ${plan} plan...`);
+                
+                // Kirim request upgrade ke server
+                fetch('/api/premium/upgrade', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ plan: plan })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        showToast('Upgrade berhasil!', 'success');
+                        setTimeout(() => {
+                            location.reload();
+                        }, 1500);
+                    } else {
+                        showToast('Upgrade gagal: ' + data.error, 'error');
+                    }
+                })
+                .catch(error => {
+                    showToast('Terjadi kesalahan: ' + error, 'error');
+                });
+                
+                upgradeModal.classList.remove('active');
+            });
+        });
+
+        // Search functionality
+        document.getElementById('globalSearch').addEventListener('input', function(e) {
+            const searchTerm = e.target.value.toLowerCase();
+            
+            if (searchTerm.length < 2) return;
+            
+            // Implement search logic
+            fetch(`/api/learn/search?q=${encodeURIComponent(searchTerm)}`)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        console.log('Search results:', data.results);
+                    }
+                });
+        });
+
+        // Toast notification function
+        function showToast(message, type = 'success') {
+            const toastContainer = document.getElementById('toastContainer');
+            const toast = document.createElement('div');
+            toast.className = `toast toast-${type}`;
+            toast.innerHTML = `
+                <div class="toast-icon">
+                    <i class="fas fa-${type === 'success' ? 'check-circle' : 'exclamation-circle'}"></i>
+                </div>
+                <div class="toast-content">
+                    <p>${message}</p>
+                </div>
+                <button class="toast-close">
+                    <i class="fas fa-times"></i>
+                </button>
+            `;
+            
+            toastContainer.appendChild(toast);
+            
+            setTimeout(() => {
+                toast.classList.add('show');
+            }, 10);
+            
+            // Auto remove after 5 seconds
+            setTimeout(() => {
+                toast.classList.remove('show');
+                setTimeout(() => {
+                    toast.remove();
+                }, 300);
+            }, 5000);
+            
+            // Close button
+            toast.querySelector('.toast-close').addEventListener('click', function() {
+                toast.classList.remove('show');
+                setTimeout(() => {
+                    toast.remove();
+                }, 300);
+            });
+        }
+
+        // Animate progress bar on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            const progressFill = document.querySelector('.progress-fill');
+            if (progressFill) {
+                // Reset width to 0 for animation
+                const finalWidth = progressFill.style.width;
+                progressFill.style.width = '0%';
+                
+                setTimeout(() => {
+                    progressFill.style.width = finalWidth;
+                }, 500);
+            }
+        });
+
+        // Add hover effects to cards
+        document.querySelectorAll('.learn-card').forEach(card => {
+            card.addEventListener('mouseenter', function() {
+                const icon = this.querySelector('.learn-card-icon');
+                if (icon) {
+                    icon.style.transform = 'scale(1.1) rotate(5deg)';
+                }
+            });
+            
+            card.addEventListener('mouseleave', function() {
+                const icon = this.querySelector('.learn-card-icon');
+                if (icon) {
+                    icon.style.transform = 'scale(1) rotate(0deg)';
+                }
+            });
+        });
+
+        // Load real-time data
+        function loadRealTimeData() {
+            fetch('/api/learn/stats')
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        // Update stats if needed
+                        console.log('Real-time stats loaded:', data);
+                    }
+                });
+        }
+
+        // Load real-time data every 30 seconds
+        setInterval(loadRealTimeData, 30000);
+    </script>
+</body>
+</html>

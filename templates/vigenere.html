@@ -1,0 +1,319 @@
+{% extends "base.html" %}
+
+{% block title %}Vigenere Cipher - CryptoLab{% endblock %}
+
+{% block extra_css %}
+<style>
+    .cipher-container {
+        max-width: 900px;
+        margin: 0 auto;
+    }
+
+    .cipher-header {
+        text-align: center;
+        margin-bottom: 3rem;
+    }
+
+    .cipher-icon {
+        font-size: 4rem;
+        --webkit-background-clip: text;
+        margin-bottom: 1rem;
+    }
+
+    .cipher-title {
+        font-size: 2.5rem;
+        font-weight: 800;
+        margin-bottom: 0.5rem;
+    }
+
+    .cipher-desc {
+        color: var(--text-muted);
+        font-size: 1.1rem;
+    }
+
+    .cipher-card {
+        background: rgba(30, 41, 59, 0.5);
+        backdrop-filter: blur(10px);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 16px;
+        padding: 2rem;
+        margin-bottom: 2rem;
+    }
+
+    .form-group {
+        margin-bottom: 1.5rem;
+    }
+
+    .form-label {
+        display: block;
+        margin-bottom: 0.5rem;
+        font-weight: 600;
+        color: var(--text);
+    }
+
+    .form-textarea {
+        width: 100%;
+        min-height: 120px;
+        padding: 1rem;
+        background: rgba(15, 23, 42, 0.5);
+        border: 2px solid rgba(255, 255, 255, 0.1);
+        border-radius: 10px;
+        color: var(--text);
+        font-size: 1rem;
+        font-family: 'Courier New', monospace;
+        resize: vertical;
+        transition: all 0.3s;
+    }
+
+    .form-textarea:focus {
+        outline: none;
+        border-color: var(--primary);
+        background: rgba(15, 23, 42, 0.8);
+    }
+
+    .form-input {
+        width: 100%;
+        padding: 0.875rem 1rem;
+        background: rgba(15, 23, 42, 0.5);
+        border: 2px solid rgba(255, 255, 255, 0.1);
+        border-radius: 10px;
+        color: var(--text);
+        font-size: 1rem;
+        transition: all 0.3s;
+    }
+
+    .form-input:focus {
+        outline: none;
+        border-color: var(--primary);
+        background: rgba(15, 23, 42, 0.8);
+    }
+
+    .button-group {
+        display: flex;
+        gap: 1rem;
+        flex-wrap: wrap;
+    }
+
+    .btn {
+        flex: 1;
+        min-width: 150px;
+        padding: 1rem;
+        border: none;
+        border-radius: 10px;
+        font-weight: 700;
+        cursor: pointer;
+        transition: all 0.3s;
+        font-size: 1rem;
+    }
+
+    .btn-encrypt {
+        background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+        color: white;
+    }
+
+    .btn-encrypt:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 10px 30px rgba(99, 102, 241, 0.4);
+    }
+
+    .btn-decrypt {
+        background: linear-gradient(135deg, var(--secondary), #be185d);
+        color: white;
+    }
+
+    .btn-decrypt:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 10px 30px rgba(236, 72, 153, 0.4);
+    }
+
+    .btn-clear {
+        background: rgba(239, 68, 68, 0.2);
+        border: 2px solid var(--danger);
+        color: var(--danger);
+    }
+
+    .btn-clear:hover {
+        background: var(--danger);
+        color: white;
+    }
+
+    .result-box {
+        background: rgba(15, 23, 42, 0.8);
+        border: 2px solid rgba(99, 102, 241, 0.3);
+        border-radius: 10px;
+        padding: 1.5rem;
+        min-height: 120px;
+        font-family: 'Courier New', monospace;
+        font-size: 1rem;
+        word-break: break-all;
+        display: none;
+    }
+
+    .result-box.show {
+        display: block;
+        animation: fadeIn 0.3s ease;
+    }
+
+    @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(-10px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+
+    .info-box {
+        background: rgba(99, 102, 241, 0.1);
+        border-left: 4px solid var(--primary);
+        padding: 1rem;
+        border-radius: 8px;
+        margin-bottom: 2rem;
+    }
+
+    .info-title {
+        font-weight: 700;
+        margin-bottom: 0.5rem;
+        color: var(--primary);
+    }
+
+    .key-examples {
+        display: flex;
+        gap: 0.5rem;
+        flex-wrap: wrap;
+        margin-top: 0.5rem;
+    }
+
+    .key-badge {
+        background: rgba(99, 102, 241, 0.2);
+        color: var(--primary);
+        padding: 0.25rem 0.75rem;
+        border-radius: 20px;
+        font-size: 0.875rem;
+        cursor: pointer;
+        transition: all 0.3s;
+    }
+
+    .key-badge:hover {
+        background: var(--primary);
+        color: white;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="cipher-container">
+    <div class="cipher-header">
+        <div class="cipher-icon">
+            <i class="fas fa-key"></i>
+        </div>
+        <h1 class="cipher-title">Vigenere Cipher</h1>
+        <p class="cipher-desc">
+            Enkripsi polyalphabetic menggunakan kata kunci (keyword)
+        </p>
+    </div>
+
+    <div class="info-box">
+        <div class="info-title"><i class="fas fa-info-circle"></i> Cara Kerja</div>
+        <p>Vigenere Cipher menggunakan keyword untuk menentukan shift setiap karakter. Setiap huruf keyword menentukan berapa besar shift untuk huruf plaintext di posisi tersebut.</p>
+        <div class="key-examples">
+            <span class="key-badge" onclick="useKey('SECRET')">SECRET</span>
+            <span class="key-badge" onclick="useKey('CRYPTO')">CRYPTO</span>
+            <span class="key-badge" onclick="useKey('PYTHON')">PYTHON</span>
+        </div>
+    </div>
+
+    <div class="cipher-card">
+        <div class="form-group">
+            <label class="form-label">
+                <i class="fas fa-edit"></i> Masukkan Teks
+            </label>
+            <textarea 
+                id="inputText" 
+                class="form-textarea" 
+                placeholder="Ketik teks yang ingin dienkripsi atau didekripsi..."
+            ></textarea>
+        </div>
+
+        <div class="form-group">
+            <label class="form-label">
+                <i class="fas fa-key"></i> Keyword (Kata Kunci)
+            </label>
+            <input 
+                type="text" 
+                id="keyInput" 
+                class="form-input" 
+                placeholder="Masukkan keyword (contoh: SECRET)"
+            >
+        </div>
+
+        <div class="button-group">
+            <button class="btn btn-encrypt" onclick="performVigenere('encrypt')">
+                <i class="fas fa-lock"></i> Encrypt
+            </button>
+            <button class="btn btn-decrypt" onclick="performVigenere('decrypt')">
+                <i class="fas fa-unlock"></i> Decrypt
+            </button>
+            <button class="btn btn-clear" onclick="clearAll()">
+                <i class="fas fa-trash"></i> Clear
+            </button>
+        </div>
+    </div>
+
+    <div class="cipher-card">
+        <div class="form-group">
+            <label class="form-label">
+                <i class="fas fa-check-circle"></i> Hasil
+            </label>
+            <div id="resultBox" class="result-box"></div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    function useKey(key) {
+        document.getElementById('keyInput').value = key;
+    }
+
+    async function performVigenere(mode) {
+        const text = document.getElementById('inputText').value;
+        const key = document.getElementById('keyInput').value;
+        
+        if (!text.trim()) {
+            alert('Masukkan teks terlebih dahulu!');
+            return;
+        }
+
+        if (!key.trim()) {
+            alert('Masukkan keyword terlebih dahulu!');
+            return;
+        }
+
+        try {
+            const response = await fetch('/api/vigenere', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    text: text,
+                    key: key,
+                    mode: mode
+                })
+            });
+
+            const data = await response.json();
+            
+            const resultBox = document.getElementById('resultBox');
+            resultBox.textContent = data.result;
+            resultBox.classList.add('show');
+        } catch (error) {
+            alert('Terjadi kesalahan: ' + error.message);
+        }
+    }
+
+    function clearAll() {
+        document.getElementById('inputText').value = '';
+        document.getElementById('keyInput').value = '';
+        document.getElementById('resultBox').classList.remove('show');
+    }
+</script>
+{% endblock %}

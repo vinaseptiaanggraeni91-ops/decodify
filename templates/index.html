@@ -1,0 +1,896 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DecoDify - Belajar Kriptografi Interaktif</title>
+    
+    <!-- Fonts & Icons -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Bootstrap 5 -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    
+    <style>
+        :root {
+            --primary: #6366f1;
+            --primary-dark: #4f46e5;
+            --secondary: #8b5cf6;
+            --accent: #ec4899;
+            --dark: #0f172a;
+            --darker: #0a0f1f;
+            --light: #f8fafc;
+            --gray: #64748b;
+            --success: #22c55e;
+            --danger: #ef4444;
+            --warning: #f59e0b;
+            
+            --glass-bg: rgba(255, 255, 255, 0.03);
+            --glass-border: rgba(255, 255, 255, 0.08);
+            --glass-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            
+            --gradient-primary: linear-gradient(135deg, #6366f1 0%, #8b5cf6 50%, #ec4899 100%);
+            --gradient-dark: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+            --gradient-glass: linear-gradient(135deg, rgba(255, 255, 255, 0.05) 0%, rgba(255, 255, 255, 0.02) 100%);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--darker);
+            color: var(--light);
+            min-height: 100vh;
+            background-image: 
+                radial-gradient(circle at 20% 30%, rgba(99, 102, 241, 0.08) 0%, transparent 50%),
+                radial-gradient(circle at 80% 70%, rgba(139, 92, 246, 0.05) 0%, transparent 50%);
+            overflow-x: hidden;
+        }
+
+        /* Navigation */
+        .navbar {
+            background: rgba(15, 23, 42, 0.85);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            padding: 1rem 0;
+            position: fixed;
+            top: 0;
+            width: 100%;
+            z-index: 1000;
+        }
+
+        .navbar-brand {
+            font-weight: 800;
+            font-size: 1.8rem;
+            background: var(--gradient-primary);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .nav-link {
+            color: #cbd5e1 !important;
+            font-weight: 500;
+            padding: 0.5rem 1rem;
+            border-radius: 10px;
+            transition: all 0.3s ease;
+        }
+
+        .nav-link:hover {
+            color: white !important;
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        .nav-link.active {
+            background: var(--gradient-primary);
+            color: white !important;
+        }
+
+        /* Hero Section */
+        .hero-section {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            padding-top: 80px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero-bg {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            z-index: -1;
+            opacity: 0.4;
+        }
+
+        .hero-bg::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: 
+                radial-gradient(circle at 30% 20%, rgba(99, 102, 241, 0.15) 0%, transparent 50%),
+                radial-gradient(circle at 70% 80%, rgba(139, 92, 246, 0.15) 0%, transparent 50%);
+            animation: float 20s infinite alternate ease-in-out;
+        }
+
+        @keyframes float {
+            0% { transform: translate(0, 0) rotate(0deg); }
+            100% { transform: translate(-50px, -50px) rotate(5deg); }
+        }
+
+        .hero-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+            text-align: center;
+        }
+
+        .hero-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            background: rgba(99, 102, 241, 0.1);
+            border: 1px solid rgba(99, 102, 241, 0.3);
+            color: #818cf8;
+            padding: 0.5rem 1.25rem;
+            border-radius: 50px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            margin-bottom: 2rem;
+            backdrop-filter: blur(10px);
+        }
+
+        .hero-title {
+            font-size: clamp(2.5rem, 5vw, 4.5rem);
+            font-weight: 900;
+            line-height: 1.1;
+            margin-bottom: 1.5rem;
+            background: linear-gradient(to right, #f8fafc, #94a3b8);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .hero-subtitle {
+            font-size: clamp(1.1rem, 2vw, 1.3rem);
+            color: #cbd5e1;
+            max-width: 700px;
+            margin: 0 auto 3rem;
+            line-height: 1.6;
+        }
+
+        /* Buttons */
+        .btn-group {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin-bottom: 4rem;
+        }
+
+        .btn {
+            padding: 1rem 2rem;
+            border-radius: 12px;
+            font-weight: 600;
+            font-size: 1rem;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            display: inline-flex;
+            align-items: center;
+            gap: 0.75rem;
+            border: none;
+            cursor: pointer;
+        }
+
+        .btn-primary {
+            background: var(--gradient-primary);
+            color: white;
+            box-shadow: 0 10px 30px -5px rgba(99, 102, 241, 0.4);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 40px -5px rgba(99, 102, 241, 0.6);
+        }
+
+        .btn-secondary {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: white;
+            backdrop-filter: blur(10px);
+        }
+
+        .btn-secondary:hover {
+            background: rgba(255, 255, 255, 0.1);
+            border-color: rgba(255, 255, 255, 0.2);
+            transform: translateY(-3px);
+        }
+
+        /* Stats */
+        .stats-container {
+            display: flex;
+            justify-content: center;
+            gap: 3rem;
+            margin-top: 4rem;
+            flex-wrap: wrap;
+        }
+
+        .stat-item {
+            text-align: center;
+        }
+
+        .stat-number {
+            font-size: 2.5rem;
+            font-weight: 800;
+            background: var(--gradient-primary);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            line-height: 1;
+        }
+
+        .stat-label {
+            color: #94a3b8;
+            font-size: 0.9rem;
+            margin-top: 0.5rem;
+        }
+
+        /* Features Section */
+        .section {
+            padding: 6rem 2rem;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .section-header {
+            text-align: center;
+            margin-bottom: 4rem;
+        }
+
+        .section-title {
+            font-size: 2.5rem;
+            font-weight: 800;
+            margin-bottom: 1rem;
+            background: linear-gradient(to right, #f8fafc, #94a3b8);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .section-subtitle {
+            color: #94a3b8;
+            font-size: 1.1rem;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        /* Cards */
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 2rem;
+            margin-bottom: 4rem;
+        }
+
+        .feature-card {
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            border-radius: 24px;
+            padding: 2.5rem 2rem;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            height: 100%;
+            position: relative;
+            overflow: hidden;
+            backdrop-filter: blur(10px);
+        }
+
+        .feature-card:hover {
+            transform: translateY(-10px) scale(1.02);
+            border-color: rgba(99, 102, 241, 0.5);
+            box-shadow: 
+                0 20px 40px rgba(0, 0, 0, 0.3),
+                inset 0 0 0 1px rgba(255, 255, 255, 0.1);
+        }
+
+        .feature-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: var(--gradient-primary);
+            opacity: 0;
+            transition: opacity 0.4s;
+            z-index: -1;
+        }
+
+        .feature-card:hover::before {
+            opacity: 0.05;
+        }
+
+        .feature-icon {
+            width: 70px;
+            height: 70px;
+            border-radius: 18px;
+            background: rgba(99, 102, 241, 0.1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            color: #818cf8;
+            margin-bottom: 1.5rem;
+            transition: all 0.3s;
+        }
+
+        .feature-card:hover .feature-icon {
+            background: var(--gradient-primary);
+            color: white;
+            transform: rotate(-5deg) scale(1.1);
+        }
+
+        .feature-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            color: #f8fafc;
+        }
+
+        .feature-desc {
+            color: #94a3b8;
+            line-height: 1.6;
+            margin-bottom: 1.5rem;
+        }
+
+        /* Badges */
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.5rem 1rem;
+            border-radius: 50px;
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+
+        .badge-free {
+            background: rgba(34, 197, 94, 0.1);
+            border: 1px solid rgba(34, 197, 94, 0.3);
+            color: #22c55e;
+        }
+
+        .badge-premium {
+            background: rgba(168, 85, 247, 0.1);
+            border: 1px solid rgba(168, 85, 247, 0.3);
+            color: #a855f7;
+        }
+
+        .badge-locked {
+            background: rgba(239, 68, 68, 0.1);
+            border: 1px solid rgba(239, 68, 68, 0.3);
+            color: #ef4444;
+        }
+
+        /* Footer */
+        .footer {
+            background: rgba(15, 23, 42, 0.8);
+            border-top: 1px solid rgba(255, 255, 255, 0.05);
+            padding: 4rem 2rem 2rem;
+            margin-top: 4rem;
+        }
+
+        .footer-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 3rem;
+        }
+
+        .footer-brand {
+            font-size: 1.5rem;
+            font-weight: 800;
+            background: var(--gradient-primary);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 1rem;
+        }
+
+        .footer-description {
+            color: #94a3b8;
+            line-height: 1.6;
+        }
+
+        .footer-links h4 {
+            color: white;
+            margin-bottom: 1.5rem;
+            font-size: 1.1rem;
+        }
+
+        .footer-links ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        .footer-links li {
+            margin-bottom: 0.75rem;
+        }
+
+        .footer-links a {
+            color: #94a3b8;
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+
+        .footer-links a:hover {
+            color: white;
+        }
+
+        .copyright {
+            text-align: center;
+            color: #64748b;
+            padding-top: 2rem;
+            margin-top: 3rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        /* Auth Alert */
+        .custom-alert {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: #1e293b;
+            border-left: 4px solid var(--primary);
+            color: white;
+            padding: 1rem 1.5rem;
+            border-radius: 12px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+            z-index: 9999;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            transform: translateX(120%);
+            transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+            max-width: 400px;
+        }
+
+        .custom-alert.show {
+            transform: translateX(0);
+        }
+
+        .alert-icon {
+            font-size: 1.5rem;
+            color: var(--primary);
+        }
+
+        .alert-content {
+            flex: 1;
+        }
+
+        .alert-title {
+            font-weight: 600;
+            margin-bottom: 0.25rem;
+        }
+
+        .alert-message {
+            color: #cbd5e1;
+            font-size: 0.9rem;
+        }
+
+        .close-alert {
+            background: none;
+            border: none;
+            color: #94a3b8;
+            cursor: pointer;
+            font-size: 1.2rem;
+            padding: 0.25rem;
+            transition: color 0.3s;
+        }
+
+        .close-alert:hover {
+            color: white;
+        }
+
+        /* Scroll Animation */
+        .animate-on-scroll {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .animate-on-scroll.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .hero-title { font-size: 2.5rem; }
+            .section { padding: 4rem 1rem; }
+            .section-title { font-size: 2rem; }
+            .features-grid { grid-template-columns: 1fr; }
+            .btn-group { flex-direction: column; align-items: center; }
+            .btn { width: 100%; max-width: 300px; justify-content: center; }
+            .stats-container { gap: 2rem; }
+            .stat-number { font-size: 2rem; }
+        }
+
+        @media (max-width: 480px) {
+            .hero-content { padding: 1rem; }
+            .feature-card { padding: 2rem 1.5rem; }
+            .footer-content { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg">
+        <div class="container">
+            <a class="navbar-brand" href="/">
+                <i class="fas fa-shield-halved"></i>
+                DecoDify
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <i class="fas fa-bars text-white"></i>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    {% if not current_user.is_authenticated %}
+                    <li class="nav-item">
+                        <a class="nav-link btn btn-primary py-2 px-4" href="/register">Daftar</a>
+                    </li>
+                    {% else %}
+                    <li class="nav-item">
+                        <a class="nav-link" href="/profile">{{ current_user.username }}</a>
+                    </li>
+                    <li class="nav-item">
+                        <form action="/logout" method="POST" style="display: inline;">
+                            <input type="hidden" name="token" value="{{ session.get('logout_token', '') }}">
+                            <button type="submit" class="nav-link btn btn-secondary py-2 px-4">Logout</button>
+                        </form>
+                    </li>
+                    {% endif %}
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Auth Alert -->
+    <div id="authAlert" class="custom-alert">
+        <i class="fas fa-exclamation-circle alert-icon"></i>
+        <div class="alert-content">
+            <div class="alert-title">Akses Premium</div>
+            <div class="alert-message">Silakan login untuk mengakses fitur ini</div>
+        </div>
+        <button class="close-alert" onclick="hideAlert()">
+            <i class="fas fa-times"></i>
+        </button>
+    </div>
+
+    <!-- Hero Section -->
+    <section class="hero-section">
+        <div class="hero-bg"></div>
+        <div class="hero-content">
+            <div class="hero-badge">
+                <i class="fas fa-star"></i>
+                Platform Edukasi Kriptografi #1
+            </div>
+            
+            <h1 class="hero-title">
+                <span style="background: var(--gradient-primary); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">
+                    Belajar Kriptografi
+                </span>
+                <br>
+                Secara Interaktif & Menyenangkan
+            </h1>
+            
+            <p class="hero-subtitle">
+                Jelajahi dunia kriptografi dari algoritma klasik hingga standar enkripsi modern. 
+                Platform kami dirancang untuk membuat pembelajaran kompleks menjadi sederhana dan menarik.
+            </p>
+            
+            <div class="btn-group">
+                {% if not current_user.is_authenticated %}
+                <a href="/register" class="btn btn-primary">
+                    <i class="fas fa-rocket"></i> Mulai Sekarang - Gratis!
+                </a>
+                <a href="/caesar" class="btn btn-secondary">
+                    <i class="fas fa-play-circle"></i> Coba Demo Gratis
+                </a>
+                {% else %}
+                <a href="/dashboard" class="btn btn-primary">
+                    <i class="fas fa-gauge-high"></i> Lanjutkan Pembelajaran
+                </a>
+                <a href="/learn" class="btn btn-secondary">
+                    <i class="fas fa-graduation-cap"></i> Jelajahi Kursus
+                </a>
+                {% endif %}
+            </div>
+            
+            <div class="stats-container">
+                <div class="stat-item">
+                    <div class="stat-number">15+</div>
+                    <div class="stat-label">Algoritma Kriptografi</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-number">1000+</div>
+                    <div class="stat-label">Pengguna Aktif</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-number">500+</div>
+                    <div class="stat-label">Challenge Menyelesaikan</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-number">4.8</div>
+                    <div class="stat-label">Rating Pengguna</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Free Features -->
+    <section class="section">
+        <div class="section-header">
+            <h2 class="section-title">Fitur Gratis untuk Semua</h2>
+            <p class="section-subtitle">Mulai perjalanan kriptografi Anda dengan fitur-fitur dasar yang powerful</p>
+        </div>
+        
+        <div class="features-grid">
+            <!-- Caesar Cipher -->
+            <a href="/caesar" class="text-decoration-none animate-on-scroll">
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-lock"></i>
+                    </div>
+                    <h3 class="feature-title">Caesar Cipher</h3>
+                    <p class="feature-desc">
+                        Algoritma substitusi sederhana yang digunakan oleh Julius Caesar. 
+                        Pelajari konsep pergeseran alfabet dengan tool interaktif kami.
+                    </p>
+                    <span class="badge badge-free">
+                        <i class="fas fa-unlock"></i> Gratis & Terbuka
+                    </span>
+                </div>
+            </a>
+            
+            <!-- Vigenere Cipher -->
+            <a href="/vigenere" class="text-decoration-none animate-on-scroll">
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-key"></i>
+                    </div>
+                    <h3 class="feature-title">Vigenere Cipher</h3>
+                    <p class="feature-desc">
+                        Cipher polyalphabetic yang lebih aman dari Caesar. 
+                        Gunakan kunci untuk meningkatkan keamanan enkripsi Anda.
+                    </p>
+                    <span class="badge badge-free">
+                        <i class="fas fa-unlock"></i> Gratis & Terbuka
+                    </span>
+                </div>
+            </a>
+            
+            <!-- Bruteforce Attack -->
+            <a href="/bruteforce" class="text-decoration-none animate-on-scroll">
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-bolt"></i>
+                    </div>
+                    <h3 class="feature-title">Bruteforce Attack</h3>
+                    <p class="feature-desc">
+                        Simulasikan serangan brute force pada cipher klasik. 
+                        Pahami mengapa algoritma modern memerlukan keamanan yang lebih kuat.
+                    </p>
+                    <span class="badge badge-free">
+                        <i class="fas fa-unlock"></i> Gratis & Terbuka
+                    </span>
+                </div>
+            </a>
+        </div>
+    </section>
+
+    <!-- Premium Features -->
+    <section class="section" style="background: rgba(15, 23, 42, 0.5); border-radius: 32px; margin: 2rem; padding: 5rem 2rem;">
+        <div class="section-header">
+            <h2 class="section-title">Unlock Full Potential dengan Premium</h2>
+            <p class="section-subtitle">Akses semua alat dan kursus kriptografi tingkat lanjut</p>
+        </div>
+        
+        <div class="features-grid">
+            {% set premium_features = [
+                ('Substitution Cipher', 'fas fa-random', 'Substitusi alfabet dengan pola custom untuk enkripsi yang lebih kompleks.', '/substitution'),
+                ('Transposition Cipher', 'fas fa-arrows-rotate', 'Rail Fence dan Columnar Transposition untuk pengacakan urutan karakter.', '/transposition'),
+                ('Playfair Cipher', 'fas fa-table-cells', 'Enkripsi berbasis matriks 5x5 untuk pasangan huruf (digraph).', '/playfair'),
+                ('Hill Cipher', 'fas fa-mountain', 'Enkripsi matematis menggunakan aljabar matriks linear.', '/hill'),
+                ('RSA Encryption', 'fas fa-shield-halved', 'Kriptografi asimetris untuk keamanan data modern.', '/rsa'),
+                ('Hash Functions', 'fas fa-hashtag', 'SHA-256, MD5, dan fungsi hash lainnya untuk integritas data.', '/hash'),
+                ('AES Encryption', 'fas fa-file-shield', 'Advanced Encryption Standard - standar enkripsi modern.', '/aes'),
+                ('Learning Path', 'fas fa-map', 'Panduan belajar terstruktur dari pemula hingga mahir.', '/learning-path')
+            ] %}
+            
+            {% for title, icon, desc, url in premium_features %}
+            <div class="feature-card animate-on-scroll" onclick="handlePremiumClick('{{ url }}')" style="cursor: pointer;">
+                <div class="feature-icon">
+                    <i class="{{ icon }}"></i>
+                </div>
+                <h3 class="feature-title">{{ title }}</h3>
+                <p class="feature-desc">{{ desc }}</p>
+                <span class="badge badge-premium">
+                    <i class="fas fa-crown"></i> Fitur Premium
+                </span>
+            </div>
+            {% endfor %}
+        </div>
+        
+        <div class="text-center mt-5 animate-on-scroll">
+            <a href="/premium" class="btn btn-primary" style="padding: 1.2rem 3rem; font-size: 1.1rem;">
+                <i class="fas fa-gem"></i> Upgrade ke Premium
+            </a>
+            <p class="mt-3" style="color: #94a3b8; font-size: 0.9rem;">
+                Hanya Rp 49.999/bulan • Uji coba gratis 7 hari
+            </p>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="footer-content">
+            <div>
+                <div class="footer-brand">DecoDify</div>
+                <p class="footer-description">
+                    Platform edukasi kriptografi interaktif yang membuat pembelajaran 
+                    kompleks menjadi sederhana dan menyenangkan.
+                </p>
+                <div style="margin-top: 2rem; display: flex; gap: 1rem;">
+                    <a href="#" class="text-white" style="font-size: 1.2rem;"><i class="fab fa-twitter"></i></a>
+                    <a href="#" class="text-white" style="font-size: 1.2rem;"><i class="fab fa-github"></i></a>
+                    <a href="#" class="text-white" style="font-size: 1.2rem;"><i class="fab fa-discord"></i></a>
+                </div>
+            </div>
+            
+            <div class="footer-links">
+                <h4>Produk</h4>
+                <ul>
+                    <li><a href="/learn">Kursus</a></li>
+                    <li><a href="/dashboard">Dashboard</a></li>
+                    <li><a href="/premium">Premium</a></li>
+                    <li><a href="/glossary">Glosarium</a></li>
+                </ul>
+            </div>
+            
+            <div class="footer-links">
+                <h4>Sumber Daya</h4>
+                <ul>
+                    <li><a href="/support">Dukungan</a></li>
+                    <li><a href="/tanya_jawab">Tanya Jawab</a></li>
+                    <li><a href="#">Blog</a></li>
+                    <li><a href="#">Komunitas</a></li>
+                </ul>
+            </div>
+            
+            <div class="footer-links">
+                <h4>Perusahaan</h4>
+                <ul>
+                    <li><a href="#">Tentang Kami</a></li>
+                    <li><a href="#">Karir</a></li>
+                    <li><a href="#">Kebijakan Privasi</a></li>
+                    <li><a href="#">Syarat Layanan</a></li>
+                </ul>
+            </div>
+        </div>
+        
+        <div class="copyright">
+            <p>&copy; 2024 DecoDify. All rights reserved. Dibuat dengan <i class="fas fa-heart" style="color: #ef4444;"></i> untuk pendidikan kriptografi.</p>
+        </div>
+    </footer>
+
+    <!-- Bootstrap & JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <script>
+        // Handle premium feature clicks
+        function handlePremiumClick(url) {
+            
+            if (isAuthenticated) {
+                window.location.href = url;
+            } else {
+                showAlert('Login Required', 'Silakan login atau daftar untuk mengakses fitur premium');
+                setTimeout(() => {
+                    window.location.href = '/login?next=' + encodeURIComponent(url);
+                }, 2000);
+            }
+        }
+
+        // Custom alert system
+        function showAlert(title, message) {
+            const alert = document.getElementById('authAlert');
+            alert.querySelector('.alert-title').textContent = title;
+            alert.querySelector('.alert-message').textContent = message;
+            alert.classList.add('show');
+            
+            setTimeout(() => {
+                hideAlert();
+            }, 5000);
+        }
+
+        function hideAlert() {
+            const alert = document.getElementById('authAlert');
+            alert.classList.remove('show');
+        }
+
+        // Scroll animation
+        function animateOnScroll() {
+            const elements = document.querySelectorAll('.animate-on-scroll');
+            
+            elements.forEach(element => {
+                const elementTop = element.getBoundingClientRect().top;
+                const elementVisible = 150;
+                
+                if (elementTop < window.innerHeight - elementVisible) {
+                    element.classList.add('visible');
+                }
+            });
+        }
+
+        // Initial check on page load
+        document.addEventListener('DOMContentLoaded', () => {
+            animateOnScroll();
+            
+            // Animate stats counter
+            const stats = document.querySelectorAll('.stat-number');
+            stats.forEach(stat => {
+                const target = parseInt(stat.textContent.replace('+', ''));
+                const suffix = stat.textContent.includes('+') ? '+' : '';
+                let current = 0;
+                const increment = target / 100;
+                const timer = setInterval(() => {
+                    current += increment;
+                    if (current >= target) {
+                        stat.textContent = target + suffix;
+                        clearInterval(timer);
+                    } else {
+                        stat.textContent = Math.floor(current) + suffix;
+                    }
+                }, 20);
+            });
+        });
+
+        // Check on scroll
+        window.addEventListener('scroll', animateOnScroll);
+
+        // Smooth scroll for anchor links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            });
+        });
+
+        // Parallax effect for hero background
+        window.addEventListener('scroll', () => {
+            const scrolled = window.pageYOffset;
+            const heroBg = document.querySelector('.hero-bg');
+            if (heroBg) {
+                heroBg.style.transform = `translateY(${scrolled * 0.5}px)`;
+            }
+        });
+    </script>
+</body>
+</html>

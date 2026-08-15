@@ -1,0 +1,2264 @@
+{% extends "base.html" %}
+
+{% block title %}Pengaturan - DecoDify{% endblock %}
+
+{% block styles %}
+<style>
+    :root {
+        --primary: #8c8dac;
+        --secondary: #8b5cf6;
+        --accent: #10b981;
+        --danger: #ef4444;
+        --warning: #f59e0b;
+        --dark: #1e293b;
+        --darker: #0f172a;
+        --text: #f1f5f9;
+        --text-muted: #94a3b8;
+        --card-bg: rgba(30, 41, 59, 0.7);
+        --glass: rgba(255, 255, 255, 0.05);
+        --premium-gold: linear-gradient(135deg, #f59e0b, #d97706, #b45309);
+    }
+
+    /* Settings Container */
+    .settings-container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 2rem;
+    }
+
+    /* Settings Header */
+    .settings-header {
+        margin-bottom: 2rem;
+    }
+
+    .settings-header h1 {
+        font-size: 2.5rem;
+        font-weight: 800;
+        background: linear-gradient(135deg, var(--primary), var(--secondary), var(--accent));
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        margin-bottom: 0.5rem;
+        display: flex;
+        align-items: center;
+        gap: 15px;
+    }
+
+    .settings-header p {
+        color: var(--text-muted);
+        font-size: 1.1rem;
+        max-width: 600px;
+    }
+
+    /* Settings Layout */
+    .settings-layout {
+        display: grid;
+        grid-template-columns: 300px 1fr;
+        gap: 2rem;
+    }
+
+    @media (max-width: 1024px) {
+        .settings-layout {
+            grid-template-columns: 1fr;
+        }
+    }
+
+    /* Settings Sidebar */
+    .settings-sidebar {
+        background: linear-gradient(180deg, 
+            rgba(30, 41, 59, 0.95) 0%,
+            rgba(15, 23, 42, 0.98) 100%);
+        backdrop-filter: blur(15px);
+        border: 1px solid rgba(139, 92, 246, 0.2);
+        border-radius: 20px;
+        padding: 1.5rem;
+        height: fit-content;
+        position: sticky;
+        top: 2rem;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+    }
+
+    .settings-nav {
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+
+    .settings-nav-item {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 1rem 1.2rem;
+        background: rgba(255, 255, 255, 0.03);
+        border: 1px solid rgba(255, 255, 255, 0.05);
+        border-radius: 12px;
+        color: var(--text);
+        text-decoration: none;
+        transition: all 0.3s ease;
+        cursor: pointer;
+    }
+
+    .settings-nav-item:hover {
+        background: rgba(139, 92, 246, 0.1);
+        border-color: rgba(139, 92, 246, 0.3);
+        transform: translateX(5px);
+    }
+
+    .settings-nav-item.active {
+        background: linear-gradient(135deg, 
+            rgba(139, 92, 246, 0.2), 
+            rgba(99, 102, 241, 0.15));
+        border-color: var(--secondary);
+    }
+
+    .settings-nav-icon {
+        width: 40px;
+        height: 40px;
+        border-radius: 10px;
+        background: rgba(139, 92, 246, 0.1);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: var(--secondary);
+        font-size: 1.2rem;
+    }
+
+    .settings-nav-text {
+        flex: 1;
+        font-weight: 500;
+    }
+
+    /* Settings Content */
+    .settings-content {
+        background: var(--card-bg);
+        border-radius: 20px;
+        border: 1px solid var(--glass);
+        padding: 2rem;
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+    }
+
+    .settings-section {
+        display: none;
+        animation: fadeIn 0.3s ease;
+    }
+
+    .settings-section.active {
+        display: block;
+    }
+
+    .section-header {
+        margin-bottom: 2rem;
+    }
+
+    .section-header h2 {
+        color: var(--text);
+        font-size: 1.8rem;
+        margin-bottom: 0.5rem;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .section-header p {
+        color: var(--text-muted);
+        font-size: 1rem;
+    }
+
+    /* Form Styles */
+    .settings-form {
+        max-width: 600px;
+    }
+
+    .form-group {
+        margin-bottom: 1.5rem;
+    }
+
+    .form-label {
+        display: block;
+        color: var(--text);
+        font-weight: 500;
+        margin-bottom: 0.5rem;
+        font-size: 0.95rem;
+    }
+
+    .form-input {
+        width: 100%;
+        padding: 0.9rem 1.2rem;
+        background: rgba(255, 255, 255, 0.05);
+        border: 1px solid var(--glass);
+        border-radius: 12px;
+        color: var(--text);
+        font-family: inherit;
+        font-size: 1rem;
+        transition: all 0.3s ease;
+    }
+
+    .form-input:focus {
+        outline: none;
+        border-color: var(--secondary);
+        box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.1);
+        background: rgba(255, 255, 255, 0.08);
+    }
+
+    .form-input::placeholder {
+        color: var(--text-muted);
+    }
+
+    .form-textarea {
+        min-height: 120px;
+        resize: vertical;
+    }
+
+    .form-hint {
+        display: block;
+        color: var(--text-muted);
+        font-size: 0.85rem;
+        margin-top: 0.5rem;
+    }
+
+    .form-row {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 1rem;
+    }
+
+    @media (max-width: 768px) {
+        .form-row {
+            grid-template-columns: 1fr;
+        }
+    }
+
+    /* Toggle Switch */
+    .toggle-switch {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 1rem;
+        background: rgba(255, 255, 255, 0.03);
+        border: 1px solid var(--glass);
+        border-radius: 12px;
+        margin-bottom: 1rem;
+        transition: all 0.3s ease;
+    }
+
+    .toggle-switch:hover {
+        background: rgba(255, 255, 255, 0.05);
+        border-color: rgba(139, 92, 246, 0.3);
+    }
+
+    .toggle-label {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        color: var(--text);
+        font-weight: 500;
+    }
+
+    .toggle-icon {
+        width: 36px;
+        height: 36px;
+        border-radius: 8px;
+        background: rgba(139, 92, 246, 0.1);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: var(--secondary);
+    }
+
+    .toggle-switch-input {
+        position: relative;
+        display: inline-block;
+        width: 60px;
+        height: 30px;
+    }
+
+    .toggle-switch-input input {
+        opacity: 0;
+        width: 0;
+        height: 0;
+    }
+
+    .toggle-slider {
+        position: absolute;
+        cursor: pointer;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(255, 255, 255, 0.1);
+        border-radius: 34px;
+        transition: .4s;
+    }
+
+    .toggle-slider:before {
+        position: absolute;
+        content: "";
+        height: 22px;
+        width: 22px;
+        left: 4px;
+        bottom: 4px;
+        background: white;
+        border-radius: 50%;
+        transition: .4s;
+    }
+
+    input:checked + .toggle-slider {
+        background: var(--secondary);
+    }
+
+    input:checked + .toggle-slider:before {
+        transform: translateX(30px);
+    }
+
+    /* Select Dropdown */
+    .select-wrapper {
+        position: relative;
+    }
+
+    .form-select {
+        width: 100%;
+        padding: 0.9rem 1.2rem;
+        background: rgba(255, 255, 255, 0.05);
+        border: 1px solid var(--glass);
+        border-radius: 12px;
+        color: var(--text);
+        font-family: inherit;
+        font-size: 1rem;
+        appearance: none;
+        cursor: pointer;
+    }
+
+    .select-arrow {
+        position: absolute;
+        right: 1.2rem;
+        top: 50%;
+        transform: translateY(-50%);
+        color: var(--text-muted);
+        pointer-events: none;
+    }
+
+    /* Profile Avatar */
+    .profile-avatar-section {
+        display: flex;
+        align-items: center;
+        gap: 2rem;
+        margin-bottom: 2rem;
+    }
+
+    .avatar-preview {
+        position: relative;
+        width: 120px;
+        height: 120px;
+    }
+
+    .avatar-preview-img {
+        width: 100%;
+        height: 100%;
+        border-radius: 50%;
+        object-fit: cover;
+        border: 4px solid var(--secondary);
+        box-shadow: 0 8px 25px rgba(139, 92, 246, 0.3);
+    }
+
+    .avatar-upload-btn {
+        position: absolute;
+        bottom: 0;
+        right: 0;
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, var(--secondary), var(--primary));
+        border: none;
+        color: white;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.2rem;
+        transition: all 0.3s ease;
+    }
+
+    .avatar-upload-btn:hover {
+        transform: scale(1.1);
+        box-shadow: 0 4px 15px rgba(139, 92, 246, 0.4);
+    }
+
+    .avatar-info {
+        flex: 1;
+    }
+
+    /* Danger Zone */
+    .danger-zone {
+        margin-top: 3rem;
+        padding-top: 2rem;
+        border-top: 1px solid rgba(239, 68, 68, 0.2);
+    }
+
+    .danger-zone h3 {
+        color: var(--danger);
+        margin-bottom: 1rem;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .danger-actions {
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+    }
+
+    .danger-btn {
+        padding: 1rem 1.5rem;
+        background: rgba(239, 68, 68, 0.1);
+        border: 1px solid rgba(239, 68, 68, 0.3);
+        border-radius: 12px;
+        color: var(--danger);
+        font-weight: 500;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+    }
+
+    .danger-btn:hover {
+        background: rgba(239, 68, 68, 0.2);
+        transform: translateX(5px);
+    }
+
+    /* Button Styles */
+    .btn-group {
+        display: flex;
+        gap: 1rem;
+        margin-top: 2rem;
+    }
+
+    .btn {
+        padding: 0.9rem 2rem;
+        border-radius: 12px;
+        font-weight: 600;
+        font-size: 1rem;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        border: none;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .btn-primary {
+        background: linear-gradient(135deg, var(--secondary), var(--primary));
+        color: white;
+    }
+
+    .btn-primary:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 25px rgba(139, 92, 246, 0.4);
+    }
+
+    .btn-secondary {
+        background: rgba(255, 255, 255, 0.1);
+        color: var(--text);
+        border: 1px solid var(--glass);
+    }
+
+    .btn-secondary:hover {
+        background: rgba(255, 255, 255, 0.15);
+        transform: translateY(-2px);
+    }
+
+    .btn-danger {
+        background: rgba(239, 68, 68, 0.1);
+        color: var(--danger);
+        border: 1px solid rgba(239, 68, 68, 0.3);
+    }
+
+    .btn-danger:hover {
+        background: rgba(239, 68, 68, 0.2);
+        transform: translateY(-2px);
+    }
+
+    /* Theme Colors */
+    .theme-colors {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+        gap: 1rem;
+        margin-top: 1rem;
+    }
+
+    .theme-color {
+        padding: 1rem;
+        border-radius: 12px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        border: 2px solid transparent;
+    }
+
+    .theme-color:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+    }
+
+    .theme-color.active {
+        border-color: var(--secondary);
+        box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.2);
+    }
+
+    .theme-color-preview {
+        width: 100%;
+        height: 60px;
+        border-radius: 8px;
+        margin-bottom: 0.5rem;
+    }
+
+    .theme-color-name {
+        color: var(--text);
+        font-weight: 500;
+        text-align: center;
+    }
+
+    /* Security Status */
+    .security-status {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+        gap: 1rem;
+        margin-bottom: 2rem;
+    }
+
+    .status-item {
+        background: rgba(255, 255, 255, 0.03);
+        border: 1px solid var(--glass);
+        border-radius: 12px;
+        padding: 1rem;
+        text-align: center;
+    }
+
+    .status-value {
+        font-size: 2rem;
+        font-weight: 700;
+        color: var(--secondary);
+        margin-bottom: 0.3rem;
+    }
+
+    .status-label {
+        font-size: 0.9rem;
+        color: var(--text-muted);
+    }
+
+    /* Animations */
+    @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(10px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+        .settings-container {
+            padding: 1rem;
+        }
+        
+        .settings-header h1 {
+            font-size: 2rem;
+        }
+        
+        .profile-avatar-section {
+            flex-direction: column;
+            text-align: center;
+        }
+        
+        .btn-group {
+            flex-direction: column;
+        }
+        
+        .btn {
+            justify-content: center;
+        }
+    }
+
+    /* Toast Notifications */
+    .toast {
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        padding: 1rem 1.5rem;
+        border-radius: 10px;
+        box-shadow: 0 5px 20px rgba(0,0,0,0.3);
+        z-index: 10000;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        animation: slideIn 0.3s ease;
+    }
+
+    .toast.success {
+        background: var(--accent);
+        color: white;
+    }
+
+    .toast.error {
+        background: var(--danger);
+        color: white;
+    }
+
+    @keyframes slideIn {
+        from { transform: translateX(100%); opacity: 0; }
+        to { transform: translateX(0); opacity: 1; }
+    }
+
+    @keyframes slideOut {
+        from { transform: translateX(0); opacity: 1; }
+        to { transform: translateX(100%); opacity: 0; }
+    }
+
+    /* Loading State */
+    .loading-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(0, 0, 0, 0.8);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 9999;
+        backdrop-filter: blur(10px);
+    }
+
+    .loader {
+        width: 50px;
+        height: 50px;
+        border: 3px solid var(--glass);
+        border-top: 3px solid var(--secondary);
+        border-radius: 50%;
+        animation: spin 1s linear infinite;
+    }
+
+    @keyframes spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+    }
+
+    /* Confirmation Modal */
+    .confirmation-modal {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(0, 0, 0, 0.8);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 10001;
+        backdrop-filter: blur(10px);
+        padding: 1rem;
+    }
+
+    .confirmation-content {
+        background: var(--card-bg);
+        border-radius: 20px;
+        padding: 2rem;
+        max-width: 500px;
+        width: 100%;
+        border: 1px solid var(--glass);
+        animation: modalIn 0.3s ease;
+    }
+
+    @keyframes modalIn {
+        from { opacity: 0; transform: scale(0.9); }
+        to { opacity: 1; transform: scale(1); }
+    }
+
+    /* Theme Color Definitions */
+    .theme-color-purple {
+        background: linear-gradient(135deg, #8b5cf6, #7c3aed);
+    }
+
+    .theme-color-blue {
+        background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+    }
+
+    .theme-color-green {
+        background: linear-gradient(135deg, #10b981, #059669);
+    }
+
+    .theme-color-orange {
+        background: linear-gradient(135deg, #f59e0b, #d97706);
+    }
+
+    .theme-color-pink {
+        background: linear-gradient(135deg, #ec4899, #db2777);
+    }
+
+    .theme-color-dark {
+        background: linear-gradient(135deg, #1e293b, #0f172a);
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="settings-container">
+    <!-- Header -->
+    <div class="settings-header">
+        <h1>
+            <i class="fas fa-cog"></i>
+            Pengaturan Akun
+        </h1>
+        <p>Kelola profil, keamanan, tampilan, dan preferensi akun DecoDify Anda</p>
+    </div>
+
+    <!-- Settings Layout -->
+    <div class="settings-layout">
+        <!-- Sidebar Navigation -->
+        <div class="settings-sidebar">
+            <nav class="settings-nav" id="settingsNav">
+                <a href="#profile" class="settings-nav-item active" data-section="profile">
+                    <div class="settings-nav-icon">
+                        <i class="fas fa-user"></i>
+                    </div>
+                    <span class="settings-nav-text">Profil</span>
+                    <i class="fas fa-chevron-right"></i>
+                </a>
+                
+                <a href="#security" class="settings-nav-item" data-section="security">
+                    <div class="settings-nav-icon">
+                        <i class="fas fa-shield-alt"></i>
+                    </div>
+                    <span class="settings-nav-text">Keamanan</span>
+                    <i class="fas fa-chevron-right"></i>
+                </a>
+                
+                <a href="#appearance" class="settings-nav-item" data-section="appearance">
+                    <div class="settings-nav-icon">
+                        <i class="fas fa-palette"></i>
+                    </div>
+                    <span class="settings-nav-text">Tampilan</span>
+                    <i class="fas fa-chevron-right"></i>
+                </a>
+                
+                <a href="#notifications" class="settings-nav-item" data-section="notifications">
+                    <div class="settings-nav-icon">
+                        <i class="fas fa-bell"></i>
+                    </div>
+                    <span class="settings-nav-text">Notifikasi</span>
+                    <i class="fas fa-chevron-right"></i>
+                </a>
+                
+                <a href="#privacy" class="settings-nav-item" data-section="privacy">
+                    <div class="settings-nav-icon">
+                        <i class="fas fa-lock"></i>
+                    </div>
+                    <span class="settings-nav-text">Privasi</span>
+                    <i class="fas fa-chevron-right"></i>
+                </a>
+                
+                <a href="#subscription" class="settings-nav-item" data-section="subscription">
+                    <div class="settings-nav-icon">
+                        <i class="fas fa-crown"></i>
+                    </div>
+                    <span class="settings-nav-text">Langganan</span>
+                    <i class="fas fa-chevron-right"></i>
+                </a>
+                
+                <a href="#integrations" class="settings-nav-item" data-section="integrations">
+                    <div class="settings-nav-icon">
+                        <i class="fas fa-puzzle-piece"></i>
+                    </div>
+                    <span class="settings-nav-text">Integrasi</span>
+                    <i class="fas fa-chevron-right"></i>
+                </a>
+            </nav>
+        </div>
+
+        <!-- Settings Content -->
+        <div class="settings-content">
+            <!-- Profile Section -->
+            <div class="settings-section active" id="profileSection">
+                <div class="section-header">
+                    <h2><i class="fas fa-user"></i> Informasi Profil</h2>
+                    <p>Kelola informasi pribadi dan foto profil Anda</p>
+                </div>
+
+                <!-- Profile Avatar -->
+                <div class="profile-avatar-section">
+                    <div class="avatar-preview">
+                        {% if user_avatar and user_avatar != '' %}
+                        <img src="{{ user_avatar }}" alt="Avatar" class="avatar-preview-img" id="avatarPreview">
+                        {% else %}
+                        <div class="avatar-preview-img" id="avatarPreview" style="background: linear-gradient(135deg, var(--secondary), var(--primary)); display: flex; align-items: center; justify-content: center; color: white; font-size: 2.5rem;">
+                            <i class="fas fa-user-secret"></i>
+                        </div>
+                        {% endif %}
+                        <button class="avatar-upload-btn" onclick="document.getElementById('avatarUpload').click()">
+                            <i class="fas fa-camera"></i>
+                        </button>
+                        <input type="file" id="avatarUpload" accept="image/*" style="display: none;" onchange="previewAvatar(event)">
+                    </div>
+                    <div class="avatar-info">
+                        <h3 style="color: var(--text); margin-bottom: 0.5rem;">Foto Profil</h3>
+                        <p style="color: var(--text-muted); font-size: 0.9rem;">
+                            Unggah foto profil baru. Gambar akan otomatis di-resize ke 400x400 px.
+                            Format yang didukung: JPG, PNG, GIF (maks. 5MB)
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Profile Form -->
+                <form class="settings-form" id="profileForm">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label" for="firstName">Nama Depan</label>
+                            <input type="text" class="form-input" id="firstName" 
+                                   value="{{ current_user.first_name if current_user.first_name else '' }}"
+                                   placeholder="Masukkan nama depan">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label" for="lastName">Nama Belakang</label>
+                            <input type="text" class="form-input" id="lastName" 
+                                   value="{{ current_user.last_name if current_user.last_name else '' }}"
+                                   placeholder="Masukkan nama belakang">
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label" for="username">Username</label>
+                        <input type="text" class="form-input" id="username" 
+                               value="{{ current_user.username if current_user.username else '' }}"
+                               placeholder="Masukkan username">
+                        <span class="form-hint">Username akan digunakan untuk URL profil dan sebutan di platform</span>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label" for="email">Email</label>
+                        <input type="email" class="form-input" id="email" 
+                               value="{{ current_user.email if current_user.email else '' }}"
+                               placeholder="Masukkan email" disabled>
+                        <span class="form-hint">Email tidak dapat diubah. Hubungi support jika perlu perubahan</span>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label" for="bio">Bio</label>
+                        <textarea class="form-input form-textarea" id="bio" 
+                                  placeholder="Ceritakan tentang diri Anda...">{% if current_user.bio %}{{ current_user.bio }}{% endif %}</textarea>
+                        <span class="form-hint">Maksimal 200 karakter</span>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label" for="website">Website</label>
+                        <input type="url" class="form-input" id="website" 
+                               value="{{ current_user.website if current_user.website else '' }}"
+                               placeholder="https://website-anda.com">
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label" for="location">Lokasi</label>
+                        <input type="text" class="form-input" id="location" 
+                               value="{{ current_user.location if current_user.location else '' }}"
+                               placeholder="Kota, Negara">
+                    </div>
+
+                    <div class="btn-group">
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-save"></i>
+                            Simpan Perubahan
+                        </button>
+                        <button type="button" class="btn btn-secondary" onclick="resetProfileForm()">
+                            <i class="fas fa-undo"></i>
+                            Reset
+                        </button>
+                    </div>
+                </form>
+            </div>
+
+            <!-- Security Section -->
+            <div class="settings-section" id="securitySection">
+                <div class="section-header">
+                    <h2><i class="fas fa-shield-alt"></i> Keamanan Akun</h2>
+                    <p>Kelola kata sandi, autentikasi dua faktor, dan keamanan akun Anda</p>
+                </div>
+
+                <!-- Security Status -->
+                <div class="security-status">
+                    <div class="status-item">
+                        <div class="status-value">{% if current_user.is_authenticated %}Aman{% else %}Tidak{% endif %}</div>
+                        <div class="status-label">Status Akun</div>
+                    </div>
+                    <div class="status-item">
+                        <div class="status-value">{% if current_user.last_login %}{{ current_user.last_login.strftime('%d/%m/%Y') }}{% else %}Belum{% endif %}</div>
+                        <div class="status-label">Login Terakhir</div>
+                    </div>
+                    <div class="status-item">
+                        <div class="status-value">{% if current_user.two_factor_enabled %}Aktif{% else %}Nonaktif{% endif %}</div>
+                        <div class="status-label">2FA</div>
+                    </div>
+                </div>
+
+                <!-- Change Password -->
+                <div class="section-header">
+                    <h3 style="color: var(--text); margin-bottom: 1rem;">Ubah Kata Sandi</h3>
+                </div>
+
+                <form class="settings-form" id="passwordForm">
+                    <div class="form-group">
+                        <label class="form-label" for="currentPassword">Kata Sandi Saat Ini</label>
+                        <input type="password" class="form-input" id="currentPassword" 
+                               placeholder="Masukkan kata sandi saat ini">
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label" for="newPassword">Kata Sandi Baru</label>
+                            <input type="password" class="form-input" id="newPassword" 
+                                   placeholder="Masukkan kata sandi baru">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label" for="confirmPassword">Konfirmasi Kata Sandi</label>
+                            <input type="password" class="form-input" id="confirmPassword" 
+                                   placeholder="Konfirmasi kata sandi baru">
+                        </div>
+                    </div>
+
+                    <div class="form-hint" style="margin-bottom: 1.5rem;">
+                        <strong>Tips Keamanan:</strong><br>
+                        • Gunakan minimal 12 karakter<br>
+                        • Kombinasikan huruf besar, kecil, angka, dan simbol<br>
+                        • Hindari kata sandi yang mudah ditebak<br>
+                        • Jangan gunakan kata sandi yang sama di banyak situs
+                    </div>
+
+                    <div class="btn-group">
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-key"></i>
+                            Ubah Kata Sandi
+                        </button>
+                    </div>
+                </form>
+
+                <!-- Two-Factor Authentication -->
+                <div class="section-header" style="margin-top: 3rem;">
+                    <h3 style="color: var(--text); margin-bottom: 1rem;">Autentikasi Dua Faktor (2FA)</h3>
+                    <p style="color: var(--text-muted);">Tambahkan lapisan keamanan ekstra ke akun Anda</p>
+                </div>
+
+                <div class="toggle-switch">
+                    <div class="toggle-label">
+                        <div class="toggle-icon">
+                            <i class="fas fa-mobile-alt"></i>
+                        </div>
+                        <div>
+                            <div style="font-weight: 600; color: var(--text);">Autentikasi Dua Faktor</div>
+                            <div style="font-size: 0.9rem; color: var(--text-muted);">Login dengan kode dari aplikasi autentikator</div>
+                        </div>
+                    </div>
+                    <label class="toggle-switch-input">
+                        <input type="checkbox" id="twoFactorToggle" {% if current_user.two_factor_enabled %}checked{% endif %}>
+                        <span class="toggle-slider"></span>
+                    </label>
+                </div>
+
+                <!-- Session Management -->
+                <div class="section-header" style="margin-top: 3rem;">
+                    <h3 style="color: var(--text); margin-bottom: 1rem;">Sesi Aktif</h3>
+                    <p style="color: var(--text-muted);">Kelola perangkat yang terhubung ke akun Anda</p>
+                </div>
+
+                <div class="toggle-switch">
+                    <div class="toggle-label">
+                        <div class="toggle-icon">
+                            <i class="fas fa-laptop"></i>
+                        </div>
+                        <div>
+                            <div style="font-weight: 600; color: var(--text);">Sesi Saat Ini</div>
+                            <div style="font-size: 0.9rem; color: var(--text-muted);">{{ request.user_agent.browser }} di {{ request.user_agent.platform }}</div>
+                        </div>
+                    </div>
+                    <button type="button" class="btn btn-danger" onclick="logoutOtherSessions()">
+                        <i class="fas fa-sign-out-alt"></i>
+                        Keluar dari Perangkat Lain
+                    </button>
+                </div>
+
+                <!-- Danger Zone -->
+                <div class="danger-zone">
+                    <h3><i class="fas fa-exclamation-triangle"></i> Zona Bahaya</h3>
+                    
+                    <div class="danger-actions">
+                        <button class="danger-btn" onclick="showDeactivateModal()">
+                            <span>
+                                <i class="fas fa-user-slash"></i>
+                                Nonaktifkan Akun Sementara
+                            </span>
+                            <i class="fas fa-chevron-right"></i>
+                        </button>
+                        
+                        <button class="danger-btn" onclick="showDeleteModal()">
+                            <span>
+                                <i class="fas fa-trash-alt"></i>
+                                Hapus Akun Permanen
+                            </span>
+                            <i class="fas fa-chevron-right"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Appearance Section -->
+            <div class="settings-section" id="appearanceSection">
+                <div class="section-header">
+                    <h2><i class="fas fa-palette"></i> Tampilan & Tema</h2>
+                    <p>Sesuaikan tampilan DecoDify sesuai preferensi Anda</p>
+                </div>
+
+                <!-- Theme Selection -->
+                <div class="form-group">
+                    <label class="form-label">Tema Warna</label>
+                    <div class="theme-colors">
+                        <div class="theme-color active" data-theme="purple" onclick="selectTheme('purple')">
+                            <div class="theme-color-preview theme-color-purple"></div>
+                            <div class="theme-color-name">Ungu (Default)</div>
+                        </div>
+                        
+                        <div class="theme-color" data-theme="blue" onclick="selectTheme('blue')">
+                            <div class="theme-color-preview theme-color-blue"></div>
+                            <div class="theme-color-name">Biru</div>
+                        </div>
+                        
+                        <div class="theme-color" data-theme="green" onclick="selectTheme('green')">
+                            <div class="theme-color-preview theme-color-green"></div>
+                            <div class="theme-color-name">Hijau</div>
+                        </div>
+                        
+                        <div class="theme-color" data-theme="orange" onclick="selectTheme('orange')">
+                            <div class="theme-color-preview theme-color-orange"></div>
+                            <div class="theme-color-name">Oranye</div>
+                        </div>
+                        
+                        <div class="theme-color" data-theme="pink" onclick="selectTheme('pink')">
+                            <div class="theme-color-preview theme-color-pink"></div>
+                            <div class="theme-color-name">Merah Muda</div>
+                        </div>
+                        
+                        <div class="theme-color" data-theme="dark" onclick="selectTheme('dark')">
+                            <div class="theme-color-preview theme-color-dark"></div>
+                            <div class="theme-color-name">Gelap</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Display Preferences -->
+                <div class="section-header" style="margin-top: 2rem;">
+                    <h3 style="color: var(--text); margin-bottom: 1rem;">Preferensi Tampilan</h3>
+                </div>
+
+                <div class="toggle-switch">
+                    <div class="toggle-label">
+                        <div class="toggle-icon">
+                            <i class="fas fa-moon"></i>
+                        </div>
+                        <div>
+                            <div style="font-weight: 600; color: var(--text);">Mode Gelap</div>
+                            <div style="font-size: 0.9rem; color: var(--text-muted);">Aktifkan tema gelap untuk kenyamanan mata</div>
+                        </div>
+                    </div>
+                    <label class="toggle-switch-input">
+                        <input type="checkbox" id="darkModeToggle" checked>
+                        <span class="toggle-slider"></span>
+                    </label>
+                </div>
+
+                <div class="toggle-switch">
+                    <div class="toggle-label">
+                        <div class="toggle-icon">
+                            <i class="fas fa-text-height"></i>
+                        </div>
+                        <div>
+                            <div style="font-weight: 600; color: var(--text);">Font Besar</div>
+                            <div style="font-size: 0.9rem; color: var(--text-muted);">Perbesar ukuran font untuk keterbacaan yang lebih baik</div>
+                        </div>
+                    </div>
+                    <label class="toggle-switch-input">
+                        <input type="checkbox" id="largeFontToggle">
+                        <span class="toggle-slider"></span>
+                    </label>
+                </div>
+
+                <div class="toggle-switch">
+                    <div class="toggle-label">
+                        <div class="toggle-icon">
+                            <i class="fas fa-eye"></i>
+                        </div>
+                        <div>
+                            <div style="font-weight: 600; color: var(--text);">High Contrast</div>
+                            <div style="font-size: 0.9rem; color: var(--text-muted);">Tingkatkan kontras untuk visibilitas yang lebih baik</div>
+                        </div>
+                    </div>
+                    <label class="toggle-switch-input">
+                        <input type="checkbox" id="highContrastToggle">
+                        <span class="toggle-slider"></span>
+                    </label>
+                </div>
+
+                <!-- Animation Preferences -->
+                <div class="form-group" style="margin-top: 2rem;">
+                    <label class="form-label" for="animationSpeed">Kecepatan Animasi</label>
+                    <div class="select-wrapper">
+                        <select class="form-select" id="animationSpeed">
+                            <option value="fast">Cepat</option>
+                            <option value="normal" selected>Normal</option>
+                            <option value="slow">Lambat</option>
+                            <option value="none">Tanpa Animasi</option>
+                        </select>
+                        <div class="select-arrow">
+                            <i class="fas fa-chevron-down"></i>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="btn-group">
+                    <button type="button" class="btn btn-primary" onclick="saveAppearanceSettings()">
+                        <i class="fas fa-save"></i>
+                        Simpan Preferensi
+                    </button>
+                    <button type="button" class="btn btn-secondary" onclick="resetAppearanceSettings()">
+                        <i class="fas fa-undo"></i>
+                        Reset ke Default
+                    </button>
+                </div>
+            </div>
+
+            <!-- Notifications Section -->
+            <div class="settings-section" id="notificationsSection">
+                <div class="section-header">
+                    <h2><i class="fas fa-bell"></i> Pengaturan Notifikasi</h2>
+                    <p>Kelaua jenis notifikasi yang ingin Anda terima</p>
+                </div>
+
+                <!-- Notification Categories -->
+                <div class="toggle-switch">
+                    <div class="toggle-label">
+                        <div class="toggle-icon">
+                            <i class="fas fa-envelope"></i>
+                        </div>
+                        <div>
+                            <div style="font-weight: 600; color: var(--text);">Email Notifikasi</div>
+                            <div style="font-size: 0.9rem; color: var(--text-muted);">Terima notifikasi via email</div>
+                        </div>
+                    </div>
+                    <label class="toggle-switch-input">
+                        <input type="checkbox" id="emailNotifications" checked>
+                        <span class="toggle-slider"></span>
+                    </label>
+                </div>
+
+                <div class="toggle-switch">
+                    <div class="toggle-label">
+                        <div class="toggle-icon">
+                            <i class="fas fa-bell"></i>
+                        </div>
+                        <div>
+                            <div style="font-weight: 600; color: var(--text);">Notifikasi Browser</div>
+                            <div style="font-size: 0.9rem; color: var(--text-muted);">Tampilkan notifikasi di browser</div>
+                        </div>
+                    </div>
+                    <label class="toggle-switch-input">
+                        <input type="checkbox" id="browserNotifications">
+                        <span class="toggle-slider"></span>
+                    </label>
+                </div>
+
+                <div class="toggle-switch">
+                    <div class="toggle-label">
+                        <div class="toggle-icon">
+                            <i class="fas fa-comment-alt"></i>
+                        </div>
+                        <div>
+                            <div style="font-weight: 600; color: var(--text);">Notifikasi Forum</div>
+                            <div style="font-size: 0.9rem; color: var(--text-muted);">Pembaruan di forum Q&A</div>
+                        </div>
+                    </div>
+                    <label class="toggle-switch-input">
+                        <input type="checkbox" id="forumNotifications" checked>
+                        <span class="toggle-slider"></span>
+                    </label>
+                </div>
+
+                <div class="toggle-switch">
+                    <div class="toggle-label">
+                        <div class="toggle-icon">
+                            <i class="fas fa-graduation-cap"></i>
+                        </div>
+                        <div>
+                            <div style="font-weight: 600; color: var(--text);">Pembaruan Belajar</div>
+                            <div style="font-size: 0.9rem; color: var(--text-muted);">Materi baru dan progress belajar</div>
+                        </div>
+                    </div>
+                    <label class="toggle-switch-input">
+                        <input type="checkbox" id="learningNotifications" checked>
+                        <span class="toggle-slider"></span>
+                    </label>
+                </div>
+
+                <div class="toggle-switch">
+                    <div class="toggle-label">
+                        <div class="toggle-icon">
+                            <i class="fas fa-trophy"></i>
+                        </div>
+                        <div>
+                            <div style="font-weight: 600; color: var(--text);">Pencapaian</div>
+                            <div style="font-size: 0.9rem; color: var(--text-muted);">Pencapaian dan badge baru</div>
+                        </div>
+                    </div>
+                    <label class="toggle-switch-input">
+                        <input type="checkbox" id="achievementNotifications" checked>
+                        <span class="toggle-slider"></span>
+                    </label>
+                </div>
+
+                <div class="toggle-switch">
+                    <div class="toggle-label">
+                        <div class="toggle-icon">
+                            <i class="fas fa-crown"></i>
+                        </div>
+                        <div>
+                            <div style="font-weight: 600; color: var(--text);">Promo Premium</div>
+                            <div style="font-size: 0.9rem; color: var(--text-muted);">Penawaran dan promo khusus premium</div>
+                        </div>
+                    </div>
+                    <label class="toggle-switch-input">
+                        <input type="checkbox" id="promoNotifications">
+                        <span class="toggle-slider"></span>
+                    </label>
+                </div>
+
+                <!-- Notification Frequency -->
+                <div class="form-group" style="margin-top: 2rem;">
+                    <label class="form-label" for="notificationFrequency">Frekuensi Email</label>
+                    <div class="select-wrapper">
+                        <select class="form-select" id="notificationFrequency">
+                            <option value="instant">Instant (langsung)</option>
+                            <option value="daily" selected>Harian (digest)</option>
+                            <option value="weekly">Mingguan (digest)</option>
+                            <option value="never">Jangan kirim email</option>
+                        </select>
+                        <div class="select-arrow">
+                            <i class="fas fa-chevron-down"></i>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Quiet Hours -->
+                <div class="form-group">
+                    <label class="form-label" for="quietHours">Jam Tenang</label>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <input type="time" class="form-input" id="quietStart" value="22:00">
+                        </div>
+                        <div class="form-group">
+                            <input type="time" class="form-input" id="quietEnd" value="07:00">
+                        </div>
+                    </div>
+                    <span class="form-hint">Notifikasi akan ditahan selama jam tenang</span>
+                </div>
+
+                <div class="btn-group">
+                    <button type="button" class="btn btn-primary" onclick="saveNotificationSettings()">
+                        <i class="fas fa-save"></i>
+                        Simpan Pengaturan
+                    </button>
+                </div>
+            </div>
+
+            <!-- Privacy Section -->
+            <div class="settings-section" id="privacySection">
+                <div class="section-header">
+                    <h2><i class="fas fa-lock"></i> Privasi & Data</h2>
+                    <p>Kelola privasi akun dan pengaturan data Anda</p>
+                </div>
+
+                <!-- Privacy Settings -->
+                <div class="toggle-switch">
+                    <div class="toggle-label">
+                        <div class="toggle-icon">
+                            <i class="fas fa-user-friends"></i>
+                        </div>
+                        <div>
+                            <div style="font-weight: 600; color: var(--text);">Profil Publik</div>
+                            <div style="font-size: 0.9rem; color: var(--text-muted);">Buat profil dapat dilihat oleh pengguna lain</div>
+                        </div>
+                    </div>
+                    <label class="toggle-switch-input">
+                        <input type="checkbox" id="publicProfile" checked>
+                        <span class="toggle-slider"></span>
+                    </label>
+                </div>
+
+                <div class="toggle-switch">
+                    <div class="toggle-label">
+                        <div class="toggle-icon">
+                            <i class="fas fa-chart-line"></i>
+                        </div>
+                        <div>
+                            <div style="font-weight: 600; color: var(--text);">Tampilkan Aktivitas</div>
+                            <div style="font-size: 0.9rem; color: var(--text-muted);">Tampilkan aktivitas belajar di profil</div>
+                        </div>
+                    </div>
+                    <label class="toggle-switch-input">
+                        <input type="checkbox" id="showActivity" checked>
+                        <span class="toggle-slider"></span>
+                    </label>
+                </div>
+
+                <div class="toggle-switch">
+                    <div class="toggle-label">
+                        <div class="toggle-icon">
+                            <i class="fas fa-search"></i>
+                        </div>
+                        <div>
+                            <div style="font-weight: 600; color: var(--text);">Muncul di Pencarian</div>
+                            <div style="font-size: 0.9rem; color: var(--text-muted);">Tampilkan profil di hasil pencarian</div>
+                        </div>
+                    </div>
+                    <label class="toggle-switch-input">
+                        <input type="checkbox" id="searchable" checked>
+                        <span class="toggle-slider"></span>
+                    </label>
+                </div>
+
+                <div class="toggle-switch">
+                    <div class="toggle-label">
+                        <div class="toggle-icon">
+                            <i class="fas fa-envelope-open"></i>
+                        </div>
+                        <div>
+                            <div style="font-weight: 600; color: var(--text);">Terima Pesan</div>
+                            <div style="font-size: 0.9rem; color: var(--text-muted);">Izinkan pengguna lain mengirim pesan</div>
+                        </div>
+                    </div>
+                    <label class="toggle-switch-input">
+                        <input type="checkbox" id="receiveMessages">
+                        <span class="toggle-slider"></span>
+                    </label>
+                </div>
+
+                <!-- Data Sharing -->
+                <div class="section-header" style="margin-top: 2rem;">
+                    <h3 style="color: var(--text); margin-bottom: 1rem;">Berbagi Data</h3>
+                    <p style="color: var(--text-muted);">Kontrol penggunaan data Anda untuk pengembangan platform</p>
+                </div>
+
+                <div class="toggle-switch">
+                    <div class="toggle-label">
+                        <div class="toggle-icon">
+                            <i class="fas fa-chart-bar"></i>
+                        </div>
+                        <div>
+                            <div style="font-weight: 600; color: var(--text);">Analitik Anonim</div>
+                            <div style="font-size: 0.9rem; color: var(--text-muted);">Izinkan pengumpulan data anonim untuk analitik</div>
+                        </div>
+                    </div>
+                    <label class="toggle-switch-input">
+                        <input type="checkbox" id="analyticsData" checked>
+                        <span class="toggle-slider"></span>
+                    </label>
+                </div>
+
+                <div class="toggle-switch">
+                    <div class="toggle-label">
+                        <div class="toggle-icon">
+                            <i class="fas fa-flask"></i>
+                        </div>
+                        <div>
+                            <div style="font-weight: 600; color: var(--text);">Pengujian Fitur</div>
+                            <div style="font-size: 0.9rem; color: var(--text-muted);">Ikuti program pengujian fitur baru</div>
+                        </div>
+                    </div>
+                    <label class="toggle-switch-input">
+                        <input type="checkbox" id="betaTesting">
+                        <span class="toggle-slider"></span>
+                    </label>
+                </div>
+
+                <!-- Data Management -->
+                <div class="section-header" style="margin-top: 2rem;">
+                    <h3 style="color: var(--text); margin-bottom: 1rem;">Kelola Data</h3>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label" for="dataExport">Ekspor Data</label>
+                    <button type="button" class="btn btn-secondary" onclick="exportUserData()" style="width: 100%;">
+                        <i class="fas fa-download"></i>
+                        Ekspor Semua Data Saya
+                    </button>
+                    <span class="form-hint">Unduh salinan semua data Anda dalam format JSON</span>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label" for="clearData">Hapus Data</label>
+                    <button type="button" class="btn btn-danger" onclick="showClearDataModal()" style="width: 100%;">
+                        <i class="fas fa-eraser"></i>
+                        Hapus Riwayat Aktivitas
+                    </button>
+                    <span class="form-hint">Hapus riwayat belajar, pencapaian, dan aktivitas Anda</span>
+                </div>
+
+                <div class="btn-group">
+                    <button type="button" class="btn btn-primary" onclick="savePrivacySettings()">
+                        <i class="fas fa-save"></i>
+                        Simpan Pengaturan Privasi
+                    </button>
+                </div>
+            </div>
+
+            <!-- Subscription Section -->
+            <div class="settings-section" id="subscriptionSection">
+                <div class="section-header">
+                    <h2><i class="fas fa-crown"></i> Langganan</h2>
+                    <p>Kelola paket langganan dan metode pembayaran Anda</p>
+                </div>
+
+                {% if is_premium %}
+                <!-- Premium User -->
+                <div class="premium-status-card" style="background: linear-gradient(135deg, rgba(245, 158, 11, 0.1), rgba(217, 119, 6, 0.05)); border: 2px solid var(--warning); padding: 2rem; border-radius: 15px; margin-bottom: 2rem;">
+                    <div style="display: flex; align-items: center; gap: 1rem; margin-bottom: 1rem;">
+                        <div style="width: 60px; height: 60px; border-radius: 12px; background: linear-gradient(135deg, var(--warning), #d97706); display: flex; align-items: center; justify-content: center; color: white; font-size: 2rem;">
+                            <i class="fas fa-crown"></i>
+                        </div>
+                        <div>
+                            <h3 style="color: var(--text); margin-bottom: 0.3rem;">Premium Member</h3>
+                            <p style="color: var(--text-muted); font-size: 0.9rem;">Paket premium Anda aktif</p>
+                        </div>
+                    </div>
+                    
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem;">
+                        <div>
+                            <div style="font-size: 0.9rem; color: var(--text-muted);">Paket</div>
+                            <div style="font-weight: 600; color: var(--text);">Premium Bulanan</div>
+                        </div>
+                        <div>
+                            <div style="font-size: 0.9rem; color: var(--text-muted);">Harga</div>
+                            <div style="font-weight: 600; color: var(--text);">Rp 49.999/bulan</div>
+                        </div>
+                        <div>
+                            <div style="font-size: 0.9rem; color: var(--text-muted);">Berakhir</div>
+                            <div style="font-weight: 600; color: var(--text);">{{ premium_expiry if premium_expiry else '30 hari lagi' }}</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Benefits List -->
+                <div class="section-header">
+                    <h3 style="color: var(--text); margin-bottom: 1rem;">Manfaat Premium</h3>
+                </div>
+
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1rem; margin-bottom: 2rem;">
+                    <div style="background: rgba(255, 255, 255, 0.03); padding: 1.5rem; border-radius: 12px; border: 1px solid var(--glass);">
+                        <div style="width: 50px; height: 50px; border-radius: 10px; background: rgba(16, 185, 129, 0.1); display: flex; align-items: center; justify-content: center; color: var(--accent); font-size: 1.5rem; margin-bottom: 1rem;">
+                            <i class="fas fa-infinity"></i>
+                        </div>
+                        <h4 style="color: var(--text); margin-bottom: 0.5rem;">Akses Tak Terbatas</h4>
+                        <p style="color: var(--text-muted); font-size: 0.9rem;">Semua materi dan fitur premium</p>
+                    </div>
+                    
+                    <div style="background: rgba(255, 255, 255, 0.03); padding: 1.5rem; border-radius: 12px; border: 1px solid var(--glass);">
+                        <div style="width: 50px; height: 50px; border-radius: 10px; background: rgba(139, 92, 246, 0.1); display: flex; align-items: center; justify-content: center; color: var(--secondary); font-size: 1.5rem; margin-bottom: 1rem;">
+                            <i class="fas fa-headset"></i>
+                        </div>
+                        <h4 style="color: var(--text); margin-bottom: 0.5rem;">Priority Support</h4>
+                        <p style="color: var(--text-muted); font-size: 0.9rem;">Bantuan 24/7 dengan prioritas</p>
+                    </div>
+                    
+                    <div style="background: rgba(255, 255, 255, 0.03); padding: 1.5rem; border-radius: 12px; border: 1px solid var(--glass);">
+                        <div style="width: 50px; height: 50px; border-radius: 10px; background: rgba(239, 68, 68, 0.1); display: flex; align-items: center; justify-content: center; color: var(--danger); font-size: 1.5rem; margin-bottom: 1rem;">
+                            <i class="fas fa-certificate"></i>
+                        </div>
+                        <h4 style="color: var(--text); margin-bottom: 0.5rem;">Sertifikat Eksklusif</h4>
+                        <p style="color: var(--text-muted); font-size: 0.9rem;">Sertifikat kelulusan premium</p>
+                    </div>
+                </div>
+
+                <!-- Manage Subscription -->
+                <div class="btn-group">
+                    <button type="button" class="btn btn-secondary" onclick="manageSubscription()">
+                        <i class="fas fa-credit-card"></i>
+                        Kelola Pembayaran
+                    </button>
+                    <button type="button" class="btn btn-danger" onclick="showCancelSubscriptionModal()">
+                        <i class="fas fa-times-circle"></i>
+                        Batalkan Langganan
+                    </button>
+                </div>
+                {% else %}
+                <!-- Free User -->
+                <div class="upgrade-card" style="background: linear-gradient(135deg, rgba(139, 92, 246, 0.1), rgba(99, 102, 241, 0.05)); border: 2px solid var(--secondary); padding: 2rem; border-radius: 15px; margin-bottom: 2rem;">
+                    <div style="display: flex; align-items: center; gap: 1rem; margin-bottom: 1rem;">
+                        <div style="width: 60px; height: 60px; border-radius: 12px; background: linear-gradient(135deg, var(--secondary), var(--primary)); display: flex; align-items: center; justify-content: center; color: white; font-size: 2rem;">
+                            <i class="fas fa-gem"></i>
+                        </div>
+                        <div>
+                            <h3 style="color: var(--text); margin-bottom: 0.3rem;">Upgrade ke Premium</h3>
+                            <p style="color: var(--text-muted); font-size: 0.9rem;">Buka semua fitur eksklusif</p>
+                        </div>
+                    </div>
+                    
+                    <div style="margin-bottom: 1.5rem;">
+                        <p style="color: var(--text); margin-bottom: 1rem;">Dengan premium Anda mendapatkan:</p>
+                        <ul style="color: var(--text-muted); padding-left: 1.5rem;">
+                            <li style="margin-bottom: 0.5rem;">Akses ke semua materi kriptografi</li>
+                            <li style="margin-bottom: 0.5rem;">Enkripsi/dekripsi tak terbatas</li>
+                            <li style="margin-bottom: 0.5rem;">Priority support 24/7</li>
+                            <li style="margin-bottom: 0.5rem;">Sertifikat kelulusan premium</li>
+                        </ul>
+                    </div>
+                    
+                    <div style="text-align: center;">
+                        <div style="font-size: 2.5rem; font-weight: 800; color: var(--secondary); margin-bottom: 0.5rem;">
+                            Rp 49.999<span style="font-size: 1rem; color: var(--text-muted);">/bulan</span>
+                        </div>
+                        <button class="btn btn-primary" onclick="upgradeToPremium()" style="width: 100%;">
+                            <i class="fas fa-arrow-up"></i>
+                            Upgrade Sekarang
+                        </button>
+                    </div>
+                </div>
+                {% endif %}
+
+                <!-- Payment Methods -->
+                <div class="section-header">
+                    <h3 style="color: var(--text); margin-bottom: 1rem;">Metode Pembayaran</h3>
+                    <p style="color: var(--text-muted);">Kelaua metode pembayaran yang tersimpan</p>
+                </div>
+
+                <div style="background: rgba(255, 255, 255, 0.03); border-radius: 12px; padding: 1.5rem; border: 1px solid var(--glass); margin-bottom: 2rem;">
+                    <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 1rem;">
+                        <div style="display: flex; align-items: center; gap: 1rem;">
+                            <div style="width: 50px; height: 50px; border-radius: 10px; background: rgba(16, 185, 129, 0.1); display: flex; align-items: center; justify-content: center; color: var(--accent); font-size: 1.5rem;">
+                                <i class="fab fa-cc-visa"></i>
+                            </div>
+                            <div>
+                                <h4 style="color: var(--text); margin-bottom: 0.2rem;">Visa •••• 4242</h4>
+                                <p style="color: var(--text-muted); font-size: 0.9rem;">Kadaluarsa: 12/25</p>
+                            </div>
+                        </div>
+                        <button class="btn btn-danger" onclick="removePaymentMethod()">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </div>
+                    
+                    <button class="btn btn-secondary" onclick="addPaymentMethod()" style="width: 100%;">
+                        <i class="fas fa-plus"></i>
+                        Tambah Metode Pembayaran
+                    </button>
+                </div>
+
+                <!-- Billing History -->
+                <div class="section-header">
+                    <h3 style="color: var(--text); margin-bottom: 1rem;">Riwayat Tagihan</h3>
+                </div>
+
+                <div style="background: rgba(255, 255, 255, 0.03); border-radius: 12px; border: 1px solid var(--glass); overflow: hidden;">
+                    <div style="display: grid; grid-template-columns: 2fr 1fr 1fr 1fr; padding: 1rem; border-bottom: 1px solid var(--glass); background: rgba(255, 255, 255, 0.02);">
+                        <div style="font-weight: 600; color: var(--text);">Deskripsi</div>
+                        <div style="font-weight: 600; color: var(--text);">Tanggal</div>
+                        <div style="font-weight: 600; color: var(--text);">Jumlah</div>
+                        <div style="font-weight: 600; color: var(--text);">Status</div>
+                    </div>
+                    
+                    <div style="padding: 1rem; border-bottom: 1px solid var(--glass);">
+                        <div style="display: grid; grid-template-columns: 2fr 1fr 1fr 1fr; align-items: center;">
+                            <div style="color: var(--text);">Premium Bulanan</div>
+                            <div style="color: var(--text-muted);">15 Jan 2024</div>
+                            <div style="color: var(--text);">Rp 49.999</div>
+                            <div><span style="background: rgba(16, 185, 129, 0.1); color: var(--accent); padding: 0.3rem 0.8rem; border-radius: 20px; font-size: 0.8rem; font-weight: 500;">Sukses</span></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Integrations Section -->
+            <div class="settings-section" id="integrationsSection">
+                <div class="section-header">
+                    <h2><i class="fas fa-puzzle-piece"></i> Integrasi</h2>
+                    <p>Sambungkan akun Anda dengan layanan eksternal</p>
+                </div>
+
+                <!-- Available Integrations -->
+                <div class="toggle-switch">
+                    <div class="toggle-label">
+                        <div class="toggle-icon" style="background: rgba(29, 161, 242, 0.1); color: #1da1f2;">
+                            <i class="fab fa-twitter"></i>
+                        </div>
+                        <div>
+                            <div style="font-weight: 600; color: var(--text);">Twitter</div>
+                            <div style="font-size: 0.9rem; color: var(--text-muted);">Bagikan pencapaian ke Twitter</div>
+                        </div>
+                    </div>
+                    <label class="toggle-switch-input">
+                        <input type="checkbox" id="twitterIntegration">
+                        <span class="toggle-slider"></span>
+                    </label>
+                </div>
+
+                <div class="toggle-switch">
+                    <div class="toggle-label">
+                        <div class="toggle-icon" style="background: rgba(65, 137, 230, 0.1); color: #4189e2;">
+                            <i class="fab fa-discord"></i>
+                        </div>
+                        <div>
+                            <div style="font-weight: 600; color: var(--text);">Discord</div>
+                            <div style="font-size: 0.9rem; color: var(--text-muted);">Bergabung dengan komunitas Discord</div>
+                        </div>
+                    </div>
+                    <label class="toggle-switch-input">
+                        <input type="checkbox" id="discordIntegration" checked>
+                        <span class="toggle-slider"></span>
+                    </label>
+                </div>
+
+                <div class="toggle-switch">
+                    <div class="toggle-label">
+                        <div class="toggle-icon" style="background: rgba(36, 41, 46, 0.1); color: #24292e;">
+                            <i class="fab fa-github"></i>
+                        </div>
+                        <div>
+                            <div style="font-weight: 600; color: var(--text);">GitHub</div>
+                            <div style="font-size: 0.9rem; color: var(--text-muted);">Hubungkan dengan repository GitHub</div>
+                        </div>
+                    </div>
+                    <label class="toggle-switch-input">
+                        <input type="checkbox" id="githubIntegration">
+                        <span class="toggle-slider"></span>
+                    </label>
+                </div>
+
+                <div class="toggle-switch">
+                    <div class="toggle-label">
+                        <div class="toggle-icon" style="background: rgba(66, 133, 244, 0.1); color: #4285f4;">
+                            <i class="fab fa-google"></i>
+                        </div>
+                        <div>
+                            <div style="font-weight: 600; color: var(--text);">Google Calendar</div>
+                            <div style="font-size: 0.9rem; color: var(--text-muted);">Sinkronkan jadwal belajar</div>
+                        </div>
+                    </div>
+                    <label class="toggle-switch-input">
+                        <input type="checkbox" id="calendarIntegration">
+                        <span class="toggle-slider"></span>
+                    </label>
+                </div>
+
+                <div class="toggle-switch">
+                    <div class="toggle-label">
+                        <div class="toggle-icon" style="background: rgba(88, 101, 242, 0.1); color: #5865f2;">
+                            <i class="fab fa-dropbox"></i>
+                        </div>
+                        <div>
+                            <div style="font-weight: 600; color: var(--text);">Dropbox</div>
+                            <div style="font-size: 0.9rem; color: var(--text-muted);">Backup sertifikat dan materi</div>
+                        </div>
+                    </div>
+                    <label class="toggle-switch-input">
+                        <input type="checkbox" id="dropboxIntegration">
+                        <span class="toggle-slider"></span>
+                    </label>
+                </div>
+
+                <!-- API Keys -->
+                <div class="section-header" style="margin-top: 2rem;">
+                    <h3 style="color: var(--text); margin-bottom: 1rem;">Kunci API</h3>
+                    <p style="color: var(--text-muted);">Kelola kunci API untuk integrasi dengan aplikasi Anda</p>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label" for="apiKey">Kunci API Anda</label>
+                    <div style="display: flex; gap: 1rem;">
+                        <input type="text" class="form-input" id="apiKey" value="decodify_sk_***" readonly>
+                        <button type="button" class="btn btn-secondary" onclick="copyApiKey()">
+                            <i class="fas fa-copy"></i>
+                            Salin
+                        </button>
+                    </div>
+                    <span class="form-hint">Gunakan kunci ini untuk mengakses API DecoDify</span>
+                </div>
+
+                <div class="btn-group">
+                    <button type="button" class="btn btn-primary" onclick="generateApiKey()">
+                        <i class="fas fa-key"></i>
+                        Buat Kunci API Baru
+                    </button>
+                    <button type="button" class="btn btn-danger" onclick="showRevokeApiKeyModal()">
+                        <i class="fas fa-ban"></i>
+                        Cabut Semua Kunci
+                    </button>
+                </div>
+
+                <!-- Webhooks -->
+                <div class="section-header" style="margin-top: 2rem;">
+                    <h3 style="color: var(--text); margin-bottom: 1rem;">Webhooks</h3>
+                    <p style="color: var(--text-muted);">Kelola webhooks untuk integrasi real-time</p>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label" for="webhookUrl">URL Webhook</label>
+                    <input type="url" class="form-input" id="webhookUrl" placeholder="https://your-domain.com/webhook">
+                    <span class="form-hint">URL untuk menerima notifikasi real-time dari DecoDify</span>
+                </div>
+
+                <div class="btn-group">
+                    <button type="button" class="btn btn-primary" onclick="saveIntegrationSettings()">
+                        <i class="fas fa-save"></i>
+                        Simpan Integrasi
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Loading Overlay -->
+<div class="loading-overlay" id="loadingOverlay" style="display: none;">
+    <div class="loader"></div>
+</div>
+
+<!-- Confirmation Modal Template -->
+<div class="confirmation-modal" id="confirmationModal" style="display: none;">
+    <div class="confirmation-content">
+        <h3 style="color: var(--text); margin-bottom: 1rem;" id="modalTitle"></h3>
+        <p style="color: var(--text-muted); margin-bottom: 2rem;" id="modalMessage"></p>
+        <div class="btn-group">
+            <button type="button" class="btn btn-danger" id="modalConfirmBtn">Konfirmasi</button>
+            <button type="button" class="btn btn-secondary" onclick="hideModal()">Batal</button>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    // State Management
+    let currentSection = 'profile';
+    let avatarFile = null;
+
+    // Initialize settings page
+    document.addEventListener('DOMContentLoaded', function() {
+        initializeSettings();
+        loadSettings();
+    });
+
+    // Initialize settings navigation
+    function initializeSettings() {
+        // Setup navigation
+        const navItems = document.querySelectorAll('.settings-nav-item');
+        navItems.forEach(item => {
+            item.addEventListener('click', function(e) {
+                e.preventDefault();
+                const section = this.getAttribute('data-section');
+                switchSection(section);
+            });
+        });
+
+        // Setup form submissions
+        document.getElementById('profileForm').addEventListener('submit', saveProfile);
+        document.getElementById('passwordForm').addEventListener('submit', changePassword);
+        
+        // Setup toggles
+        setupToggles();
+        
+        // Setup theme selection
+        setupThemeSelection();
+    }
+
+    // Switch between sections
+    function switchSection(section) {
+        // Update navigation
+        document.querySelectorAll('.settings-nav-item').forEach(item => {
+            item.classList.remove('active');
+        });
+        document.querySelector(`.settings-nav-item[data-section="${section}"]`).classList.add('active');
+        
+        // Update content
+        document.querySelectorAll('.settings-section').forEach(sec => {
+            sec.classList.remove('active');
+        });
+        document.getElementById(`${section}Section`).classList.add('active');
+        
+        currentSection = section;
+        
+        // Scroll to top of content
+        document.querySelector('.settings-content').scrollTop = 0;
+    }
+
+    // Setup toggle switches
+    function setupToggles() {
+        const toggles = document.querySelectorAll('.toggle-switch-input input');
+        toggles.forEach(toggle => {
+            toggle.addEventListener('change', function() {
+                const settingId = this.id;
+                const value = this.checked;
+                saveToggleSetting(settingId, value);
+            });
+        });
+    }
+
+    // Setup theme selection
+    function setupThemeSelection() {
+        const themeColors = document.querySelectorAll('.theme-color');
+        themeColors.forEach(color => {
+            color.addEventListener('click', function() {
+                themeColors.forEach(c => c.classList.remove('active'));
+                this.classList.add('active');
+            });
+        });
+    }
+
+    // Preview avatar upload
+    function previewAvatar(event) {
+        const file = event.target.files[0];
+        if (!file) return;
+        
+        // Validate file
+        if (!file.type.match('image.*')) {
+            showToast('Hanya file gambar yang diperbolehkan', 'error');
+            return;
+        }
+        
+        if (file.size > 5 * 1024 * 1024) { // 5MB
+            showToast('Ukuran file maksimal 5MB', 'error');
+            return;
+        }
+        
+        avatarFile = file;
+        
+        // Preview image
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            const preview = document.getElementById('avatarPreview');
+            preview.innerHTML = `<img src="${e.target.result}" alt="Avatar" style="width: 100%; height: 100%; border-radius: 50%; object-fit: cover;">`;
+        };
+        reader.readAsDataURL(file);
+    }
+
+    // Load saved settings
+    function loadSettings() {
+        // Load from localStorage
+        const savedSettings = JSON.parse(localStorage.getItem('decodify_settings') || '{}');
+        
+        // Apply settings
+        if (savedSettings.theme) {
+            selectTheme(savedSettings.theme);
+        }
+        
+        if (savedSettings.toggles) {
+            Object.entries(savedSettings.toggles).forEach(([id, value]) => {
+                const toggle = document.getElementById(id);
+                if (toggle) {
+                    toggle.checked = value;
+                }
+            });
+        }
+    }
+
+    // Save toggle setting
+    function saveToggleSetting(id, value) {
+        const settings = JSON.parse(localStorage.getItem('decodify_settings') || '{}');
+        if (!settings.toggles) settings.toggles = {};
+        settings.toggles[id] = value;
+        localStorage.setItem('decodify_settings', JSON.stringify(settings));
+    }
+
+    // Select theme
+    function selectTheme(theme) {
+        const settings = JSON.parse(localStorage.getItem('decodify_settings') || '{}');
+        settings.theme = theme;
+        localStorage.setItem('decodify_settings', JSON.stringify(settings));
+        
+        // Apply theme (in real app, this would update CSS variables)
+        console.log('Theme changed to:', theme);
+    }
+
+    // Save profile
+    function saveProfile(event) {
+        event.preventDefault();
+        
+        showLoading();
+        
+        const profileData = {
+            firstName: document.getElementById('firstName').value,
+            lastName: document.getElementById('lastName').value,
+            username: document.getElementById('username').value,
+            bio: document.getElementById('bio').value,
+            website: document.getElementById('website').value,
+            location: document.getElementById('location').value
+        };
+        
+        // Simulate API call
+        setTimeout(() => {
+            hideLoading();
+            
+            // Save to localStorage (in real app, send to server)
+            localStorage.setItem('decodify_profile', JSON.stringify(profileData));
+            
+            showToast('Profil berhasil disimpan!', 'success');
+        }, 1500);
+    }
+
+    // Reset profile form
+    function resetProfileForm() {
+        const savedProfile = JSON.parse(localStorage.getItem('decodify_profile') || '{}');
+        
+        document.getElementById('firstName').value = savedProfile.firstName || '';
+        document.getElementById('lastName').value = savedProfile.lastName || '';
+        document.getElementById('username').value = savedProfile.username || '';
+        document.getElementById('bio').value = savedProfile.bio || '';
+        document.getElementById('website').value = savedProfile.website || '';
+        document.getElementById('location').value = savedProfile.location || '';
+        
+        showToast('Formulir telah direset', 'info');
+    }
+
+    // Change password
+    function changePassword(event) {
+        event.preventDefault();
+        
+        const currentPassword = document.getElementById('currentPassword').value;
+        const newPassword = document.getElementById('newPassword').value;
+        const confirmPassword = document.getElementById('confirmPassword').value;
+        
+        // Validation
+        if (!currentPassword || !newPassword || !confirmPassword) {
+            showToast('Harap isi semua field', 'error');
+            return;
+        }
+        
+        if (newPassword.length < 12) {
+            showToast('Kata sandi minimal 12 karakter', 'error');
+            return;
+        }
+        
+        if (newPassword !== confirmPassword) {
+            showToast('Kata sandi baru tidak cocok', 'error');
+            return;
+        }
+        
+        showLoading();
+        
+        // Simulate API call
+        setTimeout(() => {
+            hideLoading();
+            
+            // Clear form
+            document.getElementById('currentPassword').value = '';
+            document.getElementById('newPassword').value = '';
+            document.getElementById('confirmPassword').value = '';
+            
+            showToast('Kata sandi berhasil diubah!', 'success');
+        }, 1500);
+    }
+
+    // Logout other sessions
+    function logoutOtherSessions() {
+        showConfirmationModal(
+            'Keluar dari Perangkat Lain',
+            'Anda akan keluar dari semua perangkat lain yang menggunakan akun ini. Lanjutkan?',
+            function() {
+                showLoading();
+                setTimeout(() => {
+                    hideLoading();
+                    showToast('Berhasil keluar dari perangkat lain', 'success');
+                }, 1000);
+            }
+        );
+    }
+
+    // Save appearance settings
+    function saveAppearanceSettings() {
+        const settings = {
+            theme: document.querySelector('.theme-color.active').getAttribute('data-theme'),
+            darkMode: document.getElementById('darkModeToggle').checked,
+            largeFont: document.getElementById('largeFontToggle').checked,
+            highContrast: document.getElementById('highContrastToggle').checked,
+            animationSpeed: document.getElementById('animationSpeed').value
+        };
+        
+        localStorage.setItem('decodify_appearance', JSON.stringify(settings));
+        showToast('Pengaturan tampilan disimpan!', 'success');
+    }
+
+    // Reset appearance settings
+    function resetAppearanceSettings() {
+        document.getElementById('darkModeToggle').checked = true;
+        document.getElementById('largeFontToggle').checked = false;
+        document.getElementById('highContrastToggle').checked = false;
+        document.getElementById('animationSpeed').value = 'normal';
+        
+        document.querySelectorAll('.theme-color').forEach(color => color.classList.remove('active'));
+        document.querySelector('.theme-color[data-theme="purple"]').classList.add('active');
+        
+        showToast('Pengaturan tampilan direset ke default', 'info');
+    }
+
+    // Save notification settings
+    function saveNotificationSettings() {
+        const settings = {
+            email: document.getElementById('emailNotifications').checked,
+            browser: document.getElementById('browserNotifications').checked,
+            forum: document.getElementById('forumNotifications').checked,
+            learning: document.getElementById('learningNotifications').checked,
+            achievements: document.getElementById('achievementNotifications').checked,
+            promo: document.getElementById('promoNotifications').checked,
+            frequency: document.getElementById('notificationFrequency').value,
+            quietStart: document.getElementById('quietStart').value,
+            quietEnd: document.getElementById('quietEnd').value
+        };
+        
+        localStorage.setItem('decodify_notifications', JSON.stringify(settings));
+        showToast('Pengaturan notifikasi disimpan!', 'success');
+    }
+
+    // Save privacy settings
+    function savePrivacySettings() {
+        const settings = {
+            publicProfile: document.getElementById('publicProfile').checked,
+            showActivity: document.getElementById('showActivity').checked,
+            searchable: document.getElementById('searchable').checked,
+            receiveMessages: document.getElementById('receiveMessages').checked,
+            analytics: document.getElementById('analyticsData').checked,
+            betaTesting: document.getElementById('betaTesting').checked
+        };
+        
+        localStorage.setItem('decodify_privacy', JSON.stringify(settings));
+        showToast('Pengaturan privasi disimpan!', 'success');
+    }
+
+    // Export user data
+    function exportUserData() {
+        showLoading();
+        
+        // Collect user data
+        const userData = {
+            profile: JSON.parse(localStorage.getItem('decodify_profile') || '{}'),
+            settings: JSON.parse(localStorage.getItem('decodify_settings') || '{}'),
+            appearance: JSON.parse(localStorage.getItem('decodify_appearance') || '{}'),
+            notifications: JSON.parse(localStorage.getItem('decodify_notifications') || '{}'),
+            privacy: JSON.parse(localStorage.getItem('decodify_privacy') || '{}'),
+            timestamp: new Date().toISOString()
+        };
+        
+        // Create download
+        const dataStr = JSON.stringify(userData, null, 2);
+        const dataUri = 'data:application/json;charset=utf-8,'+ encodeURIComponent(dataStr);
+        
+        setTimeout(() => {
+            hideLoading();
+            
+            const exportFileDefaultName = `decodify-data-${new Date().toISOString().split('T')[0]}.json`;
+            const linkElement = document.createElement('a');
+            linkElement.setAttribute('href', dataUri);
+            linkElement.setAttribute('download', exportFileDefaultName);
+            linkElement.click();
+            
+            showToast('Data berhasil diekspor!', 'success');
+        }, 1000);
+    }
+
+    // Upgrade to premium
+    function upgradeToPremium() {
+        showLoading();
+        setTimeout(() => {
+            hideLoading();
+            window.location.href = '/subscription';
+        }, 1000);
+    }
+
+    // Manage subscription
+    function manageSubscription() {
+        showLoading();
+        setTimeout(() => {
+            hideLoading();
+            window.location.href = '/subscription/manage';
+        }, 1000);
+    }
+
+    // Save integration settings
+    function saveIntegrationSettings() {
+        const settings = {
+            twitter: document.getElementById('twitterIntegration').checked,
+            discord: document.getElementById('discordIntegration').checked,
+            github: document.getElementById('githubIntegration').checked,
+            calendar: document.getElementById('calendarIntegration').checked,
+            dropbox: document.getElementById('dropboxIntegration').checked,
+            webhookUrl: document.getElementById('webhookUrl').value
+        };
+        
+        localStorage.setItem('decodify_integrations', JSON.stringify(settings));
+        showToast('Pengaturan integrasi disimpan!', 'success');
+    }
+
+    // Copy API key
+    function copyApiKey() {
+        navigator.clipboard.writeText('decodify_sk_***').then(() => {
+            showToast('Kunci API disalin ke clipboard!', 'success');
+        }).catch(err => {
+            showToast('Gagal menyalin kunci API', 'error');
+        });
+    }
+
+    // Generate new API key
+    function generateApiKey() {
+        showConfirmationModal(
+            'Buat Kunci API Baru',
+            'Kunci API lama akan dicabut. Kunci baru akan dibuat. Lanjutkan?',
+            function() {
+                showLoading();
+                setTimeout(() => {
+                    hideLoading();
+                    showToast('Kunci API baru berhasil dibuat!', 'success');
+                }, 1000);
+            }
+        );
+    }
+
+    // Show confirmation modal
+    function showConfirmationModal(title, message, confirmCallback) {
+        document.getElementById('modalTitle').textContent = title;
+        document.getElementById('modalMessage').textContent = message;
+        document.getElementById('modalConfirmBtn').onclick = function() {
+            hideModal();
+            confirmCallback();
+        };
+        document.getElementById('confirmationModal').style.display = 'flex';
+    }
+
+    // Hide modal
+    function hideModal() {
+        document.getElementById('confirmationModal').style.display = 'none';
+    }
+
+    // Show loading overlay
+    function showLoading() {
+        document.getElementById('loadingOverlay').style.display = 'flex';
+    }
+
+    // Hide loading overlay
+    function hideLoading() {
+        document.getElementById('loadingOverlay').style.display = 'none';
+    }
+
+    // Show toast notification
+    function showToast(message, type = 'success') {
+        // Remove existing toasts
+        document.querySelectorAll('.toast').forEach(toast => toast.remove());
+        
+        const toast = document.createElement('div');
+        toast.className = `toast ${type}`;
+        toast.innerHTML = `
+            <i class="fas fa-${type === 'success' ? 'check-circle' : 'exclamation-circle'}"></i>
+            ${message}
+        `;
+        
+        document.body.appendChild(toast);
+        
+        setTimeout(() => {
+            toast.style.animation = 'slideOut 0.3s ease';
+            setTimeout(() => toast.remove(), 300);
+        }, 5000);
+    }
+
+    // Danger zone functions
+    function showDeactivateModal() {
+        showConfirmationModal(
+            'Nonaktifkan Akun',
+            'Akun Anda akan dinonaktifkan sementara. Semua data akan disimpan dan dapat diaktifkan kembali kapan saja. Lanjutkan?',
+            function() {
+                showLoading();
+                setTimeout(() => {
+                    hideLoading();
+                    showToast('Akun berhasil dinonaktifkan', 'success');
+                    setTimeout(() => {
+                        window.location.href = '/logout';
+                    }, 2000);
+                }, 1500);
+            }
+        );
+    }
+
+    function showDeleteModal() {
+        showConfirmationModal(
+            'Hapus Akun Permanen',
+            'PERINGATAN: Tindakan ini tidak dapat dibatalkan! Semua data Anda akan dihapus secara permanen. Masukkan kata sandi untuk melanjutkan.',
+            function() {
+                const password = prompt('Masukkan kata sandi Anda untuk mengonfirmasi:');
+                if (password) {
+                    showLoading();
+                    setTimeout(() => {
+                        hideLoading();
+                        showToast('Akun berhasil dihapus', 'success');
+                        setTimeout(() => {
+                            window.location.href = '/logout';
+                        }, 2000);
+                    }, 1500);
+                }
+            }
+        );
+    }
+
+    function showClearDataModal() {
+        showConfirmationModal(
+            'Hapus Riwayat Aktivitas',
+            'Semua riwayat belajar, pencapaian, dan aktivitas Anda akan dihapus. Tindakan ini tidak dapat dibatalkan. Lanjutkan?',
+            function() {
+                showLoading();
+                setTimeout(() => {
+                    hideLoading();
+                    showToast('Riwayat aktivitas berhasil dihapus', 'success');
+                }, 1500);
+            }
+        );
+    }
+
+    function showCancelSubscriptionModal() {
+        showConfirmationModal(
+            'Batalkan Langganan',
+            'Akses premium Anda akan tetap aktif hingga akhir periode tagihan. Setelah itu, Anda akan kembali ke akun free. Lanjutkan?',
+            function() {
+                showLoading();
+                setTimeout(() => {
+                    hideLoading();
+                    showToast('Langganan berhasil dibatalkan', 'success');
+                }, 1500);
+            }
+        );
+    }
+
+    function showRevokeApiKeyModal() {
+        showConfirmationModal(
+            'Cabut Semua Kunci API',
+            'Semua kunci API yang aktif akan dicabut. Aplikasi yang menggunakan kunci ini akan kehilangan akses. Lanjutkan?',
+            function() {
+                showLoading();
+                setTimeout(() => {
+                    hideLoading();
+                    showToast('Semua kunci API berhasil dicabut', 'success');
+                }, 1500);
+            }
+        );
+    }
+
+    // Other helper functions
+    function removePaymentMethod() {
+        showConfirmationModal(
+            'Hapus Metode Pembayaran',
+            'Metode pembayaran ini akan dihapus dari akun Anda. Lanjutkan?',
+            function() {
+                showToast('Metode pembayaran berhasil dihapus', 'success');
+            }
+        );
+    }
+
+    function addPaymentMethod() {
+        showToast('Fitur ini akan segera hadir!', 'info');
+    }
+</script>
+{% endblock %}

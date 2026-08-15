@@ -1,0 +1,2645 @@
+{% extends "base.html" %}
+
+{% block title %}Tanya Jawab - DecoDify{% endblock %}
+
+{% block styles %}
+<style>
+    :root {
+        --primary: #8c8dac;
+        --secondary: #8b5cf6;
+        --accent: #10b981;
+        --danger: #ef4444;
+        --warning: #f59e0b;
+        --dark: #1e293b;
+        --darker: #0f172a;
+        --text: #f1f5f9;
+        --text-muted: #94a3b8;
+        --card-bg: rgba(30, 41, 59, 0.7);
+        --glass: rgba(255, 255, 255, 0.05);
+        --premium-gold: linear-gradient(135deg, #f59e0b, #d97706, #b45309);
+    }
+
+    /* Main Container */
+    .tanya-jawab-container {
+        max-width: 1400px;
+        margin: 0 auto;
+        padding: 1rem;
+    }
+
+    /* Header */
+    .tj-header {
+        background: linear-gradient(135deg, 
+            rgba(99, 102, 241, 0.15), 
+            rgba(139, 92, 246, 0.15));
+        border: 1px solid var(--glass);
+        border-radius: 20px;
+        padding: 2rem;
+        margin-bottom: 2rem;
+        text-align: center;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .tj-header::before {
+        content: '';
+        position: absolute;
+        top: -50%;
+        left: -50%;
+        width: 200%;
+        height: 200%;
+        background: radial-gradient(
+            circle at 30% 30%,
+            rgba(99, 102, 241, 0.1) 0%,
+            transparent 50%
+        );
+        animation: float 20s infinite linear;
+    }
+
+    .tj-header-content {
+        position: relative;
+        z-index: 2;
+    }
+
+    .tj-title {
+        font-size: 2.5rem;
+        font-weight: 800;
+        margin-bottom: 1rem;
+        background: linear-gradient(135deg, var(--primary), var(--secondary), var(--accent));
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 15px;
+    }
+
+    /* Main Layout */
+    .tj-main-layout {
+        display: grid;
+        grid-template-columns: 1fr 350px;
+        gap: 2rem;
+        min-height: 70vh;
+    }
+
+    @media (max-width: 1024px) {
+        .tj-main-layout {
+            grid-template-columns: 1fr;
+        }
+    }
+
+    /* Chatbot Container */
+    .chatbot-container {
+        background: var(--card-bg);
+        border-radius: 20px;
+        border: 1px solid var(--glass);
+        height: 600px;
+        display: flex;
+        flex-direction: column;
+        overflow: hidden;
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+    }
+
+    /* Chatbot Header */
+    .chatbot-header {
+        background: linear-gradient(135deg, var(--secondary), var(--primary));
+        color: white;
+        padding: 1.2rem 2rem;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        position: relative;
+    }
+
+    .chatbot-header h3 {
+        margin: 0;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        font-size: 1.3rem;
+    }
+
+    .bot-status {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        font-size: 0.9rem;
+        opacity: 0.9;
+    }
+
+    .status-dot {
+        width: 10px;
+        height: 10px;
+        background: #10b981;
+        border-radius: 50%;
+        animation: pulse 2s infinite;
+    }
+
+    @keyframes pulse {
+        0%, 100% { opacity: 1; }
+        50% { opacity: 0.5; }
+    }
+
+    /* Chatbot Body */
+    .chatbot-body {
+        flex: 1;
+        padding: 1.5rem;
+        overflow-y: auto;
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+        background: linear-gradient(180deg, 
+            rgba(15, 23, 42, 0.8) 0%,
+            rgba(30, 41, 59, 0.6) 100%);
+    }
+
+    /* Message Styles */
+    .message {
+        max-width: 80%;
+        padding: 1rem 1.2rem;
+        border-radius: 18px;
+        animation: fadeIn 0.4s ease;
+        position: relative;
+        line-height: 1.6;
+    }
+
+    .user-message {
+        background: linear-gradient(135deg, var(--secondary), #7c3aed);
+        color: white;
+        align-self: flex-end;
+        border-bottom-right-radius: 5px;
+        box-shadow: 0 4px 15px rgba(139, 92, 246, 0.3);
+    }
+
+    .bot-message {
+        background: linear-gradient(135deg, 
+            rgba(30, 41, 59, 0.9), 
+            rgba(15, 23, 42, 0.9));
+        color: var(--text);
+        align-self: flex-start;
+        border-bottom-left-radius: 5px;
+        border: 1px solid rgba(139, 92, 246, 0.2);
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+    }
+
+    .message-header {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        margin-bottom: 8px;
+        font-weight: 600;
+    }
+
+    .message-time {
+        font-size: 0.75rem;
+        opacity: 0.7;
+        margin-left: auto;
+    }
+
+    /* Chatbot Footer */
+    .chatbot-footer {
+        padding: 1.2rem;
+        border-top: 1px solid var(--glass);
+        background: rgba(0, 0, 0, 0.2);
+    }
+
+    /* Quick Questions */
+    .quick-questions {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.8rem;
+        margin-bottom: 1.2rem;
+    }
+
+    .quick-question-btn {
+        padding: 0.6rem 1.2rem;
+        background: linear-gradient(135deg, 
+            rgba(139, 92, 246, 0.15), 
+            rgba(99, 102, 241, 0.1));
+        color: var(--secondary);
+        border: 1px solid rgba(139, 92, 246, 0.3);
+        border-radius: 12px;
+        font-size: 0.9rem;
+        font-weight: 500;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .quick-question-btn:hover {
+        background: linear-gradient(135deg, 
+            rgba(139, 92, 246, 0.25), 
+            rgba(99, 102, 241, 0.2));
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(139, 92, 246, 0.2);
+    }
+
+    /* Chat Input */
+    .chat-input-container {
+        display: flex;
+        gap: 12px;
+        position: relative;
+    }
+
+    .chat-input {
+        flex: 1;
+        padding: 1rem 1.2rem;
+        background: rgba(255, 255, 255, 0.05);
+        border: 1px solid var(--glass);
+        border-radius: 14px;
+        color: var(--text);
+        font-size: 1rem;
+        font-family: inherit;
+        transition: all 0.3s ease;
+        resize: none;
+        min-height: 50px;
+        max-height: 100px;
+    }
+
+    .chat-input:focus {
+        outline: none;
+        border-color: var(--secondary);
+        box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.1);
+        background: rgba(255, 255, 255, 0.08);
+    }
+
+    .chat-input::placeholder {
+        color: var(--text-muted);
+    }
+
+    .send-button {
+        padding: 0 1.8rem;
+        background: linear-gradient(135deg, var(--secondary), var(--primary));
+        color: white;
+        border: none;
+        border-radius: 14px;
+        cursor: pointer;
+        font-weight: 600;
+        font-size: 1rem;
+        transition: all 0.3s ease;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        white-space: nowrap;
+    }
+
+    .send-button:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 25px rgba(139, 92, 246, 0.4);
+        background: linear-gradient(135deg, #7c3aed, var(--secondary));
+    }
+
+    /* Sidebar */
+    .tj-sidebar {
+        background: linear-gradient(180deg, 
+            rgba(30, 41, 59, 0.95) 0%,
+            rgba(15, 23, 42, 0.98) 100%);
+        backdrop-filter: blur(15px);
+        border: 1px solid rgba(139, 92, 246, 0.2);
+        border-radius: 20px;
+        padding: 1.5rem;
+        height: fit-content;
+        position: sticky;
+        top: 2rem;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+    }
+
+    .sidebar-section {
+        margin-bottom: 2rem;
+    }
+
+    .sidebar-section:last-child {
+        margin-bottom: 0;
+    }
+
+    .sidebar-title {
+        color: var(--text);
+        font-size: 1.2rem;
+        margin-bottom: 1rem;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        font-weight: 600;
+    }
+
+    /* FAQ List */
+    .faq-list {
+        display: flex;
+        flex-direction: column;
+        gap: 0.8rem;
+    }
+
+    .faq-item {
+        background: rgba(255, 255, 255, 0.03);
+        border-radius: 12px;
+        padding: 1rem;
+        border: 1px solid rgba(255, 255, 255, 0.05);
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+
+    .faq-item:hover {
+        background: rgba(255, 255, 255, 0.05);
+        transform: translateX(5px);
+        border-color: rgba(139, 92, 246, 0.3);
+    }
+
+    .faq-question {
+        color: var(--text);
+        font-weight: 500;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        font-size: 0.95rem;
+    }
+
+    .faq-answer {
+        color: var(--text-muted);
+        font-size: 0.9rem;
+        line-height: 1.5;
+        max-height: 0;
+        overflow: hidden;
+        transition: max-height 0.4s ease;
+        margin-top: 0;
+    }
+
+    .faq-item.active .faq-answer {
+        max-height: 300px;
+        margin-top: 0.8rem;
+    }
+
+    /* Bot Typing Indicator */
+    .typing-indicator {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        padding: 1rem 1.2rem;
+        background: linear-gradient(135deg, 
+            rgba(30, 41, 59, 0.9), 
+            rgba(15, 23, 42, 0.9));
+        border-radius: 18px;
+        align-self: flex-start;
+        width: fit-content;
+        border: 1px solid rgba(139, 92, 246, 0.2);
+    }
+
+    .typing-dot {
+        width: 10px;
+        height: 10px;
+        background: var(--secondary);
+        border-radius: 50%;
+        animation: typingBounce 1.4s infinite;
+    }
+
+    .typing-dot:nth-child(2) {
+        animation-delay: 0.2s;
+    }
+
+    .typing-dot:nth-child(3) {
+        animation-delay: 0.4s;
+    }
+
+    @keyframes typingBounce {
+        0%, 60%, 100% {
+            transform: translateY(0);
+        }
+        30% {
+            transform: translateY(-6px);
+        }
+    }
+
+    .typing-text {
+        color: var(--text-muted);
+        font-size: 0.9rem;
+        margin-left: 10px;
+    }
+
+    /* Error Solutions */
+    .error-solution {
+        background: rgba(30, 41, 59, 0.5);
+        border-radius: 10px;
+        padding: 1.5rem;
+        margin-bottom: 1rem;
+        border-left: 4px solid var(--accent);
+    }
+
+    .error-code {
+        font-family: 'Courier New', monospace;
+        background: rgba(0, 0, 0, 0.3);
+        padding: 0.5rem 1rem;
+        border-radius: 6px;
+        margin: 0.5rem 0;
+        color: var(--danger);
+    }
+
+    .solution-steps {
+        list-style-type: decimal;
+        padding-left: 1.5rem;
+        color: var(--text);
+    }
+
+    .solution-steps li {
+        margin-bottom: 0.5rem;
+        padding-left: 0.5rem;
+    }
+
+    /* FAQ Categories */
+    .faq-categories {
+        display: flex;
+        gap: 10px;
+        margin-bottom: 1.5rem;
+        flex-wrap: wrap;
+    }
+
+    .faq-category-btn {
+        padding: 0.6rem 1.2rem;
+        background: rgba(255, 255, 255, 0.05);
+        border: 1px solid var(--glass);
+        border-radius: 20px;
+        color: var(--text-muted);
+        cursor: pointer;
+        font-size: 0.9rem;
+        transition: all 0.3s ease;
+    }
+
+    .faq-category-btn.active {
+        background: linear-gradient(135deg, var(--secondary), var(--primary));
+        color: white;
+        border-color: var(--secondary);
+    }
+
+    .faq-category-btn:hover:not(.active) {
+        background: rgba(139, 92, 246, 0.1);
+        color: var(--text);
+    }
+
+    /* Recent Issues */
+    .recent-issues {
+        margin-top: 2rem;
+    }
+
+    .issue-item {
+        background: var(--card-bg);
+        border-radius: 10px;
+        padding: 1rem;
+        margin-bottom: 1rem;
+        border-left: 4px solid;
+        transition: all 0.3s ease;
+    }
+
+    .issue-item:hover {
+        transform: translateX(5px);
+    }
+
+    .issue-item.resolved {
+        border-left-color: var(--accent);
+    }
+
+    .issue-item.in-progress {
+        border-left-color: var(--warning);
+    }
+
+    .issue-item.open {
+        border-left-color: var(--danger);
+    }
+
+    .issue-title {
+        font-weight: 600;
+        color: var(--text);
+        margin-bottom: 0.5rem;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .issue-status {
+        font-size: 0.8rem;
+        padding: 0.2rem 0.8rem;
+        border-radius: 20px;
+        font-weight: 500;
+    }
+
+    .issue-desc {
+        color: var(--text-muted);
+        font-size: 0.9rem;
+    }
+
+    /* Contact Support */
+    .contact-support {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 1rem;
+        margin-top: 1.5rem;
+    }
+
+    .contact-method {
+        background: var(--card-bg);
+        border-radius: 10px;
+        padding: 1.5rem;
+        text-align: center;
+        transition: all 0.3s ease;
+        border: 1px solid var(--glass);
+    }
+
+    .contact-method:hover {
+        border-color: var(--secondary);
+        transform: translateY(-3px);
+    }
+
+    .contact-icon {
+        font-size: 2rem;
+        color: var(--secondary);
+        margin-bottom: 1rem;
+    }
+
+    .contact-title {
+        font-weight: 600;
+        color: var(--text);
+        margin-bottom: 0.5rem;
+    }
+
+    .contact-info {
+        color: var(--text-muted);
+        font-size: 0.9rem;
+    }
+
+    /* Animation */
+    @keyframes fadeIn {
+        from { 
+            opacity: 0; 
+            transform: translateY(10px); 
+        }
+        to { 
+            opacity: 1; 
+            transform: translateY(0); 
+        }
+    }
+
+    @keyframes float {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+    }
+
+    /* Custom Scrollbar */
+    .chatbot-body::-webkit-scrollbar {
+        width: 8px;
+    }
+
+    .chatbot-body::-webkit-scrollbar-track {
+        background: rgba(255, 255, 255, 0.05);
+        border-radius: 4px;
+    }
+
+    .chatbot-body::-webkit-scrollbar-thumb {
+        background: var(--primary);
+        border-radius: 4px;
+    }
+
+    .chatbot-body::-webkit-scrollbar-thumb:hover {
+        background: var(--secondary);
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+        .tj-title {
+            font-size: 2rem;
+            flex-direction: column;
+            gap: 10px;
+        }
+        
+        .tj-header {
+            padding: 1.5rem;
+        }
+        
+        .chatbot-container {
+            height: 500px;
+        }
+        
+        .quick-questions {
+            justify-content: center;
+        }
+        
+        .message {
+            max-width: 90%;
+        }
+    }
+
+    @media (max-width: 480px) {
+        .tj-title {
+            font-size: 1.7rem;
+        }
+        
+        .chatbot-header h3 {
+            font-size: 1.1rem;
+        }
+        
+        .quick-question-btn {
+            padding: 0.5rem 1rem;
+            font-size: 0.85rem;
+        }
+        
+        .chat-input {
+            padding: 0.8rem 1rem;
+        }
+        
+        .send-button {
+            padding: 0 1.5rem;
+        }
+    }
+
+    /* Statistics */
+    .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 1rem;
+        margin-top: 1rem;
+    }
+
+    .stat-item {
+        background: rgba(255, 255, 255, 0.03);
+        border-radius: 12px;
+        padding: 1rem;
+        text-align: center;
+        border: 1px solid rgba(255, 255, 255, 0.05);
+    }
+
+    .stat-value {
+        font-size: 1.5rem;
+        font-weight: 700;
+        color: var(--secondary);
+        margin-bottom: 0.3rem;
+    }
+
+    .stat-label {
+        font-size: 0.8rem;
+        color: var(--text-muted);
+    }
+
+    /* Tabs */
+    .qa-tabs {
+        display: flex;
+        gap: 10px;
+        margin: 1.5rem 0;
+        flex-wrap: wrap;
+        justify-content: center;
+    }
+
+    .qa-tab {
+        padding: 0.8rem 1.5rem;
+        background: rgba(30, 41, 59, 0.5);
+        border: 1px solid rgba(139, 92, 246, 0.2);
+        border-radius: 12px;
+        color: var(--text);
+        cursor: pointer;
+        font-weight: 500;
+        transition: all 0.3s ease;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .qa-tab.active {
+        background: linear-gradient(135deg, var(--secondary), var(--primary));
+        color: white;
+        box-shadow: 0 4px 15px rgba(139, 92, 246, 0.3);
+    }
+
+    .qa-tab:hover:not(.active) {
+        background: rgba(139, 92, 246, 0.1);
+        border-color: var(--secondary);
+    }
+
+    .qa-content {
+        display: none;
+        animation: fadeIn 0.3s ease;
+    }
+
+    .qa-content.active {
+        display: block;
+    }
+
+    /* Badges */
+    .category-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+        padding: 0.3rem 0.8rem;
+        border-radius: 20px;
+        font-size: 0.75rem;
+        font-weight: 600;
+        margin-right: 8px;
+        margin-bottom: 5px;
+    }
+
+    .badge-system {
+        background: rgba(239, 68, 68, 0.1);
+        color: var(--danger);
+        border: 1px solid rgba(239, 68, 68, 0.2);
+    }
+
+    .badge-subscription {
+        background: linear-gradient(135deg, 
+            rgba(245, 158, 11, 0.1), 
+            rgba(217, 119, 6, 0.1));
+        color: var(--warning);
+        border: 1px solid rgba(245, 158, 11, 0.2);
+    }
+
+    .badge-crypto {
+        background: rgba(16, 185, 129, 0.1);
+        color: var(--accent);
+        border: 1px solid rgba(16, 185, 129, 0.2);
+    }
+
+    .badge-technical {
+        background: rgba(99, 102, 241, 0.1);
+        color: #6366f1;
+        border: 1px solid rgba(99, 102, 241, 0.2);
+    }
+
+    /* Ticket System */
+    .ticket-system {
+        background: var(--card-bg);
+        border-radius: 15px;
+        padding: 1.5rem;
+        margin-top: 1.5rem;
+        border: 1px solid var(--glass);
+    }
+
+    .ticket-form {
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+    }
+
+    .form-group {
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+
+    .form-label {
+        color: var(--text);
+        font-weight: 500;
+        font-size: 0.95rem;
+    }
+
+    .form-select,
+    .form-input {
+        padding: 0.8rem 1rem;
+        background: rgba(255, 255, 255, 0.05);
+        border: 1px solid var(--glass);
+        border-radius: 10px;
+        color: var(--text);
+        font-family: inherit;
+        font-size: 0.95rem;
+    }
+
+    .form-select:focus,
+    .form-input:focus {
+        outline: none;
+        border-color: var(--secondary);
+        box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.1);
+    }
+
+    .form-textarea {
+        min-height: 100px;
+        resize: vertical;
+    }
+
+    .submit-ticket {
+        background: linear-gradient(135deg, var(--accent), #0da271);
+        color: white;
+        border: none;
+        padding: 1rem;
+        border-radius: 10px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 10px;
+    }
+
+    .submit-ticket:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 25px rgba(16, 185, 129, 0.4);
+    }
+
+    /* Status Indicators */
+    .status-indicator {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        padding: 0.5rem 1rem;
+        border-radius: 20px;
+        font-size: 0.85rem;
+        font-weight: 500;
+    }
+
+    .status-up {
+        background: rgba(16, 185, 129, 0.1);
+        color: var(--accent);
+        border: 1px solid rgba(16, 185, 129, 0.2);
+    }
+
+    .status-down {
+        background: rgba(239, 68, 68, 0.1);
+        color: var(--danger);
+        border: 1px solid rgba(239, 68, 68, 0.2);
+    }
+
+    .status-maintenance {
+        background: rgba(245, 158, 11, 0.1);
+        color: var(--warning);
+        border: 1px solid rgba(245, 158, 11, 0.2);
+    }
+
+    /* Subscription Plans */
+    .subscription-plans {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 1.5rem;
+        margin-top: 1.5rem;
+    }
+
+    .plan-card {
+        background: var(--card-bg);
+        border: 1px solid var(--glass);
+        border-radius: 15px;
+        padding: 1.5rem;
+        transition: all 0.3s ease;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .plan-card:hover {
+        transform: translateY(-5px);
+        border-color: var(--secondary);
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+    }
+
+    .plan-card.recommended {
+        border: 2px solid var(--warning);
+        background: linear-gradient(
+            135deg,
+            rgba(30, 41, 59, 0.95),
+            rgba(15, 23, 42, 0.95)
+        );
+    }
+
+    .plan-badge {
+        position: absolute;
+        top: 15px;
+        right: -30px;
+        background: var(--warning);
+        color: white;
+        padding: 0.3rem 3rem;
+        transform: rotate(45deg);
+        font-size: 0.8rem;
+        font-weight: 600;
+    }
+
+    .plan-name {
+        font-size: 1.3rem;
+        font-weight: 700;
+        color: var(--text);
+        margin-bottom: 0.5rem;
+    }
+
+    .plan-price {
+        font-size: 2rem;
+        font-weight: 800;
+        color: var(--secondary);
+        margin-bottom: 1rem;
+    }
+
+    .plan-features {
+        list-style: none;
+        padding: 0;
+        margin-bottom: 1.5rem;
+    }
+
+    .plan-features li {
+        padding: 0.5rem 0;
+        color: var(--text-muted);
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .plan-features li i {
+        color: var(--accent);
+    }
+
+    .subscribe-btn {
+        width: 100%;
+        padding: 0.8rem;
+        border-radius: 10px;
+        border: none;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+
+    .subscribe-btn.free {
+        background: rgba(255, 255, 255, 0.1);
+        color: var(--text);
+    }
+
+    .subscribe-btn.premium {
+        background: linear-gradient(135deg, var(--secondary), var(--primary));
+        color: white;
+    }
+
+    .subscribe-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(139, 92, 246, 0.3);
+    }
+
+    /* Code Blocks */
+    .code-block {
+        background: rgba(0, 0, 0, 0.3);
+        border-radius: 8px;
+        padding: 1rem;
+        margin: 0.8rem 0;
+        font-family: 'Courier New', monospace;
+        font-size: 0.9rem;
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        overflow-x: auto;
+        position: relative;
+    }
+
+    .code-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 0.5rem;
+        color: var(--text-muted);
+        font-size: 0.8rem;
+    }
+
+    .copy-code {
+        background: rgba(255, 255, 255, 0.1);
+        border: none;
+        color: var(--text);
+        padding: 0.3rem 0.8rem;
+        border-radius: 6px;
+        cursor: pointer;
+        font-size: 0.8rem;
+        transition: all 0.3s ease;
+    }
+
+    .copy-code:hover {
+        background: rgba(139, 92, 246, 0.3);
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="tanya-jawab-container">
+    <!-- Header dengan Tabs -->
+    <div class="tj-header">
+        <div class="tj-header-content">
+            <h1 class="tj-title">
+                <i class="fas fa-robot"></i>
+                Dify Bot - Pusat Bantuan
+                <i class="fas fa-headset"></i>
+            </h1>
+            <p style="color: var(--text-muted); font-size: 1.1rem; max-width: 600px; margin: 0 auto;">
+                Asisten virtual yang siap membantu dengan materi kriptografi, masalah sistem, berlangganan, dan dukungan teknis
+            </p>
+            
+            <!-- Tabs Navigation -->
+            <div class="qa-tabs" id="qaTabs">
+                <button class="qa-tab active" onclick="switchTab('crypto')">
+                    <i class="fas fa-shield-alt"></i>
+                    Kriptografi
+                </button>
+                <button class="qa-tab" onclick="switchTab('system')">
+                    <i class="fas fa-cog"></i>
+                    Sistem & Teknis
+                </button>
+                <button class="qa-tab" onclick="switchTab('subscription')">
+                    <i class="fas fa-crown"></i>
+                    Berlangganan
+                </button>
+                <button class="qa-tab" onclick="switchTab('issues')">
+                    <i class="fas fa-exclamation-triangle"></i>
+                    Error & Masalah
+                </button>
+                <button class="qa-tab" onclick="switchTab('support')">
+                    <i class="fas fa-headset"></i>
+                    Dukungan
+                </button>
+            </div>
+
+            <!-- Status Indicators -->
+            <div style="display: flex; gap: 10px; justify-content: center; margin-top: 1rem; flex-wrap: wrap;">
+                <div class="status-indicator status-up">
+                    <i class="fas fa-check-circle"></i>
+                    Sistem Online
+                </div>
+                <div class="status-indicator status-up">
+                    <i class="fas fa-bolt"></i>
+                    Responsif
+                </div>
+                <div class="status-indicator status-up">
+                    <i class="fas fa-clock"></i>
+                    24/7 Support
+                </div>
+            </div>
+
+            <div class="stats-grid">
+                <div class="stat-item">
+                    <div class="stat-value" id="totalQuestions">0</div>
+                    <div class="stat-label">Pertanyaan Terjawab</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value" id="activeUsers">1</div>
+                    <div class="stat-label">Pengguna Aktif</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value">50+</div>
+                    <div class="stat-label">Topik & Solusi</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value">&lt;2m</div>
+                    <div class="stat-label">Waktu Respon</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Tab Contents -->
+    <div id="tabContents">
+        <!-- Tab 1: Kriptografi (Default) -->
+        <div class="qa-content active" id="cryptoTab">
+            <div class="tj-main-layout">
+                <!-- Chatbot Main Area -->
+                <div class="chatbot-container">
+                    <!-- Chatbot Header -->
+                    <div class="chatbot-header">
+                        <h3>
+                            <i class="fas fa-robot"></i>
+                            Dify Bot - Asisten Kriptografi
+                        </h3>
+                        <div class="bot-status">
+                            <div class="status-dot"></div>
+                            <span>Online</span>
+                        </div>
+                    </div>
+
+                    <!-- Chatbot Body -->
+                    <div class="chatbot-body" id="chatBody">
+                        <!-- Welcome Message -->
+                        <div class="message bot-message">
+                            <div class="message-header">
+                                <i class="fas fa-robot"></i>
+                                Dify Bot
+                                <span class="message-time" id="welcomeTime"></span>
+                            </div>
+                            <p>👋 Selamat datang di <strong>Dify Bot - Pusat Bantuan Lengkap</strong>!</p>
+                            <p>Saya siap membantu Anda dengan berbagai topik:</p>
+                            
+                            <div style="margin-top: 1rem;">
+                                <span class="category-badge badge-crypto">🔐 Kriptografi</span>
+                                <span class="category-badge badge-system">⚙️ Sistem</span>
+                                <span class="category-badge badge-subscription">👑 Langganan</span>
+                                <span class="category-badge badge-technical">🔧 Teknis</span>
+                            </div>
+
+                            <p style="margin-top: 1rem;">Tanyakan apapun, misalnya:</p>
+                            <div class="quick-questions" style="margin-top: 0.5rem;">
+                                <button class="quick-question-btn" onclick="askQuestion('Bagaimana cara kerja algoritma AES?')">
+                                    <i class="fas fa-key"></i>
+                                    Algoritma AES
+                                </button>
+                                <button class="quick-question-btn" onclick="askQuestion('Saya error saat mendaftar premium')">
+                                    <i class="fas fa-exclamation-circle"></i>
+                                    Error Premium
+                                </button>
+                                <button class="quick-question-btn" onclick="askQuestion('Cara upgrade ke paket premium')">
+                                    <i class="fas fa-crown"></i>
+                                    Upgrade Premium
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Chatbot Footer -->
+                    <div class="chatbot-footer">
+                        <!-- Quick Questions -->
+                        <div class="quick-questions">
+                            <button class="quick-question-btn" onclick="askQuestion('Apa beda paket free dan premium?')">
+                                <i class="fas fa-crown"></i>
+                                Paket Langganan
+                            </button>
+                            <button class="quick-question-btn" onclick="askQuestion('Login error 404, bagaimana mengatasinya?')">
+                                <i class="fas fa-bug"></i>
+                                Error Login
+                            </button>
+                            <button class="quick-question-btn" onclick="askQuestion('Cara reset password yang lupa')">
+                                <i class="fas fa-unlock-alt"></i>
+                                Reset Password
+                            </button>
+                        </div>
+
+                        <!-- Chat Input -->
+                        <div class="chat-input-container">
+                            <textarea 
+                                class="chat-input" 
+                                id="chatInput" 
+                                placeholder="Tanyakan apapun: kriptografi, sistem, error, atau langganan..."
+                                rows="1"
+                                oninput="autoResize(this)"
+                                onkeypress="handleChatKeyPress(event)"
+                            ></textarea>
+                            <button class="send-button" onclick="sendMessage()">
+                                <i class="fas fa-paper-plane"></i>
+                                Kirim
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Sidebar -->
+                <div class="tj-sidebar">
+                    <!-- FAQ Categories -->
+                    <div class="sidebar-section">
+                        <h3 class="sidebar-title">
+                            <i class="fas fa-filter"></i>
+                            Kategori FAQ
+                        </h3>
+                        <div class="faq-categories">
+                            <button class="faq-category-btn active" onclick="filterFAQ('all')">
+                                Semua
+                            </button>
+                            <button class="faq-category-btn" onclick="filterFAQ('system')">
+                                Sistem
+                            </button>
+                            <button class="faq-category-btn" onclick="filterFAQ('subscription')">
+                                Langganan
+                            </button>
+                            <button class="faq-category-btn" onclick="filterFAQ('technical')">
+                                Teknis
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- FAQ List -->
+                    <div class="sidebar-section">
+                        <h3 class="sidebar-title">
+                            <i class="fas fa-question-circle"></i>
+                            FAQ Populer
+                        </h3>
+                        <div class="faq-list" id="faqList">
+                            <!-- System FAQs -->
+                            <div class="faq-item system" onclick="toggleFAQ(this)">
+                                <div class="faq-question">
+                                    <i class="fas fa-sign-in-alt"></i>
+                                    Error Login 404
+                                </div>
+                                <div class="faq-answer">
+                                    Clear cache browser, coba incognito mode, atau reset password. Jika masih error, hubungi support.
+                                </div>
+                            </div>
+                            
+                            <!-- Subscription FAQs -->
+                            <div class="faq-item subscription" onclick="toggleFAQ(this)">
+                                <div class="faq-question">
+                                    <i class="fas fa-crown"></i>
+                                    Cara Upgrade Premium
+                                </div>
+                                <div class="faq-answer">
+                                    Buka Profile > Subscription > Pilih paket > Bayar. Proses aktivasi 1-5 menit.
+                                </div>
+                            </div>
+                            
+                            <!-- Technical FAQs -->
+                            <div class="faq-item technical" onclick="toggleFAQ(this)">
+                                <div class="faq-question">
+                                    <i class="fas fa-sync"></i>
+                                    Data Tidak Sync
+                                </div>
+                                <div class="faq-answer">
+                                    Cek koneksi internet, refresh halaman. Jika masalah berlanjut, kontak technical support.
+                                </div>
+                            </div>
+                            
+                            <!-- Crypto FAQs -->
+                            <div class="faq-item crypto" onclick="toggleFAQ(this)">
+                                <div class="faq-question">
+                                    <i class="fas fa-key"></i>
+                                    AES vs RSA
+                                </div>
+                                <div class="faq-answer">
+                                    AES (simetris) untuk data besar, RSA (asimetris) untuk pertukaran kunci. Gunakan hybrid approach.
+                                </div>
+                            </div>
+                            
+                            <!-- System FAQs -->
+                            <div class="faq-item system" onclick="toggleFAQ(this)">
+                                <div class="faq-question">
+                                    <i class="fas fa-lock"></i>
+                                    Reset Password
+                                </div>
+                                <div class="faq-answer">
+                                    Klik "Lupa Password" di halaman login. Link reset akan dikirim ke email Anda.
+                                </div>
+                            </div>
+                            
+                            <!-- Subscription FAQs -->
+                            <div class="faq-item subscription" onclick="toggleFAQ(this)">
+                                <div class="faq-question">
+                                    <i class="fas fa-credit-card"></i>
+                                    Metode Pembayaran
+                                </div>
+                                <div class="faq-answer">
+                                    Kami terima transfer bank, e-wallet (GoPay, OVO), dan kartu kredit (Visa/Mastercard).
+                                </div>
+                            </div>
+
+                            <!-- Technical FAQs -->
+                            <div class="faq-item technical" onclick="toggleFAQ(this)">
+                                <div class="faq-question">
+                                    <i class="fas fa-download"></i>
+                                    File Tidak Bisa Download
+                                </div>
+                                <div class="faq-answer">
+                                    Cek storage device, clear browser cache, atau coba browser lain.
+                                </div>
+                            </div>
+
+                            <!-- Crypto FAQs -->
+                            <div class="faq-item crypto" onclick="toggleFAQ(this)">
+                                <div class="faq-question">
+                                    <i class="fas fa-fingerprint"></i>
+                                    Fungsi Hash SHA-256
+                                </div>
+                                <div class="faq-answer">
+                                    Fungsi hash satu arah untuk keamanan data. Digunakan Bitcoin dan blockchain.
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Recent Issues -->
+                    <div class="sidebar-section">
+                        <h3 class="sidebar-title">
+                            <i class="fas fa-history"></i>
+                            Masalah Terbaru
+                        </h3>
+                        <div class="recent-issues">
+                            <div class="issue-item resolved">
+                                <div class="issue-title">
+                                    Maintenance Server
+                                    <span class="issue-status status-up">Selesai</span>
+                                </div>
+                                <div class="issue-desc">Server maintenance selesai, sistem normal kembali</div>
+                            </div>
+                            <div class="issue-item in-progress">
+                                <div class="issue-title">
+                                    Payment Gateway Issue
+                                    <span class="issue-status status-maintenance">Diperbaiki</span>
+                                </div>
+                                <div class="issue-desc">Sedang diperbaiki, estimasi 2 jam</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tab 2: Sistem & Teknis -->
+        <div class="qa-content" id="systemTab">
+            <div style="max-width: 800px; margin: 0 auto;">
+                <h2 style="color: var(--text); margin-bottom: 1.5rem;">
+                    <i class="fas fa-cog"></i>
+                    Sistem & Dukungan Teknis
+                </h2>
+
+                <!-- Common Issues -->
+                <div class="error-solution">
+                    <h3 style="color: var(--text); margin-bottom: 1rem;">
+                        <i class="fas fa-exclamation-triangle"></i>
+                        Masalah Umum & Solusi
+                    </h3>
+                    
+                    <div style="margin-top: 1rem;">
+                        <h4 style="color: var(--text);">1. Login Error 404</h4>
+                        <div class="error-code">HTTP 404 - Page Not Found</div>
+                        <ol class="solution-steps">
+                            <li>Clear cache browser (Ctrl+Shift+Del)</li>
+                            <li>Coba akses via mode incognito</li>
+                            <li>Reset password melalui email</li>
+                            <li>Jika masih error, hubungi support</li>
+                        </ol>
+                    </div>
+
+                    <div style="margin-top: 1.5rem;">
+                        <h4 style="color: var(--text);">2. Data Tidak Tersimpan</h4>
+                        <div class="error-code">Error: Data not persisted</div>
+                        <ol class="solution-steps">
+                            <li>Cek koneksi internet Anda</li>
+                            <li>Refresh halaman (F5)</li>
+                            <li>Export data sebagai backup</li>
+                            <li>Coba browser berbeda</li>
+                        </ol>
+                    </div>
+
+                    <div style="margin-top: 1.5rem;">
+                        <h4 style="color: var(--text);">3. Aplikasi Lambat</h4>
+                        <div class="error-code">Performance Issue</div>
+                        <ol class="solution-steps">
+                            <li>Clear cache dan cookies</li>
+                            <li>Tutup tab yang tidak perlu</li>
+                            <li>Cek koneksi internet</li>
+                            <li>Update browser ke versi terbaru</li>
+                        </ol>
+                    </div>
+                </div>
+
+                <!-- Contact Ticket System -->
+                <div class="ticket-system">
+                    <h3 style="color: var(--text); margin-bottom: 1rem;">
+                        <i class="fas fa-ticket-alt"></i>
+                        Laporkan Masalah
+                    </h3>
+                    <p style="color: var(--text-muted); margin-bottom: 1.5rem;">
+                        Jika masalah Anda belum teratasi, buat tiket dukungan:
+                    </p>
+                    
+                    <form class="ticket-form" id="ticketForm">
+                        <div class="form-group">
+                            <label class="form-label">Jenis Masalah</label>
+                            <select class="form-select" id="issueType" required>
+                                <option value="">Pilih jenis masalah</option>
+                                <option value="login">Login Error</option>
+                                <option value="payment">Masalah Pembayaran</option>
+                                <option value="performance">Performansi Lambat</option>
+                                <option value="bug">Bug Sistem</option>
+                                <option value="feature">Request Fitur Baru</option>
+                                <option value="other">Lainnya</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label">Subjek</label>
+                            <input type="text" class="form-input" id="issueSubject" placeholder="Deskripsi singkat masalah" required>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label">Deskripsi Detail</label>
+                            <textarea class="form-input form-textarea" id="issueDescription" placeholder="Jelaskan masalah secara detail termasuk langkah-langkah yang sudah dicoba..." required></textarea>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label">Email untuk Notifikasi</label>
+                            <input type="email" class="form-input" id="issueEmail" placeholder="email@anda.com" required>
+                        </div>
+                        
+                        <button type="button" class="submit-ticket" onclick="submitTicket()">
+                            <i class="fas fa-paper-plane"></i>
+                            Kirim Tiket
+                        </button>
+                    </form>
+
+                    <div class="support-contact">
+                        <h4 style="color: var(--text); margin-bottom: 1rem;">
+                            <i class="fas fa-phone-alt"></i>
+                            Kontak Cepat Support
+                        </h4>
+                        <p style="color: var(--text-muted); margin-bottom: 0.5rem;">
+                            <strong>Email:</strong> support@decodify.com
+                        </p>
+                        <p style="color: var(--text-muted); margin-bottom: 0.5rem;">
+                            <strong>Telepon:</strong> (021) 1234-5678
+                        </p>
+                        <p style="color: var(--text-muted); margin-bottom: 0;">
+                            <strong>Jam Operasional:</strong> 08:00 - 22:00 WIB
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tab 3: Berlangganan -->
+        <div class="qa-content" id="subscriptionTab">
+            <div style="max-width: 900px; margin: 0 auto;">
+                <h2 style="color: var(--text); margin-bottom: 1.5rem;">
+                    <i class="fas fa-crown"></i>
+                    Paket Berlangganan
+                </h2>
+                <p style="color: var(--text-muted); margin-bottom: 2rem;">
+                    Pilih paket yang sesuai dengan kebutuhan belajar kriptografi Anda
+                </p>
+
+                <!-- Subscription Plans -->
+                <div class="subscription-plans">
+                    <!-- Free Plan -->
+                    <div class="plan-card">
+                        <div class="plan-name">Free</div>
+                        <div class="plan-price">Rp 0</div>
+                        <ul class="plan-features">
+                            <li><i class="fas fa-check"></i> Akses materi dasar</li>
+                            <li><i class="fas fa-check"></i> 5 kali enkripsi/hari</li>
+                            <li><i class="fas fa-check"></i> Simpan 10 hasil</li>
+                            <li><i class="fas fa-times"></i> Fitur premium terkunci</li>
+                            <li><i class="fas fa-times"></i> Support prioritas</li>
+                        </ul>
+                        <button class="subscribe-btn free" onclick="askQuestion('Cara menggunakan akun free')">
+                            Paket Saat Ini
+                        </button>
+                    </div>
+
+                    <!-- Premium Plan -->
+                    <div class="plan-card recommended">
+                        <div class="plan-badge">REKOMENDASI</div>
+                        <div class="plan-name">Premium</div>
+                        <div class="plan-price">Rp 49.999<span style="font-size: 1rem; color: var(--text-muted);">/bulan</span></div>
+                        <ul class="plan-features">
+                            <li><i class="fas fa-check"></i> Semua materi premium</li>
+                            <li><i class="fas fa-check"></i> Enkripsi unlimited</li>
+                            <li><i class="fas fa-check"></i> Simpan unlimited</li>
+                            <li><i class="fas fa-check"></i> Tools analisis kripto</li>
+                            <li><i class="fas fa-check"></i> Priority support 24/7</li>
+                        </ul>
+                        <button class="subscribe-btn premium" onclick="askQuestion('Cara upgrade ke premium')">
+                            Upgrade Sekarang
+                        </button>
+                    </div>
+
+                    <!-- Student Plan -->
+                    <div class="plan-card">
+                        <div class="plan-name">Pelajar</div>
+                        <div class="plan-price">Rp 29.999<span style="font-size: 1rem; color: var(--text-muted);">/bulan</span></div>
+                        <ul class="plan-features">
+                            <li><i class="fas fa-check"></i> Semua fitur premium</li>
+                            <li><i class="fas fa-check"></i> Verifikasi .edu email</li>
+                            <li><i class="fas fa-check"></i> Diskusi dengan expert</li>
+                            <li><i class="fas fa-check"></i> Sertifikat kelulusan</li>
+                            <li><i class="fas fa-check"></i> Community access</li>
+                        </ul>
+                        <button class="subscribe-btn premium" onclick="askQuestion('Syarat paket pelajar')">
+                            Untuk Pelajar
+                        </button>
+                    </div>
+                </div>
+
+                <!-- FAQ Subscription -->
+                <div style="margin-top: 3rem;">
+                    <h3 style="color: var(--text); margin-bottom: 1.5rem;">
+                        <i class="fas fa-question-circle"></i>
+                        FAQ Berlangganan
+                    </h3>
+                    
+                    <div class="faq-list">
+                        <div class="faq-item" onclick="toggleFAQ(this)">
+                            <div class="faq-question">
+                                <i class="fas fa-sync"></i>
+                                Cara Upgrade/Downgrade
+                            </div>
+                            <div class="faq-answer">
+                                Buka Profile > Subscription > Pilih paket baru. Downgrade akan aktif di periode berikutnya.
+                            </div>
+                        </div>
+                        
+                        <div class="faq-item" onclick="toggleFAQ(this)">
+                            <div class="faq-question">
+                                <i class="fas fa-credit-card"></i>
+                                Metode Pembayaran
+                            </div>
+                            <div class="faq-answer">
+                                Transfer bank (BCA, Mandiri, BNI), e-wallet (GoPay, OVO, Dana), kartu kredit/debit.
+                            </div>
+                        </div>
+                        
+                        <div class="faq-item" onclick="toggleFAQ(this)">
+                            <div class="faq-question">
+                                <i class="fas fa-calendar-times"></i>
+                                Pembatalan & Refund
+                            </div>
+                            <div class="faq-answer">
+                                Bisa dibatalkan kapan saja, aktif sampai periode berakhir. Refund 30 hari pertama.
+                            </div>
+                        </div>
+
+                        <div class="faq-item" onclick="toggleFAQ(this)">
+                            <div class="faq-question">
+                                <i class="fas fa-graduation-cap"></i>
+                                Syarat Paket Pelajar
+                            </div>
+                            <div class="faq-answer">
+                                Verifikasi dengan email .edu atau kartu pelajar. Diskon 40% untuk status pelajar aktif.
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Support Billing -->
+                <div class="support-contact" style="margin-top: 2rem;">
+                    <h4 style="color: var(--text); margin-bottom: 1rem;">
+                        <i class="fas fa-money-check-alt"></i>
+                        Bantuan Pembayaran
+                    </h4>
+                    <p style="color: var(--text-muted); margin-bottom: 0.5rem;">
+                        <strong>Email Billing:</strong> billing@decodify.com
+                    </p>
+                    <p style="color: var(--text-muted); margin-bottom: 0.5rem;">
+                        <strong>Telepon:</strong> (021) 1234-5678 ext. 2
+                    </p>
+                    <p style="color: var(--text-muted); margin-bottom: 0;">
+                        <strong>Jam:</strong> 08:00 - 18:00 WIB (Senin-Jumat)
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tab 4: Error & Masalah -->
+        <div class="qa-content" id="issuesTab">
+            <div style="max-width: 800px; margin: 0 auto;">
+                <h2 style="color: var(--text); margin-bottom: 1.5rem;">
+                    <i class="fas fa-bug"></i>
+                    Error & Troubleshooting
+                </h2>
+
+                <!-- Common Errors -->
+                <div style="margin-bottom: 2rem;">
+                    <h3 style="color: var(--text); margin-bottom: 1rem;">Error Umum</h3>
+                    
+                    <div class="error-solution">
+                        <h4 style="color: var(--danger);">Error 500 - Internal Server Error</h4>
+                        <p style="color: var(--text-muted); margin: 0.5rem 0;">
+                            Server mengalami masalah internal
+                        </p>
+                        <ol class="solution-steps">
+                            <li>Tunggu 5 menit, refresh halaman</li>
+                            <li>Clear cache browser</li>
+                            <li>Coba akses dari browser lain</li>
+                            <li>Laporkan ke support jika berlanjut</li>
+                        </ol>
+                    </div>
+
+                    <div class="error-solution">
+                        <h4 style="color: var(--danger);">Error 403 - Forbidden</h4>
+                        <p style="color: var(--text-muted); margin: 0.5rem 0;">
+                            Akses ditolak karena permission
+                        </p>
+                        <ol class="solution-steps">
+                            <li>Pastikan sudah login</li>
+                            <li>Cek apakah fitur termasuk paket Anda</li>
+                            <li>Logout dan login kembali</li>
+                            <li>Clear cookies browser</li>
+                        </ol>
+                    </div>
+
+                    <div class="error-solution">
+                        <h4 style="color: var(--danger);">Error Connection Timeout</h4>
+                        <p style="color: var(--text-muted); margin: 0.5rem 0;">
+                            Koneksi ke server timeout
+                        </p>
+                        <ol class="solution-steps">
+                            <li>Cek koneksi internet Anda</li>
+                            <li>Nonaktifkan VPN jika ada</li>
+                            <li>Coba dengan jaringan berbeda</li>
+                            <li>Restart router/modem</li>
+                        </ol>
+                    </div>
+
+                    <div class="error-solution">
+                        <h4 style="color: var(--danger);">Payment Failed - Transaction Declined</h4>
+                        <p style="color: var(--text-muted); margin: 0.5rem 0;">
+                            Pembayaran ditolak oleh sistem
+                        </p>
+                        <ol class="solution-steps">
+                            <li>Cek saldo/limit kartu</li>
+                            <li>Hubungi bank/e-wallet provider</li>
+                            <li>Coba metode pembayaran berbeda</li>
+                            <li>Tunggu 15 menit coba lagi</li>
+                        </ol>
+                    </div>
+                </div>
+
+                <!-- Emergency Contact -->
+                <div class="support-contact" style="margin-top: 2rem; background: rgba(239, 68, 68, 0.1); border-color: rgba(239, 68, 68, 0.2);">
+                    <h4 style="color: var(--danger); margin-bottom: 1rem;">
+                        <i class="fas fa-exclamation-circle"></i>
+                        Kontak Emergency
+                    </h4>
+                    <p style="color: var(--text-muted); margin-bottom: 0.5rem;">
+                        <strong>Email Emergency:</strong> emergency@decodify.com
+                    </p>
+                    <p style="color: var(--text-muted); margin-bottom: 0.5rem;">
+                        <strong>Hotline:</strong> +62 812-3456-7890 (24/7)
+                    </p>
+                    <p style="color: var(--text-muted); margin-bottom: 0;">
+                        <strong>Response Time:</strong> &lt; 15 menit untuk critical issues
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tab 5: Dukungan -->
+        <div class="qa-content" id="supportTab">
+            <div style="max-width: 800px; margin: 0 auto;">
+                <h2 style="color: var(--text); margin-bottom: 1.5rem;">
+                    <i class="fas fa-headset"></i>
+                    Dukungan & Kontak
+                </h2>
+
+                <!-- Contact Methods -->
+                <div class="contact-support">
+                    <div class="contact-method" onclick="askQuestion('Jam operasional support')">
+                        <div class="contact-icon">
+                            <i class="fas fa-robot"></i>
+                        </div>
+                        <div class="contact-title">Dify Bot</div>
+                        <div class="contact-info">24/7 Instant Help</div>
+                    </div>
+                    
+                    <div class="contact-method" onclick="askQuestion('Cara kirim email ke support')">
+                        <div class="contact-icon">
+                            <i class="fas fa-envelope"></i>
+                        </div>
+                        <div class="contact-title">Email</div>
+                        <div class="contact-info">support@decodify.com</div>
+                    </div>
+                    
+                    <div class="contact-method" onclick="askQuestion('Jam kerja telepon support')">
+                        <div class="contact-icon">
+                            <i class="fas fa-phone"></i>
+                        </div>
+                        <div class="contact-title">Telepon</div>
+                        <div class="contact-info">(021) 1234-5678</div>
+                    </div>
+                </div>
+
+                <!-- Response Times -->
+                <div style="margin-top: 2rem; background: var(--card-bg); padding: 1.5rem; border-radius: 15px;">
+                    <h3 style="color: var(--text); margin-bottom: 1rem;">Waktu Respon</h3>
+                    
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 1rem;">
+                        <div style="text-align: center;">
+                            <div style="font-size: 2rem; color: var(--accent); font-weight: bold;">24/7</div>
+                            <div style="color: var(--text-muted);">Dify Bot</div>
+                        </div>
+                        
+                        <div style="text-align: center;">
+                            <div style="font-size: 2rem; color: var(--accent); font-weight: bold;">&lt;1m</div>
+                            <div style="color: var(--text-muted);">Chat Response</div>
+                        </div>
+                        
+                        <div style="text-align: center;">
+                            <div style="font-size: 2rem; color: var(--accent); font-weight: bold;">&lt;2h</div>
+                            <div style="color: var(--text-muted);">Email Response</div>
+                        </div>
+                        
+                        <div style="text-align: center;">
+                            <div style="font-size: 2rem; color: var(--accent); font-weight: bold;">98%</div>
+                            <div style="color: var(--text-muted);">Satisfaction</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Support Hours -->
+                <div style="margin-top: 2rem;">
+                    <h3 style="color: var(--text); margin-bottom: 1rem;">Jam Operasional</h3>
+                    
+                    <div style="background: var(--card-bg); padding: 1rem; border-radius: 10px;">
+                        <div style="display: flex; justify-content: space-between; padding: 0.5rem 0; border-bottom: 1px solid var(--glass);">
+                            <span style="color: var(--text);">Senin - Jumat</span>
+                            <span style="color: var(--accent);">08:00 - 22:00 WIB</span>
+                        </div>
+                        <div style="display: flex; justify-content: space-between; padding: 0.5rem 0; border-bottom: 1px solid var(--glass);">
+                            <span style="color: var(--text);">Sabtu - Minggu</span>
+                            <span style="color: var(--accent);">09:00 - 18:00 WIB</span>
+                        </div>
+                        <div style="display: flex; justify-content: space-between; padding: 0.5rem 0;">
+                            <span style="color: var(--text);">Emergency</span>
+                            <span style="color: var(--danger);">24/7 via Priority Support</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    // Database Pertanyaan & Jawaban
+    const cryptographyDB = {
+        'konsep dasar kriptografi': {
+            answer: `📚 **KONSEP DASAR KRIPTOGRAFI**
+
+**Definisi:**
+Kriptografi (cryptography) berasal dari bahasa Yunani: "kryptos" (tersembunyi) + "graphein" (menulis). Merupakan ilmu dan seni mengamankan informasi dengan mengubahnya menjadi bentuk yang tidak dapat dibaca tanpa kunci yang tepat.
+
+**Tujuan Utama:**
+1. **Kerahasiaan (Confidentiality)** - Hanya pihak berwenang yang dapat membaca
+2. **Integritas (Integrity)** - Data tidak berubah selama transmisi
+3. **Autentikasi (Authentication)** - Memverifikasi identitas pengguna
+4. **Non-repudiasi (Non-repudiation)** - Pengirim tidak bisa menyangkal pengiriman
+
+**Komponen Penting:**
+• **Plaintext** - Pesan asli
+• **Ciphertext** - Pesan terenkripsi  
+• **Algoritma** - Metode enkripsi/dekripsi
+• **Kunci (Key)** - Rahasia untuk transformasi
+
+**Contoh Aplikasi Nyata:**
+• HTTPS (SSL/TLS) untuk browsing aman
+• VPN untuk koneksi privat
+• Digital signatures untuk dokumen
+• Password hashing untuk autentikasi`,
+            followUp: ['enkripsi simetris asimetris', 'fungsi hash', 'algoritma populer'],
+            tags: ['dasar', 'konsep', 'teori']
+        },
+
+        'mengapa penting dalam keamanan informasi': {
+            answer: `🛡️ **PENTINGNYA KRIPTOGRAFI DALAM KEAMANAN INFORMASI**
+
+**1. Perlindungan Data Sensitif:**
+• Data finansial (kartu kredit, transaksi bank)
+• Informasi medis (rekam kesehatan)
+• Data pribadi (KTP, password, email)
+• Rahasia dagang dan intelektual
+
+**2. Keamanan Komunikasi Digital:**
+• Email terenkripsi (PGP/GPG)
+• Pesan instan (WhatsApp, Signal)
+• Video conference (Zoom, Teams)
+• Transaksi online (e-commerce)
+
+**3. Kepatuhan Regulasi:**
+• **GDPR** (General Data Protection Regulation) - UE
+• **HIPAA** (Health Insurance Portability) - AS  
+• **PCI DSS** (Payment Card Industry)
+• **UU PDP** (Perlindungan Data Pribadi) - Indonesia`,
+            followUp: ['regulasi keamanan', 'case study', 'best practices'],
+            tags: ['keamanan', 'regulasi', 'praktik']
+        },
+
+        'algoritma rsa': {
+            answer: `🔢 **ALGORITMA RSA - RIVEST-SHAMIR-ADLEMAN**
+
+**Sejarah:**
+Dikembangkan 1977 oleh Ron Rivest, Adi Shamir, dan Leonard Adleman di MIT. Merupakan algoritma asimetris pertama yang praktis.
+
+**Cara Kerja Matematis:**
+1. **Pilih dua bilangan prima besar:** p dan q
+2. **Hitung n = p × q** (modulus public/private)
+3. **Hitung φ(n) = (p-1)(q-1)** (totient function)
+4. **Pilih e** (public exponent) dimana 1 < e < φ(n) dan gcd(e, φ(n)) = 1
+5. **Hitung d** (private exponent) dengan e × d ≡ 1 mod φ(n)
+
+\`\`\`python
+# Contoh implementasi sederhana RSA
+import rsa
+
+# Generate keys
+(public_key, private_key) = rsa.newkeys(2048)
+
+# Encrypt
+message = "Data rahasia".encode('utf8')
+crypto = rsa.encrypt(message, public_key)
+
+# Decrypt  
+decrypted = rsa.decrypt(crypto, private_key)
+print(decrypted.decode('utf8'))
+\`\`\``,
+            followUp: ['keamanan rsa', 'quantum threat', 'alternatif rsa'],
+            tags: ['algoritma', 'asimetris', 'matematika']
+        },
+
+        'enkripsi simetris asimetris': {
+            answer: `⚖️ **PERBANDINGAN KRIPTOGRAFI SIMETRIS vs ASIMETRIS**
+
+**KRIPTOGRAFI SIMETRIS:**
+• **Kunci:** Sama untuk enkripsi & dekripsi
+• **Kecepatan:** Sangat cepat (100-1000x asimetris)
+• **Penggunaan:** Enkripsi data dalam jumlah besar
+• **Contoh:** AES, DES, 3DES, Blowfish, ChaCha20
+
+**KRIPTOGRAFI ASIMETRIS:**
+• **Kunci:** Pasangan kunci (public & private)
+• **Kecepatan:** Lebih lambat
+• **Penggunaan:** Pertukaran kunci, digital signatures
+• **Contoh:** RSA, ECC, ElGamal, Diffie-Hellman
+
+**BEST PRACTICE (Hybrid Approach):**
+1. Gunakan **asimetris** untuk pertukaran kunci rahasia
+2. Gunakan **simetris** untuk enkripsi data sesi
+3. Contoh: TLS menggunakan RSA untuk key exchange, AES untuk data`,
+            followUp: ['aes encryption', 'hybrid approach', 'performance comparison'],
+            tags: ['perbandingan', 'algoritma', 'praktik']
+        },
+
+        'fungsi hash kriptografi': {
+            answer: `🔗 **FUNGSI HASH KRIPTOGRAFI**
+
+**Definisi:**
+Fungsi matematika satu-arah yang memaparkan data berukuran berapa pun ke nilai berukuran tetap (biasanya 256/512 bit). Tidak dapat dibalik (irreversible).
+
+**Karakteristik:**
+1. **Deterministik** - Input sama → output sama
+2. **Komputasi Cepat** - Hash dapat dihitung cepat
+3. **Pre-image Resistance** - Sulit cari input dari hash
+4. **Small Changes, Big Difference** - Avalanche effect
+5. **Collision Resistant** - Sulit cari dua input dengan hash sama
+
+**ALGORITMA POPULER:**
+• **SHA-256** - 256-bit output, paling banyak digunakan
+• **SHA-512** - 512-bit output, lebih aman
+• **Bcrypt** - Adaptive hashing, slow by design
+• **Argon2** - Memory-hard, pemenang PHC 2015
+
+\`\`\`python
+import hashlib
+
+def calculate_file_hash(filepath):
+    sha256_hash = hashlib.sha256()
+    with open(filepath, "rb") as f:
+        for byte_block in iter(lambda: f.read(4096), b""):
+            sha256_hash.update(byte_block)
+    return sha256_hash.hexdigest()
+\`\`\``,
+            followUp: ['password hashing', 'collision attack', 'sha256 vs sha3'],
+            tags: ['hash', 'password', 'security']
+        },
+
+        'cara kerjanya dalam mengamankan password': {
+            answer: `🔐 **PASSWORD HASHING & KEAMANAN**
+
+**PROBLEM TRADISIONAL:**
+• Password disimpan plaintext → risiko tinggi
+• Enkripsi two-way → bisa di-decrypt
+• Hash tanpa salt → vulnerable to rainbow tables
+
+**SOLUTION MODERN:**
+\`\`\`python
+import argon2
+
+# Argon2 parameters
+hasher = argon2.PasswordHasher(
+    time_cost=3,
+    memory_cost=65536,
+    parallelism=4,
+    hash_len=32,
+    salt_len=16
+)
+
+# Hash a password
+password = "MySecurePass123!"
+hash = hasher.hash(password)
+
+# Verify password
+try:
+    hasher.verify(hash, "MySecurePass123!")
+    print("Password correct!")
+except:
+    print("Password incorrect!")
+\`\`\`
+
+**KEAMANAN PASSWORD:**
+• Minimum 12 karakter
+• Mix: uppercase, lowercase, numbers, symbols
+• No dictionary words
+• Change every 90 days`,
+            followUp: ['brute force protection', '2fa', 'password policies'],
+            tags: ['password', 'hashing', 'security']
+        },
+
+        'error login': {
+            answer: `🔐 **LOGIN ERROR - TROUBLESHOOTING**
+
+**Error yang Sering Terjadi:**
+1. **Error 404 - Page Not Found**
+2. **Error 403 - Access Denied**
+3. **Error 500 - Internal Server Error**
+4. **Invalid Credentials**
+5. **Session Expired**
+
+**SOLUSI CEPAT:**
+**1. Error 404 (Page Not Found):**
+\`\`\`bash
+# Langkah perbaikan:
+1. Clear cache browser: Ctrl+Shift+Del
+2. Coba mode incognito/private
+3. Pastikan URL benar: https://decodify.com/login
+4. Nonaktifkan ekstensi browser
+5. Coba browser berbeda (Chrome, Firefox, Edge)
+\`\`\`
+
+**2. Invalid Credentials:**
+• Pastikan caps lock tidak aktif
+• Reset password: https://decodify.com/reset-password
+• Cek email (termasuk spam) untuk link reset
+
+**Jika masalah berlanjut:**
+1. Screenshoot error message
+2. Catat waktu kejadian
+3. Hubungi support@decodify.com`,
+            followUp: ['reset password', 'register new account', 'clear cache'],
+            tags: ['system', 'error', 'login']
+        },
+
+        'cara upgrade ke premium': {
+            answer: `👑 **UPGRADE KE PAKET PREMIUM**
+
+**LANGKAH UPGRADE:**
+1. Klik profile picture (kanan atas)
+2. Pilih "Subscription"
+3. Pilih paket "Premium"
+4. Pilih durasi (1/3/12 bulan)
+5. Pilih metode pembayaran
+6. Konfirmasi pembayaran
+
+**METODE PEMBAYARAN:**
+• **Transfer Bank:** BCA, Mandiri, BNI, BRI
+• **E-Wallet:** GoPay, OVO, Dana, ShopeePay
+• **Kartu Kredit:** Visa, Mastercard, JCB
+• **QRIS:** Semua bank yang support QRIS
+
+**HARGA PAKET:**
+• **Bulanan:** Rp 49.999/bulan
+• **3 Bulan:** Rp 134.997 (hemat 10%)
+• **Tahunan:** Rp 479.988 (hemat 20%)
+• **Pelajar:** Rp 29.999/bulan (verifikasi .edu)`,
+            followUp: ['payment methods', 'student discount', 'cancel subscription'],
+            tags: ['subscription', 'premium', 'payment']
+        },
+
+        'reset password': {
+            answer: `🔓 **RESET PASSWORD - PETUNJUK**
+
+**CARA RESET PASSWORD:**
+1. Kunjungi: https://decodify.com/login
+2. Klik "Lupa Password?"
+3. Masukkan email terdaftar
+4. Cek email Anda (termasuk spam)
+5. Klik link reset dalam email
+6. Buat password baru
+7. Konfirmasi password
+8. Login dengan password baru
+
+**PERSYARATAN PASSWORD BARU:**
+• Minimal 12 karakter
+• Kombinasi huruf besar & kecil
+• Minimal 1 angka
+• Minimal 1 simbol
+• Tidak sama dengan password lama
+
+**Jika Link Reset Tidak Berfungsi:**
+1. Link expire dalam 1 jam
+2. Request link baru
+3. Pastikan email benar
+4. Cek folder spam
+5. Hubungi support jika masih bermasalah`,
+            followUp: ['enable 2fa', 'password manager', 'account security'],
+            tags: ['security', 'password', 'account']
+        },
+
+        'error payment premium': {
+            answer: `💳 **PAYMENT ERROR - TROUBLESHOOTING**
+
+**ERROR PEMBAYARAN UMUM:**
+1. **Payment Declined:** Cek saldo/limit kartu
+2. **Payment Pending:** Tunggu 5-30 menit
+3. **Payment Success Tapi Premium Tidak Aktif:** Tunggu maksimal 24 jam
+
+**WAKTU AKTIVASI:**
+• Kartu Kredit: Instant (1-2 menit)
+• GoPay/OVO: Instant (1-2 menit)
+• Transfer Bank: 1-24 jam kerja
+• QRIS: 5-15 menit
+
+**SUPPORT PEMBAYARAN:**
+• Email: billing@decodify.com
+• WhatsApp: +62 812-3456-7890
+• Jam kerja: 08:00-18:00 WIB`,
+            followUp: ['payment methods', 'refund policy', 'contact billing'],
+            tags: ['payment', 'premium', 'error']
+        },
+
+        'default': {
+            answer: `🤖 **DIFY BOT - PUSAT BANTUAN**
+
+Saya belum sepenuhnya memahami pertanyaan Anda. Saya adalah asisten untuk berbagai topik:
+
+**🔐 KRIPTOGRAFI:**
+• Konsep dasar, algoritma (AES, RSA, SHA-256)
+• Fungsi hash, password security
+
+**⚙️ SISTEM & TEKNIS:**
+• Error login, reset password
+• Masalah teknis, troubleshooting
+
+**👑 BERLANGGANAN:**
+• Cara upgrade ke premium
+• Metode pembayaran
+
+**🔧 ERROR & MASALAH:**
+• Solusi error umum
+• Troubleshooting
+
+**📞 DUKUNGAN:**
+• Kontak support
+• Jam operasional
+
+**ATAU COBA TANYAKAN:**
+• "Cara reset password"
+• "Error login 404"
+• "Harga paket premium"`,
+            followUp: ['error login', 'cara upgrade ke premium', 'cara kontak support'],
+            tags: ['help', 'general', 'support']
+        }
+    };
+
+    // State management
+    let chatHistory = [];
+    let questionCount = 0;
+    let currentUser = 'Pengguna';
+
+    // Initialize on page load
+    document.addEventListener('DOMContentLoaded', function() {
+        initializeChat();
+        updateWelcomeTime();
+        startBotActivity();
+        initializeTabs();
+    });
+
+    // Initialize chat interface
+    function initializeChat() {
+        const chatInput = document.getElementById('chatInput');
+        
+        // Set current user
+        currentUser = '{{ current_user.username if current_user.is_authenticated else "Pengguna" }}';
+        
+        // Auto-resize textarea
+        chatInput.addEventListener('input', function() {
+            autoResize(this);
+        });
+        
+        // Load chat history from localStorage
+        loadChatHistory();
+        
+        // Update stats
+        updateStats();
+    }
+
+    // Initialize tabs system
+    function initializeTabs() {
+        // Set default tab
+        updateBotContext('crypto');
+        filterFAQ('all');
+        
+        // Initialize ticket form
+        const ticketForm = document.getElementById('ticketForm');
+        if (ticketForm) {
+            ticketForm.addEventListener('submit', function(e) {
+                e.preventDefault();
+                submitTicket();
+            });
+        }
+    }
+
+    // Tab switching functionality
+    function switchTab(tabName) {
+        // Update tabs
+        document.querySelectorAll('.qa-tab').forEach(tab => {
+            tab.classList.remove('active');
+        });
+        document.querySelectorAll('.qa-tab').forEach(tab => {
+            if (tab.getAttribute('onclick') && tab.getAttribute('onclick').includes(tabName)) {
+                tab.classList.add('active');
+            }
+        });
+        
+        // Update content
+        document.querySelectorAll('.qa-content').forEach(content => {
+            content.classList.remove('active');
+        });
+        document.getElementById(tabName + 'Tab').classList.add('active');
+        
+        // Scroll to top
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+        
+        // Update chatbot context
+        updateBotContext(tabName);
+    }
+
+    // Update bot context based on tab
+    function updateBotContext(tabName) {
+        const chatInput = document.getElementById('chatInput');
+        const contexts = {
+            'crypto': 'Tanyakan tentang kriptografi, algoritma, keamanan sistem...',
+            'system': 'Tanyakan masalah teknis, error, atau masalah sistem...',
+            'subscription': 'Tanyakan tentang paket, harga, pembayaran, upgrade...',
+            'issues': 'Tanyakan tentang error, troubleshooting, perbaikan...',
+            'support': 'Tanyakan tentang kontak support, jam operasional, help...'
+        };
+        
+        chatInput.placeholder = contexts[tabName] || 'Tanyakan apapun...';
+    }
+
+    // Filter FAQ by category
+    function filterFAQ(category) {
+        const buttons = document.querySelectorAll('.faq-category-btn');
+        buttons.forEach(btn => btn.classList.remove('active'));
+        event.target.classList.add('active');
+        
+        const items = document.querySelectorAll('.faq-item');
+        items.forEach(item => {
+            if (category === 'all' || item.classList.contains(category)) {
+                item.style.display = 'block';
+                setTimeout(() => {
+                    item.style.opacity = '1';
+                }, 10);
+            } else {
+                item.style.opacity = '0';
+                setTimeout(() => {
+                    item.style.display = 'none';
+                }, 300);
+            }
+        });
+    }
+
+    // Submit ticket form
+    function submitTicket() {
+        const issueType = document.getElementById('issueType').value;
+        const issueSubject = document.getElementById('issueSubject').value;
+        const issueDescription = document.getElementById('issueDescription').value;
+        const issueEmail = document.getElementById('issueEmail').value;
+        
+        if (!issueType || !issueSubject || !issueDescription || !issueEmail) {
+            showNotification('Harap isi semua field yang wajib diisi!', 'error');
+            return;
+        }
+        
+        // Simulate submission
+        showNotification('Tiket berhasil dikirim! Support akan menghubungi Anda dalam 2 jam.', 'success');
+        
+        // Reset form
+        document.getElementById('ticketForm').reset();
+        
+        // Ask follow-up question
+        setTimeout(() => {
+            askQuestion('Apakah ada informasi lain yang bisa saya bantu terkait masalah Anda?');
+        }, 2000);
+    }
+
+    // Show notification
+    function showNotification(message, type = 'success') {
+        // Create notification element
+        const notification = document.createElement('div');
+        notification.className = `notification ${type}`;
+        notification.innerHTML = `
+            <i class="fas fa-${type === 'success' ? 'check-circle' : 'exclamation-circle'}"></i>
+            ${message}
+        `;
+        
+        // Style notification
+        notification.style.position = 'fixed';
+        notification.style.top = '20px';
+        notification.style.right = '20px';
+        notification.style.padding = '1rem 1.5rem';
+        notification.style.borderRadius = '10px';
+        notification.style.boxShadow = '0 5px 20px rgba(0,0,0,0.3)';
+        notification.style.zIndex = '10000';
+        notification.style.display = 'flex';
+        notification.style.alignItems = 'center';
+        notification.style.gap = '10px';
+        notification.style.animation = 'slideIn 0.3s ease';
+        
+        if (type === 'success') {
+            notification.style.background = '#10b981';
+            notification.style.color = 'white';
+        } else {
+            notification.style.background = '#ef4444';
+            notification.style.color = 'white';
+        }
+        
+        document.body.appendChild(notification);
+        
+        // Remove after 5 seconds
+        setTimeout(() => {
+            notification.style.animation = 'slideOut 0.3s ease';
+            setTimeout(() => notification.remove(), 300);
+        }, 5000);
+    }
+
+    // ==================== CHAT FUNCTIONS ====================
+    function autoResize(textarea) {
+        textarea.style.height = 'auto';
+        textarea.style.height = (textarea.scrollHeight) + 'px';
+    }
+
+    function handleChatKeyPress(event) {
+        if (event.key === 'Enter' && !event.shiftKey) {
+            event.preventDefault();
+            sendMessage();
+        }
+    }
+
+    function sendMessage() {
+        const chatInput = document.getElementById('chatInput');
+        const message = chatInput.value.trim();
+        
+        if (message) {
+            // Add user message
+            addMessageToChat(message, 'user');
+            chatInput.value = '';
+            chatInput.style.height = 'auto';
+            
+            // Update question count
+            questionCount++;
+            updateStats();
+            
+            // Show typing indicator
+            showTypingIndicator();
+            
+            // Get bot response after delay
+            setTimeout(() => {
+                removeTypingIndicator();
+                const response = getBotResponse(message);
+                addMessageToChat(response.answer, 'bot');
+                
+                // Add follow-up suggestions
+                if (response.followUp && response.followUp.length > 0) {
+                    addFollowUpSuggestions(response.followUp);
+                }
+                
+                // Save to chat history
+                saveChatToHistory(message, response.answer);
+            }, 1500);
+        }
+    }
+
+    function addMessageToChat(text, sender) {
+        const chatBody = document.getElementById('chatBody');
+        const messageDiv = document.createElement('div');
+        messageDiv.className = `message ${sender}-message`;
+        
+        const timestamp = getCurrentTime();
+        const messageId = `msg_${Date.now()}`;
+        
+        if (sender === 'bot') {
+            messageDiv.innerHTML = `
+                <div class="message-header">
+                    <i class="fas fa-robot"></i>
+                    Dify Bot
+                    <span class="message-time">${timestamp}</span>
+                </div>
+                <div id="${messageId}">${formatBotResponse(text)}</div>
+            `;
+            
+            // Add copy code functionality
+            setTimeout(() => addCodeCopyButtons(messageId), 100);
+        } else {
+            messageDiv.innerHTML = `
+                <div class="message-header">
+                    <i class="fas fa-user"></i>
+                    ${currentUser}
+                    <span class="message-time">${timestamp}</span>
+                </div>
+                <div>${escapeHtml(text)}</div>
+            `;
+        }
+        
+        chatBody.appendChild(messageDiv);
+        scrollToBottom();
+        
+        // Add to chat history
+        chatHistory.push({
+            id: messageId,
+            sender: sender,
+            text: text,
+            time: timestamp
+        });
+    }
+
+    function formatBotResponse(text) {
+        let formatted = escapeHtml(text);
+        
+        // Convert **bold**
+        formatted = formatted.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+        
+        // Convert *italic*
+        formatted = formatted.replace(/\*(.*?)\*/g, '<em>$1</em>');
+        
+        // Convert code blocks
+        formatted = formatted.replace(/```([\s\S]*?)```/g, function(match, code) {
+            const codeId = `code_${Math.random().toString(36).substr(2, 9)}`;
+            return `
+                <div class="code-block">
+                    <div class="code-header">
+                        <span><i class="fas fa-code"></i> Contoh Kode</span>
+                        <button class="copy-code" onclick="copyToClipboard('${codeId}')">
+                            <i class="fas fa-copy"></i> Salin
+                        </button>
+                    </div>
+                    <pre id="${codeId}">${escapeHtml(code.trim())}</pre>
+                </div>
+            `;
+        });
+        
+        // Convert line breaks
+        formatted = formatted.replace(/\n/g, '<br>');
+        
+        // Convert bullet points
+        formatted = formatted.replace(/•\s+(.*?)(?=<br>|$)/g, '<p style="margin: 0.3rem 0;">• $1</p>');
+        
+        return formatted;
+    }
+
+    function addCodeCopyButtons(messageId) {
+        const messageDiv = document.getElementById(messageId);
+        if (!messageDiv) return;
+        
+        const codeBlocks = messageDiv.querySelectorAll('.code-block');
+        codeBlocks.forEach(block => {
+            const copyBtn = block.querySelector('.copy-code');
+            const codeId = block.querySelector('pre').id;
+            
+            copyBtn.addEventListener('click', function() {
+                copyToClipboard(codeId);
+                
+                // Show feedback
+                const originalText = copyBtn.innerHTML;
+                copyBtn.innerHTML = '<i class="fas fa-check"></i> Tersalin!';
+                copyBtn.style.background = 'rgba(16, 185, 129, 0.3)';
+                
+                setTimeout(() => {
+                    copyBtn.innerHTML = originalText;
+                    copyBtn.style.background = '';
+                }, 2000);
+            });
+        });
+    }
+
+    function copyToClipboard(elementId) {
+        const element = document.getElementById(elementId);
+        if (!element) return;
+        
+        const text = element.textContent;
+        navigator.clipboard.writeText(text).catch(err => {
+            console.error('Failed to copy: ', err);
+            showNotification('Gagal menyalin kode', 'error');
+        });
+    }
+
+    function getBotResponse(userMessage) {
+        const message = userMessage.toLowerCase().trim();
+        
+        // Check for exact matches first
+        for (const [key, response] of Object.entries(cryptographyDB)) {
+            if (key === 'default') continue;
+            
+            const keywords = key.split(' ');
+            const matches = keywords.filter(keyword => 
+                message.includes(keyword) || 
+                calculateSimilarity(message, keyword) > 0.7
+            );
+            
+            if (matches.length >= Math.max(1, keywords.length * 0.5)) {
+                return response;
+            }
+        }
+        
+        // Check for partial matches
+        for (const [key, response] of Object.entries(cryptographyDB)) {
+            if (key === 'default') continue;
+            
+            if (message.includes(key) || 
+                (key.length > 5 && message.includes(key.substring(0, key.length - 2)))) {
+                return response;
+            }
+        }
+        
+        // Check for support-related keywords
+        const supportKeywords = ['support', 'bantuan', 'tolong', 'help', 'kontak', 'hubungi', 'email', 'telepon'];
+        if (supportKeywords.some(keyword => message.includes(keyword))) {
+            return cryptographyDB['error login'];
+        }
+        
+        // Check for error-related keywords
+        const errorKeywords = ['error', 'masalah', 'bug', 'gagal', 'tidak bisa', 'failed'];
+        if (errorKeywords.some(keyword => message.includes(keyword))) {
+            return cryptographyDB['error login'];
+        }
+        
+        // Check for subscription-related keywords
+        const subKeywords = ['premium', 'langganan', 'bayar', 'harga', 'paket', 'upgrade'];
+        if (subKeywords.some(keyword => message.includes(keyword))) {
+            return cryptographyDB['cara upgrade ke premium'];
+        }
+        
+        // Return default response
+        return cryptographyDB.default;
+    }
+
+    function calculateSimilarity(str1, str2) {
+        const words1 = str1.split(/\s+/);
+        const words2 = str2.split(/\s+/);
+        
+        let matches = 0;
+        words1.forEach(word1 => {
+            if (words2.some(word2 => 
+                word1.includes(word2) || word2.includes(word1) ||
+                word1.length > 3 && word2.length > 3 && 
+                levenshteinDistance(word1, word2) <= 2
+            )) {
+                matches++;
+            }
+        });
+        
+        return matches / Math.max(words1.length, words2.length);
+    }
+
+    function levenshteinDistance(a, b) {
+        const matrix = [];
+        
+        for (let i = 0; i <= b.length; i++) {
+            matrix[i] = [i];
+        }
+        
+        for (let j = 0; j <= a.length; j++) {
+            matrix[0][j] = j;
+        }
+        
+        for (let i = 1; i <= b.length; i++) {
+            for (let j = 1; j <= a.length; j++) {
+                if (b.charAt(i - 1) === a.charAt(j - 1)) {
+                    matrix[i][j] = matrix[i - 1][j - 1];
+                } else {
+                    matrix[i][j] = Math.min(
+                        matrix[i - 1][j - 1] + 1,
+                        matrix[i][j - 1] + 1,
+                        matrix[i - 1][j] + 1
+                    );
+                }
+            }
+        }
+        
+        return matrix[b.length][a.length];
+    }
+
+    function askQuestion(question) {
+        const chatInput = document.getElementById('chatInput');
+        chatInput.value = question;
+        sendMessage();
+    }
+
+    function showTypingIndicator() {
+        const chatBody = document.getElementById('chatBody');
+        const typingDiv = document.createElement('div');
+        typingDiv.className = 'typing-indicator';
+        typingDiv.id = 'typingIndicator';
+        typingDiv.innerHTML = `
+            <div class="typing-dot"></div>
+            <div class="typing-dot"></div>
+            <div class="typing-dot"></div>
+            <span class="typing-text">Dify Bot sedang menulis jawaban...</span>
+        `;
+        chatBody.appendChild(typingDiv);
+        scrollToBottom();
+    }
+
+    function removeTypingIndicator() {
+        const typingIndicator = document.getElementById('typingIndicator');
+        if (typingIndicator) {
+            typingIndicator.remove();
+        }
+    }
+
+    function addFollowUpSuggestions(suggestions) {
+        const chatBody = document.getElementById('chatBody');
+        const suggestionsDiv = document.createElement('div');
+        suggestionsDiv.className = 'quick-questions';
+        suggestionsDiv.style.marginTop = '1rem';
+        suggestionsDiv.style.marginBottom = '0.5rem';
+        
+        suggestions.forEach(suggestion => {
+            const button = document.createElement('button');
+            button.className = 'quick-question-btn';
+            button.innerHTML = `<i class="fas fa-arrow-right"></i> ${suggestion}`;
+            button.onclick = () => askQuestion(suggestion);
+            suggestionsDiv.appendChild(button);
+        });
+        
+        chatBody.appendChild(suggestionsDiv);
+        scrollToBottom();
+    }
+
+    function toggleFAQ(item) {
+        const isActive = item.classList.contains('active');
+        
+        // Close all other FAQ items
+        document.querySelectorAll('.faq-item.active').forEach(activeItem => {
+            if (activeItem !== item) {
+                activeItem.classList.remove('active');
+            }
+        });
+        
+        // Toggle current item
+        item.classList.toggle('active');
+        
+        // If opening, ask related question
+        if (!isActive) {
+            const question = item.querySelector('.faq-question').textContent.trim();
+            setTimeout(() => askQuestion(question), 300);
+        }
+    }
+
+    function getCurrentTime() {
+        const now = new Date();
+        return now.getHours().toString().padStart(2, '0') + ':' + 
+               now.getMinutes().toString().padStart(2, '0');
+    }
+
+    function updateWelcomeTime() {
+        const welcomeTime = document.getElementById('welcomeTime');
+        if (welcomeTime) {
+            welcomeTime.textContent = getCurrentTime();
+        }
+    }
+
+    function scrollToBottom() {
+        const chatBody = document.getElementById('chatBody');
+        chatBody.scrollTop = chatBody.scrollHeight;
+    }
+
+    function updateStats() {
+        const totalQuestions = document.getElementById('totalQuestions');
+        if (totalQuestions) {
+            totalQuestions.textContent = questionCount;
+        }
+        
+        const activeUsers = document.getElementById('activeUsers');
+        if (activeUsers) {
+            activeUsers.textContent = 1;
+        }
+    }
+
+    function saveChatToHistory(question, answer) {
+        const history = JSON.parse(localStorage.getItem('cryptoChatHistory') || '[]');
+        history.push({
+            question: question,
+            answer: answer,
+            timestamp: new Date().toISOString()
+        });
+        
+        // Keep only last 100 conversations
+        if (history.length > 100) {
+            history.shift();
+        }
+        
+        localStorage.setItem('cryptoChatHistory', JSON.stringify(history));
+    }
+
+    function loadChatHistory() {
+        const history = JSON.parse(localStorage.getItem('cryptoChatHistory') || '[]');
+        questionCount = history.length;
+        updateStats();
+    }
+
+    function startBotActivity() {
+        setInterval(() => {
+            const statusDot = document.querySelector('.status-dot');
+            if (statusDot) {
+                statusDot.style.animation = 'none';
+                setTimeout(() => {
+                    statusDot.style.animation = 'pulse 2s infinite';
+                }, 10);
+            }
+        }, 10000);
+    }
+
+    function escapeHtml(text) {
+        const div = document.createElement('div');
+        div.textContent = text;
+        return div.innerHTML;
+    }
+
+    // Add CSS for notification animations
+    const style = document.createElement('style');
+    style.textContent = `
+        @keyframes slideIn {
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+        
+        @keyframes slideOut {
+            from { transform: translateX(0); opacity: 1; }
+            to { transform: translateX(100%); opacity: 0; }
+        }
+    `;
+    document.head.appendChild(style);
+</script>
+{% endblock %}

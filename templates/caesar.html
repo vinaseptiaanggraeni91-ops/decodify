@@ -1,0 +1,640 @@
+{% extends "base.html" %}
+
+{% block title %}Caesar Cipher - DecoDify{% endblock %}
+
+{% block extra_css %}
+<style>
+    /* ========== CAESAR CIPHER STYLES ========== */
+.caesar-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 30px 40px;
+    animation: fadeIn 0.5s ease;
+}
+
+.caesar-header {
+    text-align: center;
+    margin-bottom: 40px;
+    padding: 40px 20px;
+    background: var(--gradient-primary);
+    border-radius: var(--radius-xl);
+    color: white;
+    position: relative;
+    overflow: hidden;
+}
+
+.caesar-header::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" preserveAspectRatio="none"><path d="M0,50 Q25,40 50,50 T100,50 L100,100 0,100 Z" fill="rgba(255,255,255,0.1)"/></svg>');
+    background-size: cover;
+}
+
+.caesar-icon {
+    font-size: 4rem;
+    margin-bottom: 1.5rem;
+    position: relative;
+    z-index: 2;
+    background: rgba(255, 255, 255, 0.2);
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 1.5rem;
+    backdrop-filter: blur(10px);
+    border: 2px solid rgba(255, 255, 255, 0.3);
+}
+
+.caesar-title {
+    font-size: 2.8rem;
+    font-weight: 800;
+    margin-bottom: 1rem;
+    position: relative;
+    z-index: 2;
+    text-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+}
+
+.caesar-desc {
+    font-size: 1.2rem;
+    opacity: 0.9;
+    max-width: 600px;
+    margin: 0 auto;
+    position: relative;
+    z-index: 2;
+    line-height: 1.6;
+}
+
+/* Info Box */
+.caesar-info-box {
+    background: rgba(99, 102, 241, 0.1);
+    border-left: 4px solid var(--primary);
+    padding: 20px;
+    border-radius: var(--radius-lg);
+    margin-bottom: 30px;
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.caesar-info-title {
+    font-weight: 700;
+    margin-bottom: 10px;
+    color: var(--primary);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 1.1rem;
+}
+
+.caesar-info-box p {
+    color: var(--text-secondary);
+    line-height: 1.6;
+}
+
+/* Cipher Card */
+.caesar-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border-light);
+    border-radius: var(--radius-xl);
+    padding: 30px;
+    margin-bottom: 30px;
+    box-shadow: var(--shadow-lg);
+    backdrop-filter: blur(10px);
+    transition: all var(--transition-normal);
+}
+
+.caesar-card:hover {
+    box-shadow: var(--shadow-xl);
+    transform: translateY(-2px);
+}
+
+/* Form Elements */
+.caesar-form-group {
+    margin-bottom: 25px;
+}
+
+.caesar-form-label {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 12px;
+    font-weight: 600;
+    color: var(--text-primary);
+    font-size: 1rem;
+}
+
+.caesar-form-label i {
+    color: var(--primary);
+    font-size: 1.1rem;
+}
+
+.caesar-form-textarea,
+.caesar-form-input {
+    width: 100%;
+    padding: 16px;
+    background: var(--bg-tertiary);
+    border: 2px solid var(--border-light);
+    border-radius: var(--radius-lg);
+    color: var(--text-primary);
+    font-size: 1rem;
+    font-family: 'Courier New', monospace;
+    transition: all var(--transition-fast);
+    resize: vertical;
+}
+
+body.dark-theme .caesar-form-textarea,
+body.dark-theme .caesar-form-input {
+    background: var(--dark-bg-tertiary);
+    border-color: var(--border-light);
+}
+
+.caesar-form-textarea:focus,
+.caesar-form-input:focus {
+    outline: none;
+    border-color: var(--primary);
+    box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+    background: var(--bg-secondary);
+}
+
+.caesar-form-textarea {
+    min-height: 150px;
+    line-height: 1.5;
+}
+
+.caesar-form-textarea::placeholder {
+    color: var(--text-tertiary);
+}
+
+/* Shift Control */
+.caesar-shift-control {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    background: var(--bg-tertiary);
+    padding: 20px;
+    border-radius: var(--radius-lg);
+    border: 1px solid var(--border-light);
+}
+
+.caesar-shift-slider {
+    flex: 1;
+    height: 8px;
+    background: var(--border-light);
+    border-radius: var(--radius-full);
+    outline: none;
+    -webkit-appearance: none;
+    transition: all var(--transition-fast);
+}
+
+body.dark-theme .caesar-shift-slider {
+    background: var(--dark-bg-tertiary);
+}
+
+.caesar-shift-slider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 24px;
+    height: 24px;
+    background: var(--gradient-primary);
+    border-radius: 50%;
+    cursor: pointer;
+    border: 3px solid white;
+    box-shadow: var(--shadow-md);
+    transition: all var(--transition-fast);
+}
+
+.caesar-shift-slider::-webkit-slider-thumb:hover {
+    transform: scale(1.1);
+    box-shadow: 0 0 0 8px rgba(99, 102, 241, 0.1);
+}
+
+.caesar-shift-value {
+    font-size: 2rem;
+    font-weight: 700;
+    color: var(--primary);
+    min-width: 60px;
+    text-align: center;
+    font-family: 'Courier New', monospace;
+    padding: 8px 12px;
+    background: var(--bg-card);
+    border-radius: var(--radius-md);
+    border: 2px solid var(--primary);
+}
+
+/* Button Group */
+.caesar-button-group {
+    display: flex;
+    gap: 16px;
+    flex-wrap: wrap;
+    margin-top: 30px;
+}
+
+.caesar-btn {
+    flex: 1;
+    min-width: 180px;
+    padding: 16px 24px;
+    border: none;
+    border-radius: var(--radius-lg);
+    font-weight: 600;
+    cursor: pointer;
+    transition: all var(--transition-normal);
+    font-size: 1rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    position: relative;
+    overflow: hidden;
+}
+
+.caesar-btn::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+    transition: var(--transition-slow);
+}
+
+.caesar-btn:hover::before {
+    left: 100%;
+}
+
+.caesar-btn-encrypt {
+    background: var(--gradient-primary);
+    color: white;
+}
+
+.caesar-btn-encrypt:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 15px 30px rgba(99, 102, 241, 0.3);
+}
+
+.caesar-btn-decrypt {
+    background: linear-gradient(135deg, var(--secondary), #7c3aed);
+    color: white;
+}
+
+.caesar-btn-decrypt:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 15px 30px rgba(139, 92, 246, 0.3);
+}
+
+.caesar-btn-clear {
+    background: var(--bg-tertiary);
+    border: 2px solid var(--danger);
+    color: var(--danger);
+}
+
+body.dark-theme .caesar-btn-clear {
+    background: var(--dark-bg-tertiary);
+}
+
+.caesar-btn-clear:hover {
+    background: var(--danger);
+    color: white;
+    transform: translateY(-4px);
+    box-shadow: 0 10px 20px rgba(239, 68, 68, 0.2);
+}
+
+.caesar-btn i {
+    font-size: 1.2rem;
+    transition: transform var(--transition-fast);
+}
+
+.caesar-btn:hover i {
+    transform: translateX(4px);
+}
+
+/* Result Box */
+.caesar-result-box {
+    background: var(--bg-tertiary);
+    border: 2px solid rgba(99, 102, 241, 0.3);
+    border-radius: var(--radius-lg);
+    padding: 24px;
+    min-height: 150px;
+    font-family: 'Courier New', monospace;
+    font-size: 1rem;
+    word-break: break-word;
+    display: none;
+    line-height: 1.6;
+    color: var(--text-primary);
+    position: relative;
+    overflow: hidden;
+}
+
+body.dark-theme .caesar-result-box {
+    background: var(--dark-bg-tertiary);
+}
+
+.caesar-result-box.show {
+    display: block;
+    animation: fadeInUp 0.4s ease;
+}
+
+.caesar-result-box::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 4px;
+    height: 100%;
+    background: var(--gradient-primary);
+}
+
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .caesar-container {
+        padding: 20px;
+    }
+    
+    .caesar-header {
+        padding: 30px 15px;
+    }
+    
+    .caesar-title {
+        font-size: 2.2rem;
+    }
+    
+    .caesar-desc {
+        font-size: 1rem;
+        padding: 0 10px;
+    }
+    
+    .caesar-card {
+        padding: 20px;
+    }
+    
+    .caesar-button-group {
+        flex-direction: column;
+    }
+    
+    .caesar-btn {
+        min-width: 100%;
+    }
+    
+    .caesar-shift-control {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 15px;
+    }
+    
+    .caesar-shift-slider {
+        width: 100%;
+    }
+}
+
+@media (max-width: 480px) {
+    .caesar-title {
+        font-size: 1.8rem;
+    }
+    
+    .caesar-icon {
+        width: 80px;
+        height: 80px;
+        font-size: 3rem;
+    }
+    
+    .caesar-form-textarea {
+        min-height: 120px;
+    }
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="caesar-container">
+    <!-- Header dengan desain seperti dashboard -->
+    <div class="caesar-header">
+        <div class="caesar-icon">
+            <i class="fas fa-lock"></i>
+        </div>
+        <h1 class="caesar-title">Caesar Cipher</h1>
+        <p class="caesar-desc">
+            Enkripsi klasik dengan menggeser setiap huruf sebanyak N posisi
+        </p>
+    </div>
+
+    <!-- Info Box -->
+    <div class="caesar-info-box">
+        <div class="caesar-info-title">
+            <i class="fas fa-info-circle"></i> Cara Kerja Caesar Cipher
+        </div>
+        <p>
+            Caesar Cipher menggeser setiap huruf dalam alphabet sebanyak nilai shift. 
+            Contoh dengan shift 3: A→D, B→E, C→F, dst. Teknik ini dinamai dari Julius Caesar 
+            yang menggunakan teknik ini untuk komunikasi rahasia.
+        </p>
+    </div>
+
+    <!-- Input Section -->
+    <div class="caesar-card">
+        <div class="caesar-form-group">
+            <label class="caesar-form-label">
+                <i class="fas fa-edit"></i> Masukkan Teks
+            </label>
+            <textarea 
+                id="inputText" 
+                class="caesar-form-textarea" 
+                placeholder="Ketik teks yang ingin dienkripsi atau didekripsi..."
+                spellcheck="false"
+            ></textarea>
+        </div>
+
+        <div class="caesar-form-group">
+            <label class="caesar-form-label">
+                <i class="fas fa-sliders-h"></i> Shift Value (Pergeseran)
+            </label>
+            <div class="caesar-shift-control">
+                <input 
+                    type="range" 
+                    id="shiftSlider" 
+                    class="caesar-shift-slider" 
+                    min="0" 
+                    max="25" 
+                    value="3"
+                    oninput="updateShiftValue()"
+                >
+                <span class="caesar-shift-value" id="shiftValue">3</span>
+            </div>
+        </div>
+
+        <div class="caesar-button-group">
+            <button class="caesar-btn caesar-btn-encrypt" onclick="performCaesar('encrypt')">
+                <i class="fas fa-lock"></i> Encrypt
+            </button>
+            <button class="caesar-btn caesar-btn-decrypt" onclick="performCaesar('decrypt')">
+                <i class="fas fa-unlock"></i> Decrypt
+            </button>
+            <button class="caesar-btn caesar-btn-clear" onclick="clearAll()">
+                <i class="fas fa-trash"></i> Clear All
+            </button>
+        </div>
+    </div>
+
+    <!-- Result Section -->
+    <div class="caesar-card">
+        <div class="caesar-form-group">
+            <label class="caesar-form-label">
+                <i class="fas fa-check-circle"></i> Hasil
+            </label>
+            <div id="resultBox" class="caesar-result-box">
+                <!-- Result akan muncul di sini -->
+            </div>
+        </div>
+        
+        <!-- Copy Button -->
+        <div class="caesar-button-group" style="margin-top: 20px;">
+            <button class="caesar-btn" onclick="copyResult()" style="background: var(--bg-tertiary); color: var(--text-primary);">
+                <i class="fas fa-copy"></i> Copy Result
+            </button>
+        </div>
+    </div>
+
+    <!-- Example Section -->
+    <div class="caesar-info-box">
+        <div class="caesar-info-title">
+            <i class="fas fa-lightbulb"></i> Contoh Penggunaan
+        </div>
+        <p>
+            <strong>Encrypt dengan shift 3:</strong> "HELLO" → "KHOOR"<br>
+            <strong>Decrypt dengan shift 3:</strong> "KHOOR" → "HELLO"<br><br>
+            Tips: Gunakan shift 13 untuk ROT13, cipher yang simetris (enkripsi dan dekripsi sama).
+        </p>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    function updateShiftValue() {
+        const slider = document.getElementById('shiftSlider');
+        const display = document.getElementById('shiftValue');
+        display.textContent = slider.value;
+        display.style.animation = 'none';
+        setTimeout(() => {
+            display.style.animation = 'pulse 0.3s';
+        }, 10);
+    }
+
+    async function performCaesar(mode) {
+        const text = document.getElementById('inputText').value;
+        const shift = parseInt(document.getElementById('shiftSlider').value);
+        
+        if (!text.trim()) {
+            showToast('Masukkan teks terlebih dahulu!', 'error');
+            return;
+        }
+
+        // Show loading
+        const resultBox = document.getElementById('resultBox');
+        resultBox.innerHTML = '<div style="text-align: center; padding: 20px;"><i class="fas fa-spinner fa-spin"></i> Processing...</div>';
+        resultBox.classList.add('show');
+
+        try {
+            const response = await fetch('/api/caesar', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    text: text,
+                    shift: shift,
+                    mode: mode
+                })
+            });
+
+            const data = await response.json();
+            
+            if (data.success) {
+                resultBox.innerHTML = `<pre style="margin: 0; white-space: pre-wrap;">${data.result}</pre>`;
+                showToast(`${mode === 'encrypt' ? 'Enkripsi' : 'Dekripsi'} berhasil!`, 'success');
+            } else {
+                resultBox.innerHTML = `<div style="color: var(--danger);">${data.error || 'Terjadi kesalahan'}</div>`;
+                showToast(data.error || 'Terjadi kesalahan', 'error');
+            }
+        } catch (error) {
+            resultBox.innerHTML = `<div style="color: var(--danger);">Error: ${error.message}</div>`;
+            showToast('Terjadi kesalahan jaringan', 'error');
+        }
+    }
+
+    function clearAll() {
+        document.getElementById('inputText').value = '';
+        document.getElementById('shiftSlider').value = 3;
+        document.getElementById('shiftValue').textContent = 3;
+        document.getElementById('resultBox').classList.remove('show');
+        showToast('Semua field telah dibersihkan', 'info');
+    }
+
+    function copyResult() {
+        const resultBox = document.getElementById('resultBox');
+        if (!resultBox.classList.contains('show') || !resultBox.textContent.trim()) {
+            showToast('Tidak ada hasil untuk disalin', 'warning');
+            return;
+        }
+
+        navigator.clipboard.writeText(resultBox.textContent)
+            .then(() => {
+                showToast('Hasil disalin ke clipboard!', 'success');
+            })
+            .catch(err => {
+                showToast('Gagal menyalin teks', 'error');
+            });
+    }
+
+    function showToast(message, type = 'info') {
+        // Implement toast notification similar to dashboard
+        console.log(`Toast: ${message} (${type})`);
+        // You can integrate with your existing toast system
+    }
+
+    // Add keyboard shortcuts
+    document.addEventListener('keydown', (e) => {
+        if (e.ctrlKey && e.key === 'e') {
+            e.preventDefault();
+            performCaesar('encrypt');
+        } else if (e.ctrlKey && e.key === 'd') {
+            e.preventDefault();
+            performCaesar('decrypt');
+        } else if (e.ctrlKey && e.key === 'l') {
+            e.preventDefault();
+            clearAll();
+        }
+    });
+
+    // Add animation for input focus
+    document.getElementById('inputText').addEventListener('focus', function() {
+        this.style.transform = 'scale(1.01)';
+    });
+
+    document.getElementById('inputText').addEventListener('blur', function() {
+        this.style.transform = 'scale(1)';
+    });
+</script>
+
+<style>
+    @keyframes pulse {
+        0% { transform: scale(1); }
+        50% { transform: scale(1.1); }
+        100% { transform: scale(1); }
+    }
+</style>
+{% endblock %}

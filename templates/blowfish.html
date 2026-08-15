@@ -1,0 +1,388 @@
+{% extends "base.html" %}
+
+{% block title %}Blowfish Encryption - CryptoLab{% endblock %}
+
+{% block extra_css %}
+<style>
+    .cipher-container {
+        max-width: 1000px;
+        margin: 0 auto;
+    }
+
+    .cipher-header {
+        text-align: center;
+        margin-bottom: 3rem;
+    }
+
+    .cipher-icon {
+        font-size: 4rem;
+        margin-bottom: 1rem;
+        background: linear-gradient(135deg, #10b981, #059669);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+    }
+
+    .cipher-title {
+        font-size: 2.5rem;
+        font-weight: 800;
+        margin-bottom: 0.5rem;
+    }
+
+    .premium-badge {
+        display: inline-block;
+        background: linear-gradient(135deg, #f59e0b, #d97706);
+        color: white;
+        padding: 0.5rem 1rem;
+        border-radius: 20px;
+        font-size: 0.875rem;
+        font-weight: 700;
+        margin-left: 1rem;
+    }
+
+    .cipher-desc {
+        color: var(--text-muted);
+        font-size: 1.1rem;
+    }
+
+    .cipher-card {
+        background: rgba(30, 41, 59, 0.5);
+        backdrop-filter: blur(10px);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 16px;
+        padding: 2rem;
+        margin-bottom: 2rem;
+    }
+
+    .form-group {
+        margin-bottom: 1.5rem;
+    }
+
+    .form-label {
+        display: block;
+        margin-bottom: 0.5rem;
+        font-weight: 600;
+        color: var(--text);
+    }
+
+    .form-textarea, .form-input {
+        width: 100%;
+        padding: 1rem;
+        background: rgba(15, 23, 42, 0.5);
+        border: 2px solid rgba(255, 255, 255, 0.1);
+        border-radius: 10px;
+        color: var(--text);
+        font-size: 1rem;
+        font-family: 'Courier New', monospace;
+        transition: all 0.3s;
+    }
+
+    .form-textarea {
+        min-height: 120px;
+        resize: vertical;
+    }
+
+    .form-textarea:focus, .form-input:focus {
+        outline: none;
+        border-color: var(--primary);
+        background: rgba(15, 23, 42, 0.8);
+    }
+
+    .button-group {
+        display: flex;
+        gap: 1rem;
+        flex-wrap: wrap;
+    }
+
+    .btn {
+        flex: 1;
+        min-width: 150px;
+        padding: 1rem;
+        border: none;
+        border-radius: 10px;
+        font-weight: 700;
+        cursor: pointer;
+        transition: all 0.3s;
+        font-size: 1rem;
+    }
+
+    .btn-encrypt {
+        background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+        color: white;
+    }
+
+    .btn-encrypt:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 10px 30px rgba(99, 102, 241, 0.4);
+    }
+
+    .btn-decrypt {
+        background: linear-gradient(135deg, var(--secondary), #be185d);
+        color: white;
+    }
+
+    .btn-decrypt:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 10px 30px rgba(236, 72, 153, 0.4);
+    }
+
+    .result-box {
+        background: rgba(15, 23, 42, 0.8);
+        border: 2px solid rgba(99, 102, 241, 0.3);
+        border-radius: 10px;
+        padding: 1.5rem;
+        font-family: 'Courier New', monospace;
+        font-size: 0.95rem;
+        display: none;
+        word-break: break-all;
+    }
+
+    .result-box.show {
+        display: block;
+        animation: fadeIn 0.3s ease;
+    }
+
+    .info-box {
+        background: rgba(16, 185, 129, 0.1);
+        border-left: 4px solid #10b981;
+        padding: 1rem;
+        border-radius: 8px;
+        margin-bottom: 2rem;
+    }
+
+    .info-title {
+        font-weight: 700;
+        margin-bottom: 0.5rem;
+        color: #10b981;
+    }
+
+    .spec-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 1rem;
+        margin-top: 1rem;
+    }
+
+    .spec-item {
+        background: rgba(16, 185, 129, 0.1);
+        border: 2px solid rgba(16, 185, 129, 0.3);
+        border-radius: 10px;
+        padding: 1rem;
+        text-align: center;
+    }
+
+    .spec-label {
+        font-size: 0.85rem;
+        color: var(--text-muted);
+        margin-bottom: 0.5rem;
+    }
+
+    .spec-value {
+        font-size: 1.2rem;
+        font-weight: 700;
+        color: #10b981;
+    }
+
+    @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(-10px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="cipher-container">
+    <div class="cipher-header">
+        <div class="cipher-icon">
+            <i class="fas fa-fish"></i>
+        </div>
+        <h1 class="cipher-title">
+            Blowfish Encryption
+            <span class="premium-badge"><i class="fas fa-crown"></i> Premium</span>
+        </h1>
+        <p class="cipher-desc">
+            Fast Block Cipher - Flexible Key Size
+        </p>
+    </div>
+
+    <div class="info-box">
+        <div class="info-title"><i class="fas fa-info-circle"></i> Tentang Blowfish</div>
+        <p>Blowfish adalah symmetric block cipher yang dirancang oleh Bruce Schneier pada 1993. Terkenal karena kecepatan dan fleksibilitas key size (32-448 bit). Cocok untuk enkripsi password dan data kecil. Masih dianggap aman meskipun sudah ada alternatif lebih modern seperti AES.</p>
+    </div>
+
+    <div class="cipher-card">
+        <h3 style="margin-bottom: 1.5rem; color: #10b981;">
+            <i class="fas fa-cogs"></i> Spesifikasi Blowfish
+        </h3>
+        <div class="spec-grid">
+            <div class="spec-item">
+                <div class="spec-label">Key Size</div>
+                <div class="spec-value">32-448 bit</div>
+            </div>
+            <div class="spec-item">
+                <div class="spec-label">Block Size</div>
+                <div class="spec-value">64 bit</div>
+            </div>
+            <div class="spec-item">
+                <div class="spec-label">Mode</div>
+                <div class="spec-value">CBC</div>
+            </div>
+            <div class="spec-item">
+                <div class="spec-label">Status</div>
+                <div class="spec-value">Masih Aman</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="cipher-card">
+        <div class="form-group">
+            <label class="form-label">
+                <i class="fas fa-edit"></i> Plaintext / Ciphertext
+            </label>
+            <textarea 
+                id="inputText" 
+                class="form-textarea" 
+                placeholder="Masukkan text untuk dienkripsi atau didekripsi..."
+            ></textarea>
+        </div>
+
+        <div class="form-group">
+            <label class="form-label">
+                <i class="fas fa-key"></i> Encryption Key (4-56 karakter)
+            </label>
+            <input 
+                type="text" 
+                id="keyInput" 
+                class="form-input" 
+                placeholder="Masukkan key (min. 4 karakter, max. 56 karakter)"
+            >
+            <small style="color: var(--text-muted); display: block; margin-top: 0.5rem;">
+                <i class="fas fa-info-circle"></i> Blowfish mendukung key 4-56 bytes (flexible key size)
+            </small>
+        </div>
+
+        <div class="form-group" id="ivGroup" style="display: none;">
+            <label class="form-label">
+                <i class="fas fa-random"></i> IV (Initialization Vector) - Untuk Dekripsi
+            </label>
+            <input 
+                type="text" 
+                id="ivInput" 
+                class="form-input" 
+                placeholder="Paste IV dari hasil enkripsi"
+                readonly
+            >
+        </div>
+
+        <div class="button-group">
+            <button class="btn btn-encrypt" onclick="performBlowfish('encrypt')">
+                <i class="fas fa-lock"></i> Encrypt
+            </button>
+            <button class="btn btn-decrypt" onclick="performBlowfish('decrypt')">
+                <i class="fas fa-unlock"></i> Decrypt
+            </button>
+        </div>
+    </div>
+
+    <div class="cipher-card" id="resultCard" style="display: none;">
+        <div class="form-group">
+            <label class="form-label">
+                <i class="fas fa-check-circle"></i> Result
+            </label>
+            <div id="resultBox" class="result-box show"></div>
+        </div>
+        <div class="form-group" id="ivDisplay" style="display: none;">
+            <label class="form-label">
+                <i class="fas fa-random"></i> IV (Simpan untuk dekripsi!)
+            </label>
+            <div id="ivBox" class="result-box show"></div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    let currentIV = '';
+
+    async function performBlowfish(mode) {
+        const text = document.getElementById('inputText').value;
+        const key = document.getElementById('keyInput').value;
+        
+        if (!text.trim()) {
+            alert('Masukkan text terlebih dahulu!');
+            return;
+        }
+
+        if (!key.trim()) {
+            alert('Masukkan encryption key terlebih dahulu!');
+            return;
+        }
+
+        if (key.length < 4) {
+            alert('Key harus minimal 4 karakter!');
+            return;
+        }
+
+        if (key.length > 56) {
+            alert('Key maksimal 56 karakter!');
+            return;
+        }
+
+        try {
+            let requestBody = { text, key, mode };
+            
+            if (mode === 'decrypt') {
+                const iv = document.getElementById('ivInput').value || currentIV;
+                if (!iv) {
+                    alert('Masukkan IV untuk dekripsi!');
+                    return;
+                }
+                requestBody.iv = iv;
+            }
+
+            const response = await fetch('/api/blowfish', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(requestBody)
+            });
+
+            const data = await response.json();
+            
+            if (data.error) {
+                alert('Error: ' + data.error);
+                return;
+            }
+
+            displayResult(data, mode);
+        } catch (error) {
+            alert('Terjadi kesalahan: ' + error.message);
+        }
+    }
+
+    function displayResult(data, mode) {
+        const resultCard = document.getElementById('resultCard');
+        const resultBox = document.getElementById('resultBox');
+        const ivDisplay = document.getElementById('ivDisplay');
+        const ivBox = document.getElementById('ivBox');
+        const ivGroup = document.getElementById('ivGroup');
+        const ivInput = document.getElementById('ivInput');
+
+        resultCard.style.display = 'block';
+        
+        if (mode === 'encrypt') {
+            resultBox.textContent = data.result;
+            ivBox.textContent = data.iv;
+            ivDisplay.style.display = 'block';
+            currentIV = data.iv;
+            
+            ivInput.value = data.iv;
+            ivGroup.style.display = 'block';
+        } else {
+            resultBox.textContent = data.result;
+            ivDisplay.style.display = 'none';
+        }
+
+        resultCard.scrollIntoView({ behavior: 'smooth' });
+    }
+</script>
+{% endblock %}

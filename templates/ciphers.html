@@ -1,0 +1,1752 @@
+{% extends "base.html" %}
+
+{% block title %}Semua Cipher - DecoDify{% endblock %}
+
+{% block styles %}
+<style>
+/* Ciphers Page Specific Styles - Updated to match sidebar/footer theme */
+.ciphers-page {
+    padding: 1.5rem 2rem;
+    max-width: 1400px;
+    margin: 0 auto;
+    min-height: 100vh;
+}
+
+.section-title {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+    color: var(--text);
+}
+
+.section-title i {
+    font-size: 2rem;
+    color: var(--primary);
+}
+
+.section-title h1 {
+    margin: 0;
+    font-size: 2rem;
+    font-weight: 700;
+    color: var(--text);
+}
+
+.section-title span {
+    background: var(--primary);
+    color: white;
+    padding: 0.4rem 0.8rem;
+    border-radius: 20px;
+    font-size: 0.85rem;
+    font-weight: 600;
+}
+
+/* Category Filter - Updated to match sidebar colors */
+.category-filter {
+    display: flex;
+    gap: 0.75rem;
+    margin-bottom: 2rem;
+    flex-wrap: wrap;
+    padding: 0.5rem;
+    background: var(--card-bg);
+    border-radius: 8px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    border: 1px solid var(--border-color);
+}
+
+.filter-btn {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.6rem 1.2rem;
+    border: 1px solid var(--border-color);
+    background: var(--glass);
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: 500;
+    transition: all 0.2s ease;
+    color: var(--text-muted);
+    font-size: 0.9rem;
+}
+
+.filter-btn:hover {
+    border-color: var(--primary);
+    color: var(--primary);
+    background: var(--card-bg);
+    transform: translateY(-1px);
+    box-shadow: 0 1px 3px rgba(99, 102, 241, 0.1);
+}
+
+.filter-btn.active {
+    background: var(--primary);
+    color: white;
+    border-color: var(--primary);
+    box-shadow: 0 1px 3px rgba(99, 102, 241, 0.3);
+}
+
+.filter-btn i {
+    font-size: 0.9rem;
+}
+
+/* Cipher Grid */
+.cipher-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+}
+
+.cipher-card-wrapper {
+    height: 100%;
+}
+
+.cipher-card {
+    display: block;
+    background: var(--card-bg);
+    border-radius: 8px;
+    padding: 1.25rem;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    border: 1px solid var(--border-color);
+    height: 100%;
+    transition: all 0.2s ease;
+    text-decoration: none;
+    color: inherit;
+    position: relative;
+    overflow: hidden;
+}
+
+.cipher-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    border-color: var(--primary);
+}
+
+.cipher-card.locked {
+    cursor: pointer;
+    opacity: 1;
+    position: relative;
+}
+
+.cipher-card.locked:hover {
+    transform: none;
+    border-color: #f59e0b;
+    box-shadow: 0 1px 3px rgba(245, 158, 11, 0.2);
+}
+
+/* Card Badges - Updated with consistent colors */
+.card-badges {
+    display: flex;
+    gap: 0.5rem;
+    margin-bottom: 0.75rem;
+    flex-wrap: wrap;
+}
+
+.badge {
+    padding: 0.25rem 0.6rem;
+    border-radius: 4px;
+    font-size: 0.7rem;
+    font-weight: 600;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+    letter-spacing: 0.3px;
+}
+
+.badge-free {
+    background: #10b981;
+    color: white;
+}
+
+.badge-premium {
+    background: #f59e0b;
+    color: white;
+}
+
+.badge-attack {
+    background: #ef4444;
+    color: white;
+}
+
+.badge-new {
+    background: #8b5cf6;
+    color: white;
+}
+
+.badge-legacy {
+    background: #64748b;
+    color: white;
+}
+
+.difficulty-badge {
+    padding: 0.25rem 0.6rem;
+    border-radius: 4px;
+    font-size: 0.7rem;
+    font-weight: 600;
+}
+
+.difficulty-badge.easy {
+    background: #10b981;
+    color: white;
+}
+
+.difficulty-badge.medium {
+    background: #f59e0b;
+    color: white;
+}
+
+.difficulty-badge.hard {
+    background: #ef4444;
+    color: white;
+}
+
+/* Card Header */
+.card-header {
+    display: flex;
+    align-items: flex-start;
+    gap: 1rem;
+    margin-bottom: 0.75rem;
+}
+
+.cipher-icon {
+    flex-shrink: 0;
+}
+
+.icon-circle {
+    width: 50px;
+    height: 50px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.2rem;
+    color: white;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+}
+
+/* Icon colors updated to match theme */
+.shift-icon { background: var(--primary); }
+.vigenere-icon { background: var(--secondary); }
+.attack-icon { background: #ef4444; }
+.substitution-icon { background: #10b981; }
+.transposition-icon { background: #f59e0b; }
+.playfair-icon { background: #ec4899; }
+.hill-icon { background: var(--primary); }
+.rsa-icon { background: #84cc16; }
+.aes-icon { background: #06b6d4; }
+.des-icon { background: #f97316; }
+.tdes-icon { background: var(--secondary); }
+.hash-icon { background: #64748b; }
+
+.cipher-meta {
+    flex: 1;
+}
+
+.cipher-name h3 {
+    margin: 0 0 0.2rem 0;
+    font-size: 1.2rem;
+    color: var(--text);
+    font-weight: 600;
+}
+
+.cipher-code {
+    background: rgba(255, 255, 255, 0.05);
+    color: var(--text-muted);
+    padding: 0.2rem 0.6rem;
+    border-radius: 4px;
+    font-size: 0.75rem;
+    font-family: 'Courier New', monospace;
+    border: 1px solid var(--border-color);
+}
+
+.cipher-year {
+    color: var(--text-muted);
+    font-size: 0.8rem;
+    margin-top: 0.3rem;
+    font-weight: 500;
+}
+
+/* Cipher Description */
+.cipher-desc {
+    color: var(--text-muted);
+    line-height: 1.5;
+    margin-bottom: 1rem;
+    font-size: 0.85rem;
+}
+
+/* Cipher Specs */
+.cipher-specs {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.75rem;
+    margin-bottom: 1rem;
+}
+
+.spec-item {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem;
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 6px;
+    border: 1px solid var(--border-color);
+}
+
+.spec-item i {
+    font-size: 1rem;
+    color: var(--primary);
+}
+
+.spec-label {
+    display: block;
+    font-size: 0.7rem;
+    color: var(--text-muted);
+    margin-bottom: 0.15rem;
+}
+
+.spec-value {
+    display: block;
+    font-weight: 600;
+    color: var(--text);
+    font-size: 0.85rem;
+}
+
+/* Category Tags */
+.category-tags {
+    display: flex;
+    gap: 0.4rem;
+    flex-wrap: wrap;
+}
+
+.category-tag {
+    padding: 0.2rem 0.6rem;
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 4px;
+    font-size: 0.7rem;
+    color: var(--text-muted);
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+    border: 1px solid var(--border-color);
+}
+
+/* Premium Overlay */
+.premium-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(255, 255, 255, 0.95);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    border-radius: 8px;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    text-align: center;
+    padding: 1.5rem;
+    backdrop-filter: blur(2px);
+}
+
+.cipher-card.locked:hover .premium-overlay {
+    opacity: 1;
+}
+
+.premium-overlay i {
+    font-size: 2rem;
+    color: #f59e0b;
+    margin-bottom: 0.75rem;
+}
+
+.premium-overlay h4 {
+    color: #d97706;
+    margin: 0 0 0.5rem 0;
+    font-size: 1.1rem;
+    font-weight: 600;
+}
+
+.premium-overlay p {
+    color: var(--text-muted);
+    margin-bottom: 1rem;
+    font-size: 0.85rem;
+    line-height: 1.4;
+}
+
+/* Search and Sort - Updated to match theme */
+.ciphers-controls {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.5rem;
+    gap: 1rem;
+}
+
+.search-box {
+    flex: 1;
+    max-width: 400px;
+    position: relative;
+}
+
+.search-box input {
+    width: 100%;
+    padding: 0.7rem 1rem 0.7rem 2.8rem;
+    border: 1px solid var(--border-color);
+    border-radius: 6px;
+    font-size: 0.9rem;
+    background: var(--card-bg);
+    color: var(--text);
+    transition: all 0.2s ease;
+}
+
+.search-box input:focus {
+    outline: none;
+    border-color: var(--primary);
+    box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+}
+
+.search-box i {
+    position: absolute;
+    left: 1rem;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--text-muted);
+}
+
+.sort-dropdown {
+    position: relative;
+}
+
+.sort-btn {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.7rem 1.2rem;
+    border: 1px solid var(--border-color);
+    background: var(--card-bg);
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: 500;
+    color: var(--text);
+    font-size: 0.9rem;
+    transition: all 0.2s ease;
+}
+
+.sort-btn:hover {
+    border-color: var(--primary);
+    color: var(--primary);
+}
+
+.sort-options {
+    position: absolute;
+    top: 100%;
+    right: 0;
+    background: var(--card-bg);
+    border: 1px solid var(--border-color);
+    border-radius: 6px;
+    padding: 0.5rem 0;
+    min-width: 180px;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    z-index: 100;
+    display: none;
+}
+
+.sort-options.show {
+    display: block;
+}
+
+.sort-option {
+    padding: 0.6rem 1.2rem;
+    cursor: pointer;
+    transition: background 0.2s;
+    color: var(--text);
+    font-size: 0.85rem;
+}
+
+.sort-option:hover {
+    background: rgba(255, 255, 255, 0.05);
+    color: var(--primary);
+}
+
+/* Empty State */
+.empty-state {
+    grid-column: 1 / -1;
+    text-align: center;
+    padding: 3rem 2rem;
+    color: var(--text-muted);
+}
+
+.empty-state i {
+    font-size: 3rem;
+    margin-bottom: 1rem;
+    color: var(--text-muted);
+    opacity: 0.3;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .ciphers-page {
+        padding: 1rem;
+    }
+    
+    .cipher-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .ciphers-controls {
+        flex-direction: column;
+        align-items: stretch;
+    }
+    
+    .search-box {
+        max-width: 100%;
+    }
+    
+    .category-filter {
+        overflow-x: auto;
+        padding-bottom: 0.5rem;
+    }
+    
+    .filter-btn {
+        flex-shrink: 0;
+    }
+}
+
+/* Modal Styling - Updated to match theme */
+.modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 1000;
+    align-items: center;
+    justify-content: center;
+}
+
+.modal-content {
+    background: var(--card-bg);
+    border-radius: 8px;
+    width: 90%;
+    max-width: 500px;
+    box-shadow: 0 10px 15px rgba(0,0,0,0.1);
+    animation: modalFadeIn 0.3s ease;
+}
+
+@keyframes modalFadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(-20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.modal-header {
+    padding: 1.5rem;
+    border-bottom: 1px solid var(--border-color);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 8px 8px 0 0;
+}
+
+.modal-header h3 {
+    margin: 0;
+    color: var(--text);
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.close-modal {
+    background: none;
+    border: none;
+    font-size: 1.5rem;
+    cursor: pointer;
+    color: var(--text-muted);
+    transition: color 0.2s;
+}
+
+.close-modal:hover {
+    color: #ef4444;
+}
+
+.modal-body {
+    padding: 1.5rem;
+}
+
+.premium-modal-content {
+    text-align: center;
+}
+
+.premium-icon-large {
+    font-size: 3rem;
+    color: #f59e0b;
+    margin-bottom: 1rem;
+}
+
+.premium-benefits {
+    text-align: left;
+    margin: 1.5rem 0;
+    padding: 1rem;
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 6px;
+    border: 1px solid var(--border-color);
+}
+
+.premium-benefits h5 {
+    color: var(--text);
+    margin: 0 0 0.75rem 0;
+}
+
+.premium-benefits ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.premium-benefits li {
+    padding: 0.4rem 0;
+    color: var(--text-muted);
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.9rem;
+}
+
+.premium-benefits li i {
+    color: #10b981;
+}
+
+/* Button Styling - Updated to match theme */
+.btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.75rem 1.5rem;
+    border: none;
+    border-radius: 6px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    text-decoration: none;
+    font-size: 0.9rem;
+}
+
+.btn-warning {
+    background: #f59e0b;
+    color: white;
+}
+
+.btn-warning:hover {
+    background: #d97706;
+    transform: translateY(-1px);
+    box-shadow: 0 2px 4px rgba(245, 158, 11, 0.3);
+}
+
+.btn-premium {
+    background: #f59e0b;
+    color: white;
+    width: 100%;
+    justify-content: center;
+    padding: 0.9rem;
+    font-size: 0.95rem;
+}
+
+.btn-premium:hover {
+    background: #d97706;
+    transform: translateY(-1px);
+    box-shadow: 0 2px 4px rgba(245, 158, 11, 0.3);
+}
+
+/* Active Menu Styling */
+.nav-item.active {
+    background: var(--primary-color-dark);
+    color: white !important;
+}
+
+.nav-item.active .nav-icon {
+    color: white;
+}
+
+.nav-item.active .nav-badge {
+    background: white;
+    color: var(--primary-color-dark);
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<!-- CIPHERS PAGE -->
+<div class="ciphers-page">
+    <!-- Page Header -->
+    <div class="section-title">
+        <i class="fas fa-lock"></i>
+        <h1>Semua Cipher</h1>
+        <span>12 cipher tersedia</span>
+    </div>
+
+    <!-- Controls -->
+    <div class="ciphers-controls">
+        <div class="search-box">
+            <i class="fas fa-search"></i>
+            <input type="text" id="cipherSearch" placeholder="Cari cipher..." onkeyup="searchCiphers()">
+        </div>
+        <div class="sort-dropdown">
+            <button class="sort-btn" onclick="toggleSortOptions()">
+                <i class="fas fa-sort-amount-down"></i>
+                Urutkan
+                <i class="fas fa-chevron-down"></i>
+            </button>
+            <div class="sort-options" id="sortOptions">
+                <div class="sort-option" onclick="sortCiphers('name')">Nama A-Z</div>
+                <div class="sort-option" onclick="sortCiphers('year')">Tahun Terbaru</div>
+                <div class="sort-option" onclick="sortCiphers('difficulty')">Tingkat Kesulitan</div>
+                <div class="sort-option" onclick="sortCiphers('category')">Kategori</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Cipher Categories -->
+    <div class="category-filter">
+        <button class="filter-btn active" onclick="filterCiphers('all')" data-category="all">
+            <i class="fas fa-layer-group"></i> Semua
+        </button>
+        <button class="filter-btn" onclick="filterCiphers('free')" data-category="free">
+            <i class="fas fa-unlock"></i> Gratis
+        </button>
+        <button class="filter-btn" onclick="filterCiphers('premium')" data-category="premium">
+            <i class="fas fa-crown"></i> Premium
+        </button>
+        <button class="filter-btn" onclick="filterCiphers('classical')" data-category="classical">
+            <i class="fas fa-landmark"></i> Klasik
+        </button>
+        <button class="filter-btn" onclick="filterCiphers('modern')" data-category="modern">
+            <i class="fas fa-microchip"></i> Modern
+        </button>
+        <button class="filter-btn" onclick="filterCiphers('legacy')" data-category="legacy">
+            <i class="fas fa-history"></i> Legacy
+        </button>
+    </div>
+
+    <!-- Cipher Grid -->
+    <div class="cipher-grid" id="ciphersGrid">
+        <!-- Caesar Cipher -->
+        <div class="cipher-card-wrapper" data-category="free classical" data-name="caesar" data-year="-100" data-difficulty="easy">
+            <a href="/caesar" class="cipher-card">
+                <div class="card-badges">
+                    <span class="badge badge-free">
+                        <i class="fas fa-unlock"></i> GRATIS
+                    </span>
+                    <span class="difficulty-badge easy">
+                        <i class="fas fa-signal"></i> MUDAH
+                    </span>
+                </div>
+                <div class="card-header">
+                    <div class="cipher-icon">
+                        <div class="icon-circle shift-icon">
+                            <i class="fas fa-exchange-alt"></i>
+                        </div>
+                    </div>
+                    <div class="cipher-meta">
+                        <div class="cipher-name">
+                            <h3>Caesar Cipher</h3>
+                            <span class="cipher-code">CAESAR</span>
+                        </div>
+                        <div class="cipher-year">100 SM</div>
+                    </div>
+                </div>
+                <div class="cipher-desc">
+                    Cipher substitusi klasik dengan pergeseran karakter. Digunakan Julius Caesar untuk komunikasi militer rahasia.
+                </div>
+                <div class="cipher-specs">
+                    <div class="spec-item">
+                        <i class="fas fa-sliders-h"></i>
+                        <div>
+                            <span class="spec-label">Pergeseran</span>
+                            <span class="spec-value">1-25</span>
+                        </div>
+                    </div>
+                    <div class="spec-item">
+                        <i class="fas fa-font"></i>
+                        <div>
+                            <span class="spec-label">Alfabet</span>
+                            <span class="spec-value">26</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="category-tags">
+                    <span class="category-tag">
+                        <i class="fas fa-exchange-alt"></i> Substitusi
+                    </span>
+                    <span class="category-tag">
+                        <i class="fas fa-landmark"></i> Klasik
+                    </span>
+                </div>
+            </a>
+        </div>
+
+        <!-- Vigenère Cipher -->
+        <div class="cipher-card-wrapper" data-category="free classical" data-name="vigenere" data-year="1553" data-difficulty="medium">
+            <a href="/vigenere" class="cipher-card">
+                <div class="card-badges">
+                    <span class="badge badge-free">
+                        <i class="fas fa-unlock"></i> GRATIS
+                    </span>
+                    <span class="difficulty-badge medium">
+                        <i class="fas fa-signal"></i> MENENGAH
+                    </span>
+                </div>
+                <div class="card-header">
+                    <div class="cipher-icon">
+                        <div class="icon-circle vigenere-icon">
+                            <i class="fas fa-keyboard"></i>
+                        </div>
+                    </div>
+                    <div class="cipher-meta">
+                        <div class="cipher-name">
+                            <h3>Vigenère Cipher</h3>
+                            <span class="cipher-code">VIGENERE</span>
+                        </div>
+                        <div class="cipher-year">1553</div>
+                    </div>
+                </div>
+                <div class="cipher-desc">
+                    Cipher polialfabetik dengan tabel Vigenère. Menggunakan keyword untuk enkripsi multi-lapis.
+                </div>
+                <div class="cipher-specs">
+                    <div class="spec-item">
+                        <i class="fas fa-table"></i>
+                        <div>
+                            <span class="spec-label">Tabel</span>
+                            <span class="spec-value">26×26</span>
+                        </div>
+                    </div>
+                    <div class="spec-item">
+                        <i class="fas fa-key"></i>
+                        <div>
+                            <span class="spec-label">Keyword</span>
+                            <span class="spec-value">Dinamis</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="category-tags">
+                    <span class="category-tag">
+                        <i class="fas fa-layer-group"></i> Polialfabetik
+                    </span>
+                    <span class="category-tag">
+                        <i class="fas fa-landmark"></i> Renaissance
+                    </span>
+                </div>
+            </a>
+        </div>
+
+        <!-- Bruteforce Attack -->
+        <div class="cipher-card-wrapper" data-category="free" data-name="bruteforce" data-year="0" data-difficulty="medium">
+            <a href="/bruteforce" class="cipher-card">
+                <div class="card-badges">
+                    <span class="badge badge-attack">
+                        <i class="fas fa-crosshairs"></i> ATTACK
+                    </span>
+                    <span class="difficulty-badge medium">
+                        <i class="fas fa-signal"></i> MENENGAH
+                    </span>
+                </div>
+                <div class="card-header">
+                    <div class="cipher-icon">
+                        <div class="icon-circle attack-icon">
+                            <i class="fas fa-hammer"></i>
+                        </div>
+                    </div>
+                    <div class="cipher-meta">
+                        <div class="cipher-name">
+                            <h3>Bruteforce Attack</h3>
+                            <span class="cipher-code">BFA</span>
+                        </div>
+                        <div class="cipher-year">-</div>
+                    </div>
+                </div>
+                <div class="cipher-desc">
+                    Teknik exhaustive search untuk membongkar cipher dengan mencoba semua kemungkinan kombinasi kunci.
+                </div>
+                <div class="cipher-specs">
+                    <div class="spec-item">
+                        <i class="fas fa-cogs"></i>
+                        <div>
+                            <span class="spec-label">Metode</span>
+                            <span class="spec-value">Exhaustive</span>
+                        </div>
+                    </div>
+                    <div class="spec-item">
+                        <i class="fas fa-clock"></i>
+                        <div>
+                            <span class="spec-label">Waktu</span>
+                            <span class="spec-value">O(n)</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="category-tags">
+                    <span class="category-tag">
+                        <i class="fas fa-crosshairs"></i> Cryptanalysis
+                    </span>
+                    <span class="category-tag">
+                        <i class="fas fa-brain"></i> Strategi
+                    </span>
+                </div>
+            </a>
+        </div>
+
+        <!-- Substitution Cipher (Premium) -->
+        <div class="cipher-card-wrapper" data-category="premium classical" data-name="substitution" data-year="0" data-difficulty="medium">
+            <div class="cipher-card locked" onclick="showPremiumModal('substitution')">
+                <div class="card-badges">
+                    <span class="badge badge-premium">
+                        <i class="fas fa-crown"></i> PREMIUM
+                    </span>
+                    <span class="difficulty-badge medium">
+                        <i class="fas fa-signal"></i> MENENGAH
+                    </span>
+                </div>
+                <div class="card-header">
+                    <div class="cipher-icon">
+                        <div class="icon-circle substitution-icon">
+                            <i class="fas fa-font"></i>
+                        </div>
+                    </div>
+                    <div class="cipher-meta">
+                        <div class="cipher-name">
+                            <h3>Substitution Cipher</h3>
+                            <span class="cipher-code">SUB</span>
+                        </div>
+                        <div class="cipher-year">-</div>
+                    </div>
+                </div>
+                <div class="cipher-desc">
+                    Substitusi karakter dengan mapping custom. Termasuk Monoalphabetic dan Polyalphabetic substitution.
+                </div>
+                <div class="cipher-specs">
+                    <div class="spec-item">
+                        <i class="fas fa-random"></i>
+                        <div>
+                            <span class="spec-label">Mapping</span>
+                            <span class="spec-value">1:1</span>
+                        </div>
+                    </div>
+                    <div class="spec-item">
+                        <i class="fas fa-project-diagram"></i>
+                        <div>
+                            <span class="spec-label">Permutasi</span>
+                            <span class="spec-value">26!</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="category-tags">
+                    <span class="category-tag">
+                        <i class="fas fa-exchange-alt"></i> Substitusi
+                    </span>
+                    <span class="category-tag">
+                        <i class="fas fa-history"></i> Klasik
+                    </span>
+                </div>
+                
+                <!-- Premium Overlay -->
+                <div class="premium-overlay">
+                    <i class="fas fa-crown"></i>
+                    <h4>Konten Premium</h4>
+                    <p>Upgrade akun Anda untuk mengakses cipher ini dan semua fitur premium lainnya.</p>
+                    <button class="btn btn-warning" onclick="event.stopPropagation(); showUpgradeModal();">
+                        <i class="fas fa-crown"></i> Upgrade Sekarang
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Transposition Cipher (Premium) -->
+        <div class="cipher-card-wrapper" data-category="premium classical" data-name="transposition" data-year="0" data-difficulty="medium">
+            <div class="cipher-card locked" onclick="showPremiumModal('transposition')">
+                <div class="card-badges">
+                    <span class="badge badge-premium">
+                        <i class="fas fa-crown"></i> PREMIUM
+                    </span>
+                    <span class="difficulty-badge medium">
+                        <i class="fas fa-signal"></i> MENENGAH
+                    </span>
+                </div>
+                <div class="card-header">
+                    <div class="cipher-icon">
+                        <div class="icon-circle transposition-icon">
+                            <i class="fas fa-braille"></i>
+                        </div>
+                    </div>
+                    <div class="cipher-meta">
+                        <div class="cipher-name">
+                            <h3>Transposition Cipher</h3>
+                            <span class="cipher-code">TRANS</span>
+                        </div>
+                        <div class="cipher-year">-</div>
+                    </div>
+                </div>
+                <div class="cipher-desc">
+                    Rail Fence, Columnar, dan Route Cipher. Teknik penyusunan ulang posisi karakter dalam teks.
+                </div>
+                <div class="cipher-specs">
+                    <div class="spec-item">
+                        <i class="fas fa-th"></i>
+                        <div>
+                            <span class="spec-label">Metode</span>
+                            <span class="spec-value">Rail/Column</span>
+                        </div>
+                    </div>
+                    <div class="spec-item">
+                        <i class="fas fa-route"></i>
+                        <div>
+                            <span class="spec-label">Path</span>
+                            <span class="spec-value">Zigzag/Spiral</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="category-tags">
+                    <span class="category-tag">
+                        <i class="fas fa-retweet"></i> Transposisi
+                    </span>
+                    <span class="category-tag">
+                        <i class="fas fa-puzzle-piece"></i> Pattern
+                    </span>
+                </div>
+                
+                <div class="premium-overlay">
+                    <i class="fas fa-crown"></i>
+                    <h4>Konten Premium</h4>
+                    <p>Upgrade akun Anda untuk mengakses cipher ini dan semua fitur premium lainnya.</p>
+                    <button class="btn btn-warning" onclick="event.stopPropagation(); showUpgradeModal();">
+                        <i class="fas fa-crown"></i> Upgrade Sekarang
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Playfair Cipher (Premium) -->
+        <div class="cipher-card-wrapper" data-category="premium classical" data-name="playfair" data-year="1854" data-difficulty="medium">
+            <div class="cipher-card locked" onclick="showPremiumModal('playfair')">
+                <div class="card-badges">
+                    <span class="badge badge-premium">
+                        <i class="fas fa-crown"></i> PREMIUM
+                    </span>
+                    <span class="difficulty-badge medium">
+                        <i class="fas fa-signal"></i> MENENGAH
+                    </span>
+                </div>
+                <div class="card-header">
+                    <div class="cipher-icon">
+                        <div class="icon-circle playfair-icon">
+                            <i class="fas fa-table-cells"></i>
+                        </div>
+                    </div>
+                    <div class="cipher-meta">
+                        <div class="cipher-name">
+                            <h3>Playfair Cipher</h3>
+                            <span class="cipher-code">PLAY</span>
+                        </div>
+                        <div class="cipher-year">1854</div>
+                    </div>
+                </div>
+                <div class="cipher-desc">
+                    Digraph cipher dengan matriks 5×5. Digunakan dalam Perang Dunia I dan II untuk komunikasi militer.
+                </div>
+                <div class="cipher-specs">
+                    <div class="spec-item">
+                        <i class="fas fa-border-all"></i>
+                        <div>
+                            <span class="spec-label">Matrix</span>
+                            <span class="spec-value">5×5</span>
+                        </div>
+                    </div>
+                    <div class="spec-item">
+                        <i class="fas fa-handshake"></i>
+                        <div>
+                            <span class="spec-label">Unit</span>
+                            <span class="spec-value">Digraph</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="category-tags">
+                    <span class="category-tag">
+                        <i class="fas fa-border-all"></i> Matrix
+                    </span>
+                    <span class="category-tag">
+                        <i class="fas fa-helmet-battle"></i> Military
+                    </span>
+                </div>
+                
+                <div class="premium-overlay">
+                    <i class="fas fa-crown"></i>
+                    <h4>Konten Premium</h4>
+                    <p>Upgrade akun Anda untuk mengakses cipher ini dan semua fitur premium lainnya.</p>
+                    <button class="btn btn-warning" onclick="event.stopPropagation(); showUpgradeModal();">
+                        <i class="fas fa-crown"></i> Upgrade Sekarang
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Hill Cipher (Premium) -->
+        <div class="cipher-card-wrapper" data-category="premium classical" data-name="hill" data-year="1929" data-difficulty="hard">
+            <div class="cipher-card locked" onclick="showPremiumModal('hill')">
+                <div class="card-badges">
+                    <span class="badge badge-premium">
+                        <i class="fas fa-crown"></i> PREMIUM
+                    </span>
+                    <span class="difficulty-badge hard">
+                        <i class="fas fa-signal"></i> SULIT
+                    </span>
+                </div>
+                <div class="card-header">
+                    <div class="cipher-icon">
+                        <div class="icon-circle hill-icon">
+                            <i class="fas fa-calculator"></i>
+                        </div>
+                    </div>
+                    <div class="cipher-meta">
+                        <div class="cipher-name">
+                            <h3>Hill Cipher</h3>
+                            <span class="cipher-code">HILL</span>
+                        </div>
+                        <div class="cipher-year">1929</div>
+                    </div>
+                </div>
+                <div class="cipher-desc">
+                    Cipher pertama yang menggunakan aljabar linear dengan operasi matriks modulo 26. Konsep kriptografi modern.
+                </div>
+                <div class="cipher-specs">
+                    <div class="spec-item">
+                        <i class="fas fa-square-root-alt"></i>
+                        <div>
+                            <span class="spec-label">Aljabar</span>
+                            <span class="spec-value">Linear</span>
+                        </div>
+                    </div>
+                    <div class="spec-item">
+                        <i class="fas fa-divide"></i>
+                        <div>
+                            <span class="spec-label">Modulo</span>
+                            <span class="spec-value">26</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="category-tags">
+                    <span class="category-tag">
+                        <i class="fas fa-square-root-alt"></i> Matriks
+                    </span>
+                    <span class="category-tag">
+                        <i class="fas fa-superscript"></i> Linear
+                    </span>
+                </div>
+                
+                <div class="premium-overlay">
+                    <i class="fas fa-crown"></i>
+                    <h4>Konten Premium</h4>
+                    <p>Upgrade akun Anda untuk mengakses cipher ini dan semua fitur premium lainnya.</p>
+                    <button class="btn btn-warning" onclick="event.stopPropagation(); showUpgradeModal();">
+                        <i class="fas fa-crown"></i> Upgrade Sekarang
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- RSA Encryption (Premium) -->
+        <div class="cipher-card-wrapper" data-category="premium modern" data-name="rsa" data-year="1977" data-difficulty="hard">
+            <div class="cipher-card locked" onclick="showPremiumModal('rsa')">
+                <div class="card-badges">
+                    <span class="badge badge-premium">
+                        <i class="fas fa-crown"></i> PREMIUM
+                    </span>
+                    <span class="badge badge-new">
+                        <i class="fas fa-bolt"></i> BARU
+                    </span>
+                </div>
+                <div class="card-header">
+                    <div class="cipher-icon">
+                        <div class="icon-circle rsa-icon">
+                            <i class="fas fa-key"></i>
+                        </div>
+                    </div>
+                    <div class="cipher-meta">
+                        <div class="cipher-name">
+                            <h3>Enkripsi RSA</h3>
+                            <span class="cipher-code">RSA-2048</span>
+                        </div>
+                        <div class="cipher-year">1977</div>
+                    </div>
+                </div>
+                <div class="cipher-desc">
+                    Kriptografi kunci publik berbasis faktorisasi bilangan prima. Standar keamanan internet modern.
+                </div>
+                <div class="cipher-specs">
+                    <div class="spec-item">
+                        <i class="fas fa-user-secret"></i>
+                        <div>
+                            <span class="spec-label">Tipe</span>
+                            <span class="spec-value">Asimetris</span>
+                        </div>
+                    </div>
+                    <div class="spec-item">
+                        <i class="fas fa-hashtag"></i>
+                        <div>
+                            <span class="spec-label">Key Size</span>
+                            <span class="spec-value">2048-bit</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="category-tags">
+                    <span class="category-tag">
+                        <i class="fas fa-user-secret"></i> Asimetris
+                    </span>
+                    <span class="category-tag">
+                        <i class="fas fa-globe"></i> Internet
+                    </span>
+                </div>
+                
+                <div class="premium-overlay">
+                    <i class="fas fa-crown"></i>
+                    <h4>Konten Premium</h4>
+                    <p>Upgrade akun Anda untuk mengakses cipher ini dan semua fitur premium lainnya.</p>
+                    <button class="btn btn-warning" onclick="event.stopPropagation(); showUpgradeModal();">
+                        <i class="fas fa-crown"></i> Upgrade Sekarang
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- AES Encryption (Premium) -->
+        <div class="cipher-card-wrapper" data-category="premium modern" data-name="aes" data-year="2001" data-difficulty="hard">
+            <div class="cipher-card locked" onclick="showPremiumModal('aes')">
+                <div class="card-badges">
+                    <span class="badge badge-premium">
+                        <i class="fas fa-crown"></i> PREMIUM
+                    </span>
+                    <span class="badge badge-new">
+                        <i class="fas fa-bolt"></i> BARU
+                    </span>
+                </div>
+                <div class="card-header">
+                    <div class="cipher-icon">
+                        <div class="icon-circle aes-icon">
+                            <i class="fas fa-shield-alt"></i>
+                        </div>
+                    </div>
+                    <div class="cipher-meta">
+                        <div class="cipher-name">
+                            <h3>Enkripsi AES</h3>
+                            <span class="cipher-code">AES-256</span>
+                        </div>
+                        <div class="cipher-year">2001</div>
+                    </div>
+                </div>
+                <div class="cipher-desc">
+                    Advanced Encryption Standard. Algoritma simetris standar industri untuk keamanan data tingkat tinggi.
+                </div>
+                <div class="cipher-specs">
+                    <div class="spec-item">
+                        <i class="fas fa-bolt"></i>
+                        <div>
+                            <span class="spec-label">Rounds</span>
+                            <span class="spec-value">10-14</span>
+                        </div>
+                    </div>
+                    <div class="spec-item">
+                        <i class="fas fa-microchip"></i>
+                        <div>
+                            <span class="spec-label">Block</span>
+                            <span class="spec-value">128-bit</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="category-tags">
+                    <span class="category-tag">
+                        <i class="fas fa-cube"></i> Block Cipher
+                    </span>
+                    <span class="category-tag">
+                        <i class="fas fa-industry"></i> Standar
+                    </span>
+                </div>
+                
+                <div class="premium-overlay">
+                    <i class="fas fa-crown"></i>
+                    <h4>Konten Premium</h4>
+                    <p>Upgrade akun Anda untuk mengakses cipher ini dan semua fitur premium lainnya.</p>
+                    <button class="btn btn-warning" onclick="event.stopPropagation(); showUpgradeModal();">
+                        <i class="fas fa-crown"></i> Upgrade Sekarang
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- DES Encryption (Premium) -->
+        <div class="cipher-card-wrapper" data-category="premium legacy" data-name="des" data-year="1977" data-difficulty="medium">
+            <div class="cipher-card locked" onclick="showPremiumModal('des')">
+                <div class="card-badges">
+                    <span class="badge badge-premium">
+                        <i class="fas fa-crown"></i> PREMIUM
+                    </span>
+                    <span class="badge badge-legacy">
+                        <i class="fas fa-history"></i> LEGACY
+                    </span>
+                </div>
+                <div class="card-header">
+                    <div class="cipher-icon">
+                        <div class="icon-circle des-icon">
+                            <i class="fas fa-exclamation-triangle"></i>
+                        </div>
+                    </div>
+                    <div class="cipher-meta">
+                        <div class="cipher-name">
+                            <h3>Enkripsi DES</h3>
+                            <span class="cipher-code">DES</span>
+                        </div>
+                        <div class="cipher-year">1977</div>
+                    </div>
+                </div>
+                <div class="cipher-desc">
+                    Data Encryption Standard. Algoritma historis untuk tujuan edukasi, tidak direkomendasikan untuk penggunaan praktis.
+                </div>
+                <div class="cipher-specs">
+                    <div class="spec-item">
+                        <i class="fas fa-microchip"></i>
+                        <div>
+                            <span class="spec-label">Block</span>
+                            <span class="spec-value">64-bit</span>
+                        </div>
+                    </div>
+                    <div class="spec-item">
+                        <i class="fas fa-key"></i>
+                        <div>
+                            <span class="spec-label">Key</span>
+                            <span class="spec-value">56-bit</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="category-tags">
+                    <span class="category-tag">
+                        <i class="fas fa-cube"></i> Block Cipher
+                    </span>
+                    <span class="category-tag">
+                        <i class="fas fa-history"></i> Legacy
+                    </span>
+                </div>
+                
+                <div class="premium-overlay">
+                    <i class="fas fa-crown"></i>
+                    <h4>Konten Premium</h4>
+                    <p>Upgrade akun Anda untuk mengakses cipher ini dan semua fitur premium lainnya.</p>
+                    <button class="btn btn-warning" onclick="event.stopPropagation(); showUpgradeModal();">
+                        <i class="fas fa-crown"></i> Upgrade Sekarang
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Triple DES (Premium) -->
+        <div class="cipher-card-wrapper" data-category="premium legacy" data-name="tdes" data-year="1998" data-difficulty="medium">
+            <div class="cipher-card locked" onclick="showPremiumModal('tdes')">
+                <div class="card-badges">
+                    <span class="badge badge-premium">
+                        <i class="fas fa-crown"></i> PREMIUM
+                    </span>
+                    <span class="badge badge-legacy">
+                        <i class="fas fa-history"></i> LEGACY
+                    </span>
+                </div>
+                <div class="card-header">
+                    <div class="cipher-icon">
+                        <div class="icon-circle tdes-icon">
+                            <i class="fas fa-key"></i>
+                        </div>
+                    </div>
+                    <div class="cipher-meta">
+                        <div class="cipher-name">
+                            <h3>Triple DES (3DES)</h3>
+                            <span class="cipher-code">TDES/3DES</span>
+                        </div>
+                        <div class="cipher-year">1998</div>
+                    </div>
+                </div>
+                <div class="cipher-desc">
+                    Enhanced DES dengan tiga kali enkripsi berurutan menggunakan 2 atau 3 kunci berbeda.
+                </div>
+                <div class="cipher-specs">
+                    <div class="spec-item">
+                        <i class="fas fa-redo-alt"></i>
+                        <div>
+                            <span class="spec-label">Rounds</span>
+                            <span class="spec-value">3×DES</span>
+                        </div>
+                    </div>
+                    <div class="spec-item">
+                        <i class="fas fa-key"></i>
+                        <div>
+                            <span class="spec-label">Key</span>
+                            <span class="spec-value">168-bit</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="category-tags">
+                    <span class="category-tag">
+                        <i class="fas fa-cube"></i> Block Cipher
+                    </span>
+                    <span class="category-tag">
+                        <i class="fas fa-history"></i> Legacy
+                    </span>
+                    <span class="category-tag">
+                        <i class="fas fa-sync-alt"></i> 3 Rounds
+                    </span>
+                </div>
+                
+                <div class="premium-overlay">
+                    <i class="fas fa-crown"></i>
+                    <h4>Konten Premium</h4>
+                    <p>Upgrade akun Anda untuk mengakses cipher ini dan semua fitur premium lainnya.</p>
+                    <button class="btn btn-warning" onclick="event.stopPropagation(); showUpgradeModal();">
+                        <i class="fas fa-crown"></i> Upgrade Sekarang
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Hash Functions (Premium) -->
+        <div class="cipher-card-wrapper" data-category="premium modern" data-name="hash" data-year="0" data-difficulty="hard">
+            <div class="cipher-card locked" onclick="showPremiumModal('hash')">
+                <div class="card-badges">
+                    <span class="badge badge-premium">
+                        <i class="fas fa-crown"></i> PREMIUM
+                    </span>
+                    <span class="badge badge-new">
+                        <i class="fas fa-bolt"></i> BARU
+                    </span>
+                </div>
+                <div class="card-header">
+                    <div class="cipher-icon">
+                        <div class="icon-circle hash-icon">
+                            <i class="fas fa-fingerprint"></i>
+                        </div>
+                    </div>
+                    <div class="cipher-meta">
+                        <div class="cipher-name">
+                            <h3>Fungsi Hash Kriptografi</h3>
+                            <span class="cipher-code">HASH</span>
+                        </div>
+                        <div class="cipher-year">-</div>
+                    </div>
+                </div>
+                <div class="cipher-desc">
+                    MD5, SHA-256, Bcrypt, Argon2. Praktik terbaik keamanan password dan verifikasi integritas data.
+                </div>
+                <div class="cipher-specs">
+                    <div class="spec-item">
+                        <i class="fas fa-hashtag"></i>
+                        <div>
+                            <span class="spec-label">Output</span>
+                            <span class="spec-value">Fixed</span>
+                        </div>
+                    </div>
+                    <div class="spec-item">
+                        <i class="fas fa-lock"></i>
+                        <div>
+                            <span class="spec-label">One-way</span>
+                            <span class="spec-value">✓</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="category-tags">
+                    <span class="category-tag">
+                        <i class="fas fa-hashtag"></i> Hash
+                    </span>
+                    <span class="category-tag">
+                        <i class="fas fa-shield-alt"></i> Security
+                    </span>
+                </div>
+                
+                <div class="premium-overlay">
+                    <i class="fas fa-crown"></i>
+                    <h4>Konten Premium</h4>
+                    <p>Upgrade akun Anda untuk mengakses cipher ini dan semua fitur premium lainnya.</p>
+                    <button class="btn btn-warning" onclick="event.stopPropagation(); showUpgradeModal();">
+                        <i class="fas fa-crown"></i> Upgrade Sekarang
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Empty State -->
+        <div class="empty-state" id="emptyState" style="display: none;">
+            <i class="fas fa-search"></i>
+            <h3>Tidak ada cipher yang ditemukan</h3>
+            <p>Coba gunakan kata kunci lain atau pilih kategori yang berbeda</p>
+        </div>
+    </div>
+</div>
+
+<!-- Premium Modal -->
+<div class="modal" id="premiumModal" style="display: none;">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3><i class="fas fa-crown"></i> Konten Premium</h3>
+            <button class="close-modal" onclick="closePremiumModal()">&times;</button>
+        </div>
+        <div class="modal-body">
+            <div class="premium-modal-content">
+                <div class="premium-icon-large">
+                    <i class="fas fa-lock"></i>
+                </div>
+                <h4>Upgrade ke Premium</h4>
+                <p>Untuk mengakses cipher "<span id="lockedCipherName">Substitution Cipher</span>", Anda perlu mengupgrade akun ke premium.</p>
+                <div class="premium-benefits">
+                    <h5>Manfaat Premium:</h5>
+                    <ul>
+                        <li><i class="fas fa-check"></i> Akses semua cipher premium</li>
+                        <li><i class="fas fa-check"></i> Tantangan harian & mingguan</li>
+                        <li><i class="fas fa-check"></i> Sertifikat penyelesaian</li>
+                        <li><i class="fas fa-check"></i> Statistik detail</li>
+                        <li><i class="fas fa-check"></i> Tanpa iklan</li>
+                    </ul>
+                </div>
+                <button class="btn btn-premium" onclick="showUpgradeModal()">
+                    <i class="fas fa-crown"></i> Upgrade Sekarang - $9.99/bulan
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+// Filter Ciphers by Category
+function filterCiphers(category) {
+    const cards = document.querySelectorAll('.cipher-card-wrapper');
+    const filterBtns = document.querySelectorAll('.filter-btn');
+    const emptyState = document.getElementById('emptyState');
+    
+    // Update active button
+    filterBtns.forEach(btn => {
+        btn.classList.remove('active');
+        if (btn.dataset.category === category) {
+            btn.classList.add('active');
+        }
+    });
+    
+    let visibleCount = 0;
+    
+    // Show/hide cards based on category
+    cards.forEach(card => {
+        const cardCategories = card.dataset.category.split(' ');
+        
+        if (category === 'all' || cardCategories.includes(category)) {
+            card.style.display = 'block';
+            visibleCount++;
+        } else {
+            card.style.display = 'none';
+        }
+    });
+    
+    // Show empty state if no cards visible
+    if (visibleCount === 0) {
+        emptyState.style.display = 'block';
+    } else {
+        emptyState.style.display = 'none';
+    }
+    
+    // Reset search
+    document.getElementById('cipherSearch').value = '';
+}
+
+// Search Ciphers
+function searchCiphers() {
+    const searchTerm = document.getElementById('cipherSearch').value.toLowerCase();
+    const cards = document.querySelectorAll('.cipher-card-wrapper');
+    const emptyState = document.getElementById('emptyState');
+    
+    let visibleCount = 0;
+    
+    cards.forEach(card => {
+        const cardName = card.dataset.name.toLowerCase();
+        const cardTitle = card.querySelector('h3').textContent.toLowerCase();
+        const cardDesc = card.querySelector('.cipher-desc').textContent.toLowerCase();
+        
+        if (cardName.includes(searchTerm) || 
+            cardTitle.includes(searchTerm) || 
+            cardDesc.includes(searchTerm)) {
+            card.style.display = 'block';
+            visibleCount++;
+        } else {
+            card.style.display = 'none';
+        }
+    });
+    
+    if (visibleCount === 0 && searchTerm) {
+        emptyState.style.display = 'block';
+    } else {
+        emptyState.style.display = 'none';
+    }
+}
+
+// Sort Ciphers
+let currentSort = 'name';
+let sortAscending = true;
+
+function sortCiphers(method) {
+    const grid = document.getElementById('ciphersGrid');
+    const cards = Array.from(grid.querySelectorAll('.cipher-card-wrapper'));
+    
+    // Toggle sort direction if same method
+    if (currentSort === method) {
+        sortAscending = !sortAscending;
+    } else {
+        currentSort = method;
+        sortAscending = true;
+    }
+    
+    cards.sort((a, b) => {
+        let aValue, bValue;
+        
+        switch(method) {
+            case 'name':
+                aValue = a.querySelector('h3').textContent;
+                bValue = b.querySelector('h3').textContent;
+                return sortAscending ? 
+                    aValue.localeCompare(bValue) : 
+                    bValue.localeCompare(aValue);
+                
+            case 'year':
+                aValue = parseInt(a.dataset.year) || 0;
+                bValue = parseInt(b.dataset.year) || 0;
+                return sortAscending ? aValue - bValue : bValue - aValue;
+                
+            case 'difficulty':
+                const difficultyOrder = { easy: 1, medium: 2, hard: 3 };
+                aValue = difficultyOrder[a.dataset.difficulty] || 0;
+                bValue = difficultyOrder[b.dataset.difficulty] || 0;
+                return sortAscending ? aValue - bValue : bValue - aValue;
+                
+            default:
+                return 0;
+        }
+    });
+    
+    // Reorder cards in grid
+    cards.forEach(card => grid.appendChild(card));
+    closeSortOptions();
+}
+
+// Toggle Sort Options
+function toggleSortOptions() {
+    const options = document.getElementById('sortOptions');
+    options.classList.toggle('show');
+}
+
+function closeSortOptions() {
+    const options = document.getElementById('sortOptions');
+    options.classList.remove('show');
+}
+
+// Close sort options when clicking outside
+document.addEventListener('click', function(event) {
+    if (!event.target.closest('.sort-dropdown')) {
+        closeSortOptions();
+    }
+});
+
+// Premium Modal Functions
+function showPremiumModal(cipherName) {
+    const modal = document.getElementById('premiumModal');
+    const cipherNameElement = document.getElementById('lockedCipherName');
+    
+    // Get actual cipher name from card
+    const card = event.target.closest('.cipher-card-wrapper');
+    if (card) {
+        const name = card.querySelector('h3').textContent;
+        cipherNameElement.textContent = name;
+    }
+    
+    modal.style.display = 'flex';
+}
+
+function closePremiumModal() {
+    const modal = document.getElementById('premiumModal');
+    modal.style.display = 'none';
+}
+
+// Check Premium Status
+function checkPremiumStatus() {
+    // This should be populated from your backend
+    // For now, we'll use a placeholder
+    return window.userIsPremium || false;
+}
+
+// Initialize
+document.addEventListener('DOMContentLoaded', function() {
+    // Highlight current category in sidebar
+    const currentPath = window.location.pathname;
+    if (currentPath.includes('/ciphers') || currentPath.includes('/all-ciphers')) {
+        const navItems = document.querySelectorAll('.nav-item');
+        navItems.forEach(item => {
+            const href = item.getAttribute('href');
+            if (href && href.includes('ciphers')) {
+                item.classList.add('active');
+            }
+        });
+    }
+    
+    // Check if user is premium and unlock premium content
+    if (checkPremiumStatus()) {
+        const premiumCards = document.querySelectorAll('.cipher-card.locked');
+        premiumCards.forEach(card => {
+            card.classList.remove('locked');
+            card.onclick = null;
+            
+            // Change to clickable link
+            const wrapper = card.closest('.cipher-card-wrapper');
+            const cipherName = wrapper.dataset.name;
+            card.outerHTML = `
+                <a href="/cipher/${cipherName}" class="cipher-card">
+                    ${card.innerHTML}
+                </a>
+            `;
+        });
+    }
+    
+    // Close modal when clicking outside
+    const modal = document.getElementById('premiumModal');
+    if (modal) {
+        window.addEventListener('click', function(event) {
+            if (event.target === modal) {
+                closePremiumModal();
+            }
+        });
+    }
+    
+    // Close modal with Escape key
+    document.addEventListener('keydown', function(event) {
+        if (event.key === 'Escape') {
+            closePremiumModal();
+        }
+    });
+});
+
+// Upgrade modal function
+function showUpgradeModal() {
+    // Use the upgrade modal from base.html
+    if (typeof window.showUpgradeModal === 'function') {
+        window.showUpgradeModal();
+    } else {
+        // Fallback
+        alert('Fitur upgrade akan segera tersedia!');
+    }
+}
+</script>
+{% endblock %}

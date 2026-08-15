@@ -1,0 +1,402 @@
+{% extends "base.html" %}
+
+{% block title %}RSA Encryption - CryptoLab{% endblock %}
+
+{% block extra_css %}
+<style>
+    .cipher-container {
+        max-width: 1000px;
+        margin: 0 auto;
+    }
+
+    .cipher-header {
+        text-align: center;
+        margin-bottom: 3rem;
+    }
+
+    .cipher-icon {
+        font-size: 4rem;
+        --webkit-background-clip: text;
+        margin-bottom: 1rem;
+    }
+
+    .cipher-title {
+        font-size: 2.5rem;
+        font-weight: 800;
+        margin-bottom: 0.5rem;
+    }
+
+    .premium-badge {
+        display: inline-block;
+        background: linear-gradient(135deg, #f59e0b, #d97706);
+        color: white;
+        padding: 0.5rem 1rem;
+        border-radius: 20px;
+        font-size: 0.875rem;
+        font-weight: 700;
+        margin-left: 1rem;
+    }
+
+    .cipher-desc {
+        color: var(--text-muted);
+        font-size: 1.1rem;
+    }
+
+    .cipher-card {
+        background: rgba(30, 41, 59, 0.5);
+        backdrop-filter: blur(10px);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 16px;
+        padding: 2rem;
+        margin-bottom: 2rem;
+    }
+
+    .form-group {
+        margin-bottom: 1.5rem;
+    }
+
+    .form-label {
+        display: block;
+        margin-bottom: 0.5rem;
+        font-weight: 600;
+        color: var(--text);
+    }
+
+    .form-textarea {
+        width: 100%;
+        min-height: 120px;
+        padding: 1rem;
+        background: rgba(15, 23, 42, 0.5);
+        border: 2px solid rgba(255, 255, 255, 0.1);
+        border-radius: 10px;
+        color: var(--text);
+        font-size: 1rem;
+        font-family: 'Courier New', monospace;
+        resize: vertical;
+        transition: all 0.3s;
+    }
+
+    .form-textarea:focus {
+        outline: none;
+        border-color: var(--primary);
+        background: rgba(15, 23, 42, 0.8);
+    }
+
+    .key-display-box {
+        background: rgba(16, 185, 129, 0.1);
+        border: 2px solid rgba(16, 185, 129, 0.3);
+        border-radius: 10px;
+        padding: 1.5rem;
+        margin-bottom: 1.5rem;
+        display: none;
+    }
+
+    .key-display-box.show {
+        display: block;
+        animation: fadeIn 0.3s ease;
+    }
+
+    .key-section {
+        margin-bottom: 1rem;
+    }
+
+    .key-section h4 {
+        color: var(--success);
+        margin-bottom: 0.5rem;
+        font-size: 1.1rem;
+    }
+
+    .key-value {
+        background: rgba(15, 23, 42, 0.8);
+        padding: 0.75rem;
+        border-radius: 8px;
+        font-family: 'Courier New', monospace;
+        font-size: 0.9rem;
+        word-break: break-all;
+    }
+
+    .button-group {
+        display: flex;
+        gap: 1rem;
+        flex-wrap: wrap;
+    }
+
+    .btn {
+        flex: 1;
+        min-width: 150px;
+        padding: 1rem;
+        border: none;
+        border-radius: 10px;
+        font-weight: 700;
+        cursor: pointer;
+        transition: all 0.3s;
+        font-size: 1rem;
+    }
+
+    .btn-generate {
+        background: linear-gradient(135deg, #10b981, #059669);
+        color: white;
+    }
+
+    .btn-generate:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 10px 30px rgba(16, 185, 129, 0.4);
+    }
+
+    .btn-encrypt {
+        background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+        color: white;
+    }
+
+    .btn-encrypt:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 10px 30px rgba(99, 102, 241, 0.4);
+    }
+
+    .btn-decrypt {
+        background: linear-gradient(135deg, var(--secondary), #be185d);
+        color: white;
+    }
+
+    .btn-decrypt:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 10px 30px rgba(236, 72, 153, 0.4);
+    }
+
+    .result-box {
+        background: rgba(15, 23, 42, 0.8);
+        border: 2px solid rgba(99, 102, 241, 0.3);
+        border-radius: 10px;
+        padding: 1.5rem;
+        min-height: 120px;
+        font-family: 'Courier New', monospace;
+        font-size: 0.9rem;
+        word-break: break-all;
+        display: none;
+    }
+
+    .result-box.show {
+        display: block;
+        animation: fadeIn 0.3s ease;
+    }
+
+    @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(-10px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+
+    .info-box {
+        background: rgba(99, 102, 241, 0.1);
+        border-left: 4px solid var(--primary);
+        padding: 1rem;
+        border-radius: 8px;
+        margin-bottom: 2rem;
+    }
+
+    .info-title {
+        font-weight: 700;
+        margin-bottom: 0.5rem;
+        color: var(--primary);
+    }
+
+    .warning-box {
+        background: rgba(245, 158, 11, 0.1);
+        border-left: 4px solid var(--warning);
+        padding: 1rem;
+        border-radius: 8px;
+        margin-top: 1rem;
+        font-size: 0.9rem;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="cipher-container">
+    <div class="cipher-header">
+        <div class="cipher-icon">
+            <i class="fas fa-shield"></i>
+        </div>
+        <h1 class="cipher-title">
+            RSA Encryption
+            <span class="premium-badge"><i class="fas fa-crown"></i> Premium</span>
+        </h1>
+        <p class="cipher-desc">
+            Public Key Cryptography dengan Bilangan Prima
+        </p>
+    </div>
+
+    <div class="info-box">
+        <div class="info-title"><i class="fas fa-info-circle"></i> Cara Kerja</div>
+        <p>RSA menggunakan sepasang key: Public Key (untuk enkripsi) dan Private Key (untuk dekripsi). Keamanannya bergantung pada sulitnya memfaktorkan bilangan besar.</p>
+    </div>
+
+    <div class="cipher-card">
+        <h3 style="margin-bottom: 1.5rem; color: var(--success);">
+            <i class="fas fa-key"></i> Step 1: Generate Key Pair
+        </h3>
+
+        <button class="btn btn-generate" onclick="generateKeys()" style="width: 100%;">
+            <i class="fas fa-cog"></i> Generate RSA Keys
+        </button>
+
+        <div class="key-display-box" id="keyDisplay">
+            <div class="key-section">
+                <h4><i class="fas fa-lock-open"></i> Public Key (Untuk Enkripsi)</h4>
+                <div class="key-value" id="publicKey"></div>
+            </div>
+            <div class="key-section">
+                <h4><i class="fas fa-lock"></i> Private Key (Untuk Dekripsi - RAHASIA!)</h4>
+                <div class="key-value" id="privateKey"></div>
+            </div>
+        </div>
+
+        <div class="warning-box">
+            <strong>⚠️ Demo Mode:</strong> Ini menggunakan bilangan prima kecil (16-bit) untuk demo. RSA real menggunakan 2048-4096 bit!
+        </div>
+    </div>
+
+    <div class="cipher-card">
+        <h3 style="margin-bottom: 1.5rem; color: var(--primary);">
+            <i class="fas fa-lock"></i> Step 2: Encrypt Message
+        </h3>
+
+        <div class="form-group">
+            <label class="form-label">
+                <i class="fas fa-edit"></i> Plaintext (Teks Asli)
+            </label>
+            <textarea 
+                id="plaintext" 
+                class="form-textarea" 
+                placeholder="Ketik pesan yang ingin dienkripsi..."
+            ></textarea>
+        </div>
+
+        <button class="btn btn-encrypt" onclick="encryptMessage()" style="width: 100%;">
+            <i class="fas fa-lock"></i> Encrypt with Public Key
+        </button>
+
+        <div class="form-group" style="margin-top: 1.5rem;">
+            <label class="form-label">
+                <i class="fas fa-shield-halved"></i> Ciphertext (Hasil Enkripsi)
+            </label>
+            <div id="ciphertext" class="result-box"></div>
+        </div>
+    </div>
+
+    <div class="cipher-card">
+        <h3 style="margin-bottom: 1.5rem; color: var(--secondary);">
+            <i class="fas fa-unlock"></i> Step 3: Decrypt Message
+        </h3>
+
+        <button class="btn btn-decrypt" onclick="decryptMessage()" style="width: 100%;">
+            <i class="fas fa-unlock"></i> Decrypt with Private Key
+        </button>
+
+        <div class="form-group" style="margin-top: 1.5rem;">
+            <label class="form-label">
+                <i class="fas fa-check-circle"></i> Decrypted Message
+            </label>
+            <div id="decrypted" class="result-box"></div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    let publicKey = null;
+    let privateKey = null;
+    let currentCiphertext = null;
+
+    async function generateKeys() {
+        try {
+            const response = await fetch('/api/rsa/generate', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' }
+            });
+
+            const data = await response.json();
+            
+            publicKey = data.public_key;
+            privateKey = data.private_key;
+
+            document.getElementById('publicKey').textContent = 
+                `e: ${publicKey[0]}\nn: ${publicKey[1]}`;
+            
+            document.getElementById('privateKey').textContent = 
+                `d: ${privateKey[0]}\nn: ${privateKey[1]}`;
+            
+            document.getElementById('keyDisplay').classList.add('show');
+            
+            alert('✅ RSA Key Pair berhasil di-generate!');
+        } catch (error) {
+            alert('Error: ' + error.message);
+        }
+    }
+
+    async function encryptMessage() {
+        if (!publicKey) {
+            alert('Generate keys terlebih dahulu!');
+            return;
+        }
+
+        const text = document.getElementById('plaintext').value;
+        
+        if (!text.trim()) {
+            alert('Masukkan pesan terlebih dahulu!');
+            return;
+        }
+
+        try {
+            const response = await fetch('/api/rsa/encrypt', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    text: text,
+                    public_key: publicKey
+                })
+            });
+
+            const data = await response.json();
+            currentCiphertext = data.ciphertext;
+            
+            const ciphertextBox = document.getElementById('ciphertext');
+            ciphertextBox.textContent = data.ciphertext_string;
+            ciphertextBox.classList.add('show');
+        } catch (error) {
+            alert('Error: ' + error.message);
+        }
+    }
+
+    async function decryptMessage() {
+        if (!privateKey) {
+            alert('Generate keys terlebih dahulu!');
+            return;
+        }
+
+        if (!currentCiphertext) {
+            alert('Encrypt message terlebih dahulu!');
+            return;
+        }
+
+        try {
+            const response = await fetch('/api/rsa/decrypt', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    ciphertext: currentCiphertext,
+                    private_key: privateKey
+                })
+            });
+
+            const data = await response.json();
+            
+            const decryptedBox = document.getElementById('decrypted');
+            decryptedBox.textContent = data.plaintext;
+            decryptedBox.classList.add('show');
+        } catch (error) {
+            alert('Error: ' + error.message);
+        }
+    }
+</script>
+{% endblock %}

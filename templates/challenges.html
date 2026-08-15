@@ -1,0 +1,1773 @@
+{% extends "base.html" %}
+
+{% block title %}Challenges - DecoDify{% endblock %}
+
+{% block styles %}
+<style>
+/* Challenges Page Specific Styles */
+.challenges-page {
+    padding: 2rem;
+    max-width: 1400px;
+    margin: 0 auto;
+}
+
+.page-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2rem;
+    flex-wrap: wrap;
+    gap: 1rem;
+}
+
+.page-title {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.page-title i {
+    font-size: 2.5rem;
+    color: var(--warning);
+}
+
+.page-title h1 {
+    margin: 0;
+    font-size: 2.5rem;
+    color: var(--text);
+}
+
+.page-title .subtitle {
+    color: var(--text-light);
+    font-size: 1rem;
+    margin-top: 0.5rem;
+}
+
+.challenge-stats {
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+}
+
+.stat-badge {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.75rem 1.5rem;
+    background: var(--background);
+    border-radius: 10px;
+    border: 2px solid var(--border);
+}
+
+.stat-badge i {
+    color: var(--warning);
+}
+
+.stat-badge .value {
+    font-weight: 600;
+    font-size: 1.2rem;
+    color: var(--text);
+}
+
+.stat-badge .label {
+    font-size: 0.9rem;
+    color: var(--text-light);
+}
+
+/* Challenge Categories */
+.challenge-categories {
+    display: flex;
+    gap: 0.5rem;
+    margin-bottom: 2rem;
+    overflow-x: auto;
+    padding-bottom: 0.5rem;
+}
+
+.category-btn {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.75rem 1.5rem;
+    border: 2px solid var(--border);
+    background: white;
+    border-radius: 10px;
+    cursor: pointer;
+    font-weight: 500;
+    transition: all 0.3s ease;
+    white-space: nowrap;
+    color: var(--text);
+}
+
+.category-btn:hover {
+    border-color: var(--warning);
+    color: var(--warning);
+}
+
+.category-btn.active {
+    background: var(--warning);
+    color: white;
+    border-color: var(--warning);
+}
+
+.category-btn i {
+    font-size: 1rem;
+}
+
+/* Challenge Grid */
+.challenges-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+    gap: 2rem;
+    margin-bottom: 3rem;
+}
+
+.challenge-card {
+    background: white;
+    border-radius: 15px;
+    overflow: hidden;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+    border: 2px solid var(--border);
+    transition: all 0.3s ease;
+    position: relative;
+}
+
+.challenge-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 30px rgba(0,0,0,0.12);
+    border-color: var(--warning);
+}
+
+.challenge-card.locked {
+    opacity: 0.7;
+}
+
+.challenge-card.locked .card-content {
+    filter: blur(2px);
+}
+
+/* Card Header */
+.card-header {
+    padding: 1.5rem;
+    border-bottom: 1px solid var(--border);
+    position: relative;
+}
+
+.challenge-badges {
+    display: flex;
+    gap: 0.5rem;
+    margin-bottom: 1rem;
+    flex-wrap: wrap;
+}
+
+.type-badge {
+    padding: 0.25rem 0.75rem;
+    border-radius: 20px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+}
+
+.badge-daily {
+    background: var(--primary-light);
+    color: var(--primary);
+}
+
+.badge-weekly {
+    background: var(--success-light);
+    color: var(--success);
+}
+
+.badge-monthly {
+    background: var(--warning-light);
+    color: var(--warning-dark);
+}
+
+.badge-special {
+    background: linear-gradient(135deg, #667eea, #764ba2);
+    color: white;
+}
+
+.difficulty-badge {
+    padding: 0.25rem 0.75rem;
+    border-radius: 20px;
+    font-size: 0.75rem;
+    font-weight: 600;
+}
+
+.easy {
+    background: var(--success-light);
+    color: var(--success);
+}
+
+.medium {
+    background: var(--warning-light);
+    color: var(--warning-dark);
+}
+
+.hard {
+    background: var(--danger-light);
+    color: var(--danger);
+}
+
+.expert {
+    background: linear-gradient(135deg, #667eea, #764ba2);
+    color: white;
+}
+
+.challenge-title {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 0.5rem;
+}
+
+.challenge-icon {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+    color: white;
+}
+
+.icon-daily { background: linear-gradient(135deg, #4facfe, #00f2fe); }
+.icon-weekly { background: linear-gradient(135deg, #43e97b, #38f9d7); }
+.icon-monthly { background: linear-gradient(135deg, #fa709a, #fee140); }
+.icon-special { background: linear-gradient(135deg, #a18cd1, #fbc2eb); }
+
+.challenge-title h3 {
+    margin: 0;
+    font-size: 1.5rem;
+    color: var(--text);
+    flex: 1;
+}
+
+.challenge-code {
+    background: var(--background);
+    color: var(--text-light);
+    padding: 0.25rem 0.75rem;
+    border-radius: 15px;
+    font-size: 0.8rem;
+    font-family: 'Courier New', monospace;
+}
+
+/* Card Content */
+.card-content {
+    padding: 1.5rem;
+}
+
+.challenge-desc {
+    color: var(--text);
+    line-height: 1.6;
+    margin-bottom: 1.5rem;
+    font-size: 0.95rem;
+    min-height: 60px;
+}
+
+/* Challenge Specs */
+.challenge-specs {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+}
+
+.spec-item {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.75rem;
+    background: var(--background);
+    border-radius: 10px;
+}
+
+.spec-item i {
+    font-size: 1.25rem;
+    color: var(--warning);
+}
+
+.spec-label {
+    display: block;
+    font-size: 0.8rem;
+    color: var(--text-light);
+    margin-bottom: 0.25rem;
+}
+
+.spec-value {
+    display: block;
+    font-weight: 600;
+    color: var(--text);
+    font-size: 1rem;
+}
+
+/* Reward Section */
+.reward-section {
+    background: var(--background);
+    border-radius: 10px;
+    padding: 1rem;
+    margin-bottom: 1.5rem;
+}
+
+.reward-title {
+    font-size: 0.9rem;
+    color: var(--text-light);
+    margin-bottom: 0.5rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.reward-items {
+    display: flex;
+    gap: 1rem;
+}
+
+.reward-item {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem 1rem;
+    background: white;
+    border-radius: 10px;
+    border: 1px solid var(--border);
+}
+
+.reward-item i {
+    color: var(--warning);
+}
+
+/* Progress Bar */
+.progress-section {
+    margin-bottom: 1.5rem;
+}
+
+.progress-header {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 0.5rem;
+}
+
+.progress-label {
+    font-size: 0.9rem;
+    color: var(--text);
+}
+
+.progress-value {
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: var(--warning);
+}
+
+.progress-bar {
+    height: 8px;
+    background: var(--border);
+    border-radius: 4px;
+    overflow: hidden;
+}
+
+.progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--warning), var(--warning-dark));
+    border-radius: 4px;
+    transition: width 0.3s ease;
+}
+
+/* Action Buttons */
+.card-actions {
+    display: flex;
+    gap: 1rem;
+}
+
+.btn-start {
+    flex: 1;
+    padding: 0.75rem 1.5rem;
+    background: var(--warning);
+    color: white;
+    border: none;
+    border-radius: 10px;
+    font-weight: 600;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    transition: all 0.3s ease;
+}
+
+.btn-start:hover {
+    background: var(--warning-dark);
+    transform: translateY(-2px);
+}
+
+.btn-start:disabled {
+    background: var(--border);
+    cursor: not-allowed;
+    transform: none;
+}
+
+.btn-details {
+    padding: 0.75rem 1.5rem;
+    background: white;
+    color: var(--warning);
+    border: 2px solid var(--warning);
+    border-radius: 10px;
+    font-weight: 600;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    transition: all 0.3s ease;
+}
+
+.btn-details:hover {
+    background: var(--warning-light);
+}
+
+/* Lock Overlay */
+.lock-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(255, 255, 255, 0.95);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    border-radius: 15px;
+    z-index: 10;
+    text-align: center;
+    padding: 2rem;
+}
+
+.lock-icon {
+    font-size: 3rem;
+    color: var(--warning);
+    margin-bottom: 1rem;
+}
+
+.lock-message h4 {
+    color: var(--warning);
+    margin: 0 0 0.5rem 0;
+}
+
+.lock-message p {
+    color: var(--text-light);
+    margin-bottom: 1.5rem;
+}
+
+/* Timer Section */
+.timer-section {
+    background: linear-gradient(135deg, var(--warning-light), var(--warning-lighter));
+    border-radius: 10px;
+    padding: 1rem;
+    margin-bottom: 2rem;
+    border: 2px solid var(--warning);
+}
+
+.timer-header {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 1rem;
+    color: var(--warning-dark);
+    font-weight: 600;
+}
+
+.timer-display {
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+}
+
+.timer-unit {
+    text-align: center;
+    background: white;
+    padding: 1rem;
+    border-radius: 10px;
+    min-width: 80px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+}
+
+.timer-value {
+    font-size: 2rem;
+    font-weight: 700;
+    color: var(--warning-dark);
+    font-family: 'Courier New', monospace;
+}
+
+.timer-label {
+    font-size: 0.8rem;
+    color: var(--text-light);
+    margin-top: 0.25rem;
+}
+
+/* Streak Section */
+.streak-section {
+    background: linear-gradient(135deg, var(--primary-light), var(--primary-lighter));
+    border-radius: 10px;
+    padding: 1.5rem;
+    margin-bottom: 2rem;
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+}
+
+.streak-icon {
+    font-size: 3rem;
+    color: var(--primary);
+}
+
+.streak-content h4 {
+    color: var(--primary);
+    margin: 0 0 0.5rem 0;
+}
+
+.streak-days {
+    font-size: 2rem;
+    font-weight: 700;
+    color: var(--primary);
+}
+
+/* Empty State */
+.empty-state {
+    grid-column: 1 / -1;
+    text-align: center;
+    padding: 4rem 2rem;
+    color: var(--text-light);
+}
+
+.empty-state i {
+    font-size: 4rem;
+    margin-bottom: 1rem;
+    color: var(--border);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .challenges-page {
+        padding: 1rem;
+    }
+    
+    .challenges-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .page-header {
+        flex-direction: column;
+        align-items: stretch;
+    }
+    
+    .challenge-stats {
+        justify-content: center;
+    }
+    
+    .challenge-specs {
+        grid-template-columns: 1fr;
+    }
+    
+    .card-actions {
+        flex-direction: column;
+    }
+    
+    .timer-display {
+        flex-wrap: wrap;
+    }
+    
+    .timer-unit {
+        min-width: 70px;
+    }
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<!-- CHALLENGES PAGE -->
+<div class="challenges-page">
+    <!-- Page Header -->
+    <div class="page-header">
+        <div class="page-title">
+            <div>
+                <h1><i class="fas fa-flag-checkered"></i> Challenges</h1>
+                <p class="subtitle">Uji kemampuan kriptografi Anda dengan tantangan harian dan spesial</p>
+            </div>
+        </div>
+        <div class="challenge-stats">
+            <div class="stat-badge">
+                <i class="fas fa-fire"></i>
+                <div>
+                    <div class="value" id="currentStreak">7</div>
+                    <div class="label">Day Streak</div>
+                </div>
+            </div>
+            <div class="stat-badge">
+                <i class="fas fa-trophy"></i>
+                <div>
+                    <div class="value" id="completedChallenges">12</div>
+                    <div class="label">Completed</div>
+                </div>
+            </div>
+            <div class="stat-badge">
+                <i class="fas fa-crown"></i>
+                <div>
+                    <div class="value" id="totalXP">2,850</div>
+                    <div class="label">Total XP</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Timer for Daily Challenge -->
+    <div class="timer-section">
+        <div class="timer-header">
+            <i class="fas fa-clock"></i>
+            <span>Daily Challenge Resets In:</span>
+        </div>
+        <div class="timer-display" id="dailyTimer">
+            <div class="timer-unit">
+                <div class="timer-value" id="hours">23</div>
+                <div class="timer-label">Hours</div>
+            </div>
+            <div class="timer-unit">
+                <div class="timer-value" id="minutes">45</div>
+                <div class="timer-label">Minutes</div>
+            </div>
+            <div class="timer-unit">
+                <div class="timer-value" id="seconds">18</div>
+                <div class="timer-label">Seconds</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Streak Section -->
+    <div class="streak-section">
+        <div class="streak-icon">
+            <i class="fas fa-fire"></i>
+        </div>
+        <div class="streak-content">
+            <h4>Keep Your Streak Alive!</h4>
+            <p>Complete today's challenge to extend your <span class="streak-days">7-day streak</span> and earn bonus XP!</p>
+        </div>
+        <button class="btn-start" onclick="startChallenge('daily-2024-01-21')">
+            <i class="fas fa-play-circle"></i>
+            Start Today's Challenge
+        </button>
+    </div>
+
+    <!-- Challenge Categories -->
+    <div class="challenge-categories">
+        <button class="category-btn active" onclick="filterChallenges('all')" data-category="all">
+            <i class="fas fa-layer-group"></i> All Challenges
+        </button>
+        <button class="category-btn" onclick="filterChallenges('daily')" data-category="daily">
+            <i class="fas fa-calendar-day"></i> Daily
+        </button>
+        <button class="category-btn" onclick="filterChallenges('weekly')" data-category="weekly">
+            <i class="fas fa-calendar-week"></i> Weekly
+        </button>
+        <button class="category-btn" onclick="filterChallenges('monthly')" data-category="monthly">
+            <i class="fas fa-calendar-alt"></i> Monthly
+        </button>
+        <button class="category-btn" onclick="filterChallenges('special')" data-category="special">
+            <i class="fas fa-star"></i> Special
+        </button>
+        <button class="category-btn" onclick="filterChallenges('completed')" data-category="completed">
+            <i class="fas fa-check-circle"></i> Completed
+        </button>
+        <button class="category-btn" onclick="filterChallenges('available')" data-category="available">
+            <i class="fas fa-unlock"></i> Available
+        </button>
+    </div>
+
+    <!-- Challenges Grid -->
+    <div class="challenges-grid" id="challengesGrid">
+        <!-- Daily Challenge 1 -->
+        <div class="challenge-card" data-category="daily available" data-difficulty="medium" data-completed="false">
+            <div class="card-header">
+                <div class="challenge-badges">
+                    <span class="type-badge badge-daily">
+                        <i class="fas fa-calendar-day"></i> DAILY
+                    </span>
+                    <span class="difficulty-badge medium">
+                        <i class="fas fa-signal"></i> MEDIUM
+                    </span>
+                </div>
+                <div class="challenge-title">
+                    <div class="challenge-icon icon-daily">
+                        <i class="fas fa-bolt"></i>
+                    </div>
+                    <h3>Caesar Shift Challenge</h3>
+                    <span class="challenge-code">DAY-001</span>
+                </div>
+            </div>
+            <div class="card-content">
+                <div class="challenge-desc">
+                    Decrypt a message encrypted with a random Caesar shift. Find the correct shift value and reveal the hidden message.
+                </div>
+                
+                <div class="challenge-specs">
+                    <div class="spec-item">
+                        <i class="fas fa-clock"></i>
+                        <div>
+                            <span class="spec-label">Time Limit</span>
+                            <span class="spec-value">10 minutes</span>
+                        </div>
+                    </div>
+                    <div class="spec-item">
+                        <i class="fas fa-redo"></i>
+                        <div>
+                            <span class="spec-label">Attempts</span>
+                            <span class="spec-value">3/3 left</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="reward-section">
+                    <div class="reward-title">
+                        <i class="fas fa-gift"></i> Rewards
+                    </div>
+                    <div class="reward-items">
+                        <div class="reward-item">
+                            <i class="fas fa-bolt"></i>
+                            <span>50 XP</span>
+                        </div>
+                        <div class="reward-item">
+                            <i class="fas fa-fire"></i>
+                            <span>Streak Bonus</span>
+                        </div>
+                        <div class="reward-item">
+                            <i class="fas fa-gem"></i>
+                            <span>5 Gems</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="progress-section">
+                    <div class="progress-header">
+                        <span class="progress-label">Global Completion</span>
+                        <span class="progress-value">72%</span>
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" style="width: 72%"></div>
+                    </div>
+                </div>
+                
+                <div class="card-actions">
+                    <button class="btn-start" onclick="startChallenge('daily-001')">
+                        <i class="fas fa-play-circle"></i>
+                        Start Challenge
+                    </button>
+                    <button class="btn-details" onclick="showChallengeDetails('daily-001')">
+                        <i class="fas fa-info-circle"></i>
+                        Details
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Daily Challenge 2 -->
+        <div class="challenge-card" data-category="daily available" data-difficulty="easy" data-completed="true">
+            <div class="card-header">
+                <div class="challenge-badges">
+                    <span class="type-badge badge-daily">
+                        <i class="fas fa-calendar-day"></i> DAILY
+                    </span>
+                    <span class="difficulty-badge easy">
+                        <i class="fas fa-signal"></i> EASY
+                    </span>
+                    <span class="type-badge" style="background: var(--success-light); color: var(--success);">
+                        <i class="fas fa-check-circle"></i> COMPLETED
+                    </span>
+                </div>
+                <div class="challenge-title">
+                    <div class="challenge-icon icon-daily">
+                        <i class="fas fa-key"></i>
+                    </div>
+                    <h3>Keyword Discovery</h3>
+                    <span class="challenge-code">DAY-002</span>
+                </div>
+            </div>
+            <div class="card-content">
+                <div class="challenge-desc">
+                    Find the keyword used in a Vigenère cipher encryption. The encrypted text contains a hidden clue.
+                </div>
+                
+                <div class="challenge-specs">
+                    <div class="spec-item">
+                        <i class="fas fa-clock"></i>
+                        <div>
+                            <span class="spec-label">Time Limit</span>
+                            <span class="spec-value">15 minutes</span>
+                        </div>
+                    </div>
+                    <div class="spec-item">
+                        <i class="fas fa-trophy"></i>
+                        <div>
+                            <span class="spec-label">Your Score</span>
+                            <span class="spec-value">95/100</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="reward-section">
+                    <div class="reward-title">
+                        <i class="fas fa-gift"></i> Rewards Earned
+                    </div>
+                    <div class="reward-items">
+                        <div class="reward-item">
+                            <i class="fas fa-bolt"></i>
+                            <span>45 XP</span>
+                        </div>
+                        <div class="reward-item">
+                            <i class="fas fa-gem"></i>
+                            <span>5 Gems</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="progress-section">
+                    <div class="progress-header">
+                        <span class="progress-label">Your Progress</span>
+                        <span class="progress-value">100%</span>
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" style="width: 100%"></div>
+                    </div>
+                </div>
+                
+                <div class="card-actions">
+                    <button class="btn-start" onclick="reviewChallenge('daily-002')">
+                        <i class="fas fa-eye"></i>
+                        Review Solution
+                    </button>
+                    <button class="btn-details" onclick="showChallengeDetails('daily-002')">
+                        <i class="fas fa-chart-bar"></i>
+                        Stats
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Weekly Challenge -->
+        <div class="challenge-card" data-category="weekly available" data-difficulty="hard" data-completed="false">
+            <div class="card-header">
+                <div class="challenge-badges">
+                    <span class="type-badge badge-weekly">
+                        <i class="fas fa-calendar-week"></i> WEEKLY
+                    </span>
+                    <span class="difficulty-badge hard">
+                        <i class="fas fa-signal"></i> HARD
+                    </span>
+                </div>
+                <div class="challenge-title">
+                    <div class="challenge-icon icon-weekly">
+                        <i class="fas fa-puzzle-piece"></i>
+                    </div>
+                    <h3>Polyalphabetic Puzzle</h3>
+                    <span class="challenge-code">WEEK-021</span>
+                </div>
+            </div>
+            <div class="card-content">
+                <div class="challenge-desc">
+                    Solve a complex multi-layered encryption using combined Caesar, Vigenère, and Transposition ciphers.
+                </div>
+                
+                <div class="challenge-specs">
+                    <div class="spec-item">
+                        <i class="fas fa-clock"></i>
+                        <div>
+                            <span class="spec-label">Time Limit</span>
+                            <span class="spec-value">45 minutes</span>
+                        </div>
+                    </div>
+                    <div class="spec-item">
+                        <i class="fas fa-redo"></i>
+                        <div>
+                            <span class="spec-label">Attempts</span>
+                            <span class="spec-value">Unlimited</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="reward-section">
+                    <div class="reward-title">
+                        <i class="fas fa-gift"></i> Rewards
+                    </div>
+                    <div class="reward-items">
+                        <div class="reward-item">
+                            <i class="fas fa-bolt"></i>
+                            <span>200 XP</span>
+                        </div>
+                        <div class="reward-item">
+                            <i class="fas fa-gem"></i>
+                            <span>25 Gems</span>
+                        </div>
+                        <div class="reward-item">
+                            <i class="fas fa-trophy"></i>
+                            <span>Weekly Badge</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="progress-section">
+                    <div class="progress-header">
+                        <span class="progress-label">Time Remaining</span>
+                        <span class="progress-value">4 days 12h</span>
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" style="width: 35%"></div>
+                    </div>
+                </div>
+                
+                <div class="card-actions">
+                    <button class="btn-start" onclick="startChallenge('weekly-021')">
+                        <i class="fas fa-play-circle"></i>
+                        Start Challenge
+                    </button>
+                    <button class="btn-details" onclick="showChallengeDetails('weekly-021')">
+                        <i class="fas fa-info-circle"></i>
+                        Details
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Monthly Challenge -->
+        <div class="challenge-card" data-category="monthly available" data-difficulty="expert" data-completed="false">
+            <div class="card-header">
+                <div class="challenge-badges">
+                    <span class="type-badge badge-monthly">
+                        <i class="fas fa-calendar-alt"></i> MONTHLY
+                    </span>
+                    <span class="difficulty-badge expert">
+                        <i class="fas fa-signal"></i> EXPERT
+                    </span>
+                </div>
+                <div class="challenge-title">
+                    <div class="challenge-icon icon-monthly">
+                        <i class="fas fa-chess-queen"></i>
+                    </div>
+                    <h3>Master Cryptanalyst</h3>
+                    <span class="challenge-code">MONTH-005</span>
+                </div>
+            </div>
+            <div class="card-content">
+                <div class="challenge-desc">
+                    The ultimate test: Break an unknown cipher using frequency analysis, pattern recognition, and logical deduction.
+                </div>
+                
+                <div class="challenge-specs">
+                    <div class="spec-item">
+                        <i class="fas fa-clock"></i>
+                        <div>
+                            <span class="spec-label">Time Limit</span>
+                            <span class="spec-value">2 hours</span>
+                        </div>
+                    </div>
+                    <div class="spec-item">
+                        <i class="fas fa-redo"></i>
+                        <div>
+                            <span class="spec-label">Attempts</span>
+                            <span class="spec-value">1 attempt</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="reward-section">
+                    <div class="reward-title">
+                        <i class="fas fa-gift"></i> Rewards
+                    </div>
+                    <div class="reward-items">
+                        <div class="reward-item">
+                            <i class="fas fa-bolt"></i>
+                            <span>500 XP</span>
+                        </div>
+                        <div class="reward-item">
+                            <i class="fas fa-gem"></i>
+                            <span>100 Gems</span>
+                        </div>
+                        <div class="reward-item">
+                            <i class="fas fa-crown"></i>
+                            <span>Master Badge</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="progress-section">
+                    <div class="progress-header">
+                        <span class="progress-label">Time Remaining</span>
+                        <span class="progress-value">21 days</span>
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" style="width: 30%"></div>
+                    </div>
+                </div>
+                
+                <div class="card-actions">
+                    <button class="btn-start" onclick="startChallenge('monthly-005')">
+                        <i class="fas fa-play-circle"></i>
+                        Start Challenge
+                    </button>
+                    <button class="btn-details" onclick="showChallengeDetails('monthly-005')">
+                        <i class="fas fa-info-circle"></i>
+                        Details
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Special Challenge (Locked) -->
+        <div class="challenge-card locked" data-category="special locked" data-difficulty="expert" data-completed="false">
+            <div class="card-header">
+                <div class="challenge-badges">
+                    <span class="type-badge badge-special">
+                        <i class="fas fa-star"></i> SPECIAL
+                    </span>
+                    <span class="difficulty-badge expert">
+                        <i class="fas fa-signal"></i> EXPERT
+                    </span>
+                </div>
+                <div class="challenge-title">
+                    <div class="challenge-icon icon-special">
+                        <i class="fas fa-dragon"></i>
+                    </div>
+                    <h3>Dragon's Hoard</h3>
+                    <span class="challenge-code">SPEC-001</span>
+                </div>
+            </div>
+            <div class="card-content">
+                <div class="challenge-desc">
+                    Legendary challenge: Decrypt a medieval manuscript protected by multiple ancient ciphers. Only for the bravest cryptographers.
+                </div>
+                
+                <div class="challenge-specs">
+                    <div class="spec-item">
+                        <i class="fas fa-clock"></i>
+                        <div>
+                            <span class="spec-label">Time Limit</span>
+                            <span class="spec-value">3 hours</span>
+                        </div>
+                    </div>
+                    <div class="spec-item">
+                        <i class="fas fa-lock"></i>
+                        <div>
+                            <span class="spec-label">Requirement</span>
+                            <span class="spec-value">Level 10+</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="reward-section">
+                    <div class="reward-title">
+                        <i class="fas fa-gift"></i> Legendary Rewards
+                    </div>
+                    <div class="reward-items">
+                        <div class="reward-item">
+                            <i class="fas fa-bolt"></i>
+                            <span>1000 XP</span>
+                        </div>
+                        <div class="reward-item">
+                            <i class="fas fa-gem"></i>
+                            <span>250 Gems</span>
+                        </div>
+                        <div class="reward-item">
+                            <i class="fas fa-crown"></i>
+                            <span>Legend Title</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="progress-section">
+                    <div class="progress-header">
+                        <span class="progress-label">Unlock Progress</span>
+                        <span class="progress-value">8/10 ciphers</span>
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" style="width: 80%"></div>
+                    </div>
+                </div>
+                
+                <div class="card-actions">
+                    <button class="btn-start" disabled>
+                        <i class="fas fa-lock"></i>
+                        Locked
+                    </button>
+                    <button class="btn-details" onclick="showUnlockRequirements('spec-001')">
+                        <i class="fas fa-key"></i>
+                        Unlock Info
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Lock Overlay -->
+            <div class="lock-overlay">
+                <div class="lock-icon">
+                    <i class="fas fa-lock"></i>
+                </div>
+                <div class="lock-message">
+                    <h4>Challenge Locked</h4>
+                    <p>Complete 10 different ciphers to unlock this special challenge</p>
+                    <button class="btn-start" onclick="showUnlockRequirements('spec-001')">
+                        <i class="fas fa-key"></i>
+                        View Requirements
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Special Challenge 2 -->
+        <div class="challenge-card" data-category="special available" data-difficulty="hard" data-completed="false">
+            <div class="card-header">
+                <div class="challenge-badges">
+                    <span class="type-badge badge-special">
+                        <i class="fas fa-star"></i> SPECIAL
+                    </span>
+                    <span class="difficulty-badge hard">
+                        <i class="fas fa-signal"></i> HARD
+                    </span>
+                </div>
+                <div class="challenge-title">
+                    <div class="challenge-icon icon-special">
+                        <i class="fas fa-user-secret"></i>
+                    </div>
+                    <h3>Spy Network</h3>
+                    <span class="challenge-code">SPEC-002</span>
+                </div>
+            </div>
+            <div class="card-content">
+                <div class="challenge-desc">
+                    Intercept and decode messages between spy agents using one-time pads and steganography techniques.
+                </div>
+                
+                <div class="challenge-specs">
+                    <div class="spec-item">
+                        <i class="fas fa-clock"></i>
+                        <div>
+                            <span class="spec-label">Time Limit</span>
+                            <span class="spec-value">1 hour</span>
+                        </div>
+                    </div>
+                    <div class="spec-item">
+                        <i class="fas fa-users"></i>
+                        <div>
+                            <span class="spec-label">Multiplayer</span>
+                            <span class="spec-value">2-4 players</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="reward-section">
+                    <div class="reward-title">
+                        <i class="fas fa-gift"></i> Rewards
+                    </div>
+                    <div class="reward-items">
+                        <div class="reward-item">
+                            <i class="fas fa-bolt"></i>
+                            <span>300 XP</span>
+                        </div>
+                        <div class="reward-item">
+                            <i class="fas fa-gem"></i>
+                            <span>50 Gems</span>
+                        </div>
+                        <div class="reward-item">
+                            <i class="fas fa-user-secret"></i>
+                            <span>Spy Badge</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="progress-section">
+                    <div class="progress-header">
+                        <span class="progress-label">Available For</span>
+                        <span class="progress-value">7 days</span>
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" style="width: 50%"></div>
+                    </div>
+                </div>
+                
+                <div class="card-actions">
+                    <button class="btn-start" onclick="startChallenge('spec-002')">
+                        <i class="fas fa-play-circle"></i>
+                        Start Challenge
+                    </button>
+                    <button class="btn-details" onclick="showChallengeDetails('spec-002')">
+                        <i class="fas fa-users"></i>
+                        Find Players
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Empty State -->
+        <div class="empty-state" id="emptyState" style="display: none;">
+            <i class="fas fa-search"></i>
+            <h3>No challenges found</h3>
+            <p>Try selecting a different category or check back tomorrow for new challenges!</p>
+        </div>
+    </div>
+
+    <!-- Leaderboard Section -->
+    <div class="leaderboard-section">
+        <h2><i class="fas fa-trophy"></i> Challenge Leaderboard</h2>
+        <div class="leaderboard-table">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Rank</th>
+                        <th>Player</th>
+                        <th>Score</th>
+                        <th>Challenges</th>
+                        <th>Streak</th>
+                    </tr>
+                </thead>
+                <tbody id="leaderboardBody">
+                    <!-- Will be populated by JavaScript -->
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<!-- Challenge Details Modal -->
+<div class="modal" id="challengeModal" style="display: none;">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3><i class="fas fa-info-circle"></i> Challenge Details</h3>
+            <button class="close-modal" onclick="closeChallengeModal()">&times;</button>
+        </div>
+        <div class="modal-body" id="challengeModalBody">
+            <!-- Will be populated by JavaScript -->
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+// Timer for Daily Challenge
+function updateTimer() {
+    const now = new Date();
+    const tomorrow = new Date(now);
+    tomorrow.setDate(tomorrow.getDate() + 1);
+    tomorrow.setHours(0, 0, 0, 0);
+    
+    const diff = tomorrow - now;
+    
+    const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+    const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+    const seconds = Math.floor((diff % (1000 * 60)) / 1000);
+    
+    document.getElementById('hours').textContent = hours.toString().padStart(2, '0');
+    document.getElementById('minutes').textContent = minutes.toString().padStart(2, '0');
+    document.getElementById('seconds').textContent = seconds.toString().padStart(2, '0');
+}
+
+// Update timer every second
+setInterval(updateTimer, 1000);
+updateTimer(); // Initial call
+
+// Filter Challenges
+function filterChallenges(category) {
+    const cards = document.querySelectorAll('.challenge-card');
+    const categoryBtns = document.querySelectorAll('.category-btn');
+    const emptyState = document.getElementById('emptyState');
+    
+    // Update active button
+    categoryBtns.forEach(btn => {
+        btn.classList.remove('active');
+        if (btn.dataset.category === category) {
+            btn.classList.add('active');
+        }
+    });
+    
+    let visibleCount = 0;
+    
+    // Show/hide cards based on category
+    cards.forEach(card => {
+        const cardCategories = card.dataset.category.split(' ');
+        const isCompleted = card.dataset.completed === 'true';
+        
+        let shouldShow = false;
+        
+        switch(category) {
+            case 'all':
+                shouldShow = true;
+                break;
+            case 'completed':
+                shouldShow = isCompleted;
+                break;
+            case 'available':
+                shouldShow = !isCompleted && !card.classList.contains('locked');
+                break;
+            default:
+                shouldShow = cardCategories.includes(category);
+        }
+        
+        if (shouldShow) {
+            card.style.display = 'block';
+            visibleCount++;
+        } else {
+            card.style.display = 'none';
+        }
+    });
+    
+    // Show empty state if no cards visible
+    if (visibleCount === 0) {
+        emptyState.style.display = 'block';
+    } else {
+        emptyState.style.display = 'none';
+    }
+}
+
+// Start Challenge
+function startChallenge(challengeId) {
+    // Check if user is logged in and has access
+    if (!window.userLoggedIn) {
+        showLoginModal();
+        return;
+    }
+    
+    // Check if challenge is locked
+    const card = document.querySelector(`[onclick*="${challengeId}"]`)?.closest('.challenge-card');
+    if (card?.classList.contains('locked')) {
+        showUnlockRequirements(challengeId);
+        return;
+    }
+    
+    // Redirect to challenge page
+    window.location.href = `/challenge/${challengeId}`;
+}
+
+// Show Challenge Details
+function showChallengeDetails(challengeId) {
+    const modal = document.getElementById('challengeModal');
+    const modalBody = document.getElementById('challengeModalBody');
+    
+    // Mock challenge details
+    const challengeDetails = {
+        'daily-001': {
+            title: 'Caesar Shift Challenge',
+            description: 'Decrypt a message encrypted with a random Caesar shift. The shift value is between 1 and 25. Use frequency analysis and pattern recognition to find the correct shift.',
+            instructions: [
+                'Analyze the encrypted text',
+                'Try different shift values',
+                'Look for common words and patterns',
+                'Submit the correct plaintext'
+            ],
+            tips: [
+                'Look for common words like "the", "and", "that"',
+                'Check for punctuation patterns',
+                'English letter frequency: ETAOIN SHRDLU'
+            ],
+            timeLimit: '10 minutes',
+            attempts: '3 attempts',
+            successRate: '72%'
+        },
+        'weekly-021': {
+            title: 'Polyalphabetic Puzzle',
+            description: 'This challenge combines three different ciphers in layers. You need to decrypt each layer in the correct order.',
+            instructions: [
+                'First layer: Caesar cipher with shift 7',
+                'Second layer: Vigenère with keyword "CRYPTO"',
+                'Third layer: Rail fence transposition (3 rails)',
+                'Submit the final decoded message'
+            ],
+            tips: [
+                'Work backwards from the final ciphertext',
+                'Use the provided cipher tools',
+                'Save intermediate results'
+            ],
+            timeLimit: '45 minutes',
+            attempts: 'Unlimited',
+            successRate: '45%'
+        }
+    };
+    
+    const details = challengeDetails[challengeId] || challengeDetails['daily-001'];
+    
+    modalBody.innerHTML = `
+        <div class="challenge-modal-content">
+            <h4>${details.title}</h4>
+            <p>${details.description}</p>
+            
+            <div class="modal-section">
+                <h5><i class="fas fa-list-ol"></i> Instructions</h5>
+                <ol>
+                    ${details.instructions.map(inst => `<li>${inst}</li>`).join('')}
+                </ol>
+            </div>
+            
+            <div class="modal-section">
+                <h5><i class="fas fa-lightbulb"></i> Tips & Tricks</h5>
+                <ul>
+                    ${details.tips.map(tip => `<li>${tip}</li>`).join('')}
+                </ul>
+            </div>
+            
+            <div class="modal-stats">
+                <div class="stat-item">
+                    <i class="fas fa-clock"></i>
+                    <div>
+                        <span class="stat-label">Time Limit</span>
+                        <span class="stat-value">${details.timeLimit}</span>
+                    </div>
+                </div>
+                <div class="stat-item">
+                    <i class="fas fa-redo"></i>
+                    <div>
+                        <span class="stat-label">Attempts</span>
+                        <span class="stat-value">${details.attempts}</span>
+                    </div>
+                </div>
+                <div class="stat-item">
+                    <i class="fas fa-chart-line"></i>
+                    <div>
+                        <span class="stat-label">Success Rate</span>
+                        <span class="stat-value">${details.successRate}</span>
+                    </div>
+                </div>
+            </div>
+            
+            <button class="btn-start" onclick="startChallenge('${challengeId}')" style="width: 100%; margin-top: 1rem;">
+                <i class="fas fa-play-circle"></i>
+                Start This Challenge
+            </button>
+        </div>
+    `;
+    
+    modal.style.display = 'block';
+}
+
+// Close Challenge Modal
+function closeChallengeModal() {
+    const modal = document.getElementById('challengeModal');
+    modal.style.display = 'none';
+}
+
+// Show Unlock Requirements
+function showUnlockRequirements(challengeId) {
+    const modal = document.getElementById('challengeModal');
+    const modalBody = document.getElementById('challengeModalBody');
+    
+    modalBody.innerHTML = `
+        <div class="unlock-modal-content">
+            <div class="lock-icon-large">
+                <i class="fas fa-lock"></i>
+            </div>
+            <h4>Challenge Requirements</h4>
+            <p>To unlock this challenge, you need to:</p>
+            
+            <div class="requirements-list">
+                <div class="requirement-item">
+                    <i class="fas fa-check-circle" style="color: var(--success);"></i>
+                    <span>Complete 10 different ciphers</span>
+                    <span class="requirement-progress">8/10</span>
+                </div>
+                <div class="requirement-item">
+                    <i class="fas fa-check-circle" style="color: var(--success);"></i>
+                    <span>Reach Level 5</span>
+                    <span class="requirement-progress">Level 4</span>
+                </div>
+                <div class="requirement-item">
+                    <i class="fas fa-check-circle" style="color: var(--success);"></i>
+                    <span>Complete 3 weekly challenges</span>
+                    <span class="requirement-progress">2/3</span>
+                </div>
+                <div class="requirement-item">
+                    <i class="fas fa-times-circle" style="color: var(--danger);"></i>
+                    <span>Have a 5-day streak</span>
+                    <span class="requirement-progress">7/5 ✓</span>
+                </div>
+            </div>
+            
+            <div class="progress-summary">
+                <div class="progress-bar">
+                    <div class="progress-fill" style="width: 75%"></div>
+                </div>
+                <div class="progress-text">75% completed</div>
+            </div>
+            
+            <button class="btn-start" onclick="window.location.href='/ciphers'" style="width: 100%; margin-top: 1rem;">
+                <i class="fas fa-lock-open"></i>
+                Continue Learning to Unlock
+            </button>
+        </div>
+    `;
+    
+    modal.style.display = 'block';
+}
+
+// Review Completed Challenge
+function reviewChallenge(challengeId) {
+    window.location.href = `/challenge/${challengeId}/review`;
+}
+
+// Load Leaderboard
+function loadLeaderboard() {
+    const leaderboardBody = document.getElementById('leaderboardBody');
+    
+    // Mock leaderboard data
+    const leaderboardData = [
+        { rank: 1, name: 'CryptoMaster', score: 2850, challenges: 42, streak: 21 },
+        { rank: 2, name: 'DecodeKing', score: 2740, challenges: 38, streak: 18 },
+        { rank: 3, name: 'Vinasa', score: 2650, challenges: 35, streak: 7 },
+        { rank: 4, name: 'CipherExpert', score: 2510, challenges: 32, streak: 14 },
+        { rank: 5, name: 'SecretAgent', score: 2380, challenges: 30, streak: 9 },
+        { rank: 6, name: 'CodeBreaker', score: 2250, challenges: 28, streak: 5 },
+        { rank: 7, name: 'EnigmaSolver', score: 2120, challenges: 26, streak: 12 },
+        { rank: 8, name: 'CrypticMind', score: 1980, challenges: 24, streak: 3 },
+        { rank: 9, name: 'StealthCoder', score: 1850, challenges: 22, streak: 6 },
+        { rank: 10, name: 'ByteBuster', score: 1720, challenges: 20, streak: 4 }
+    ];
+    
+    leaderboardBody.innerHTML = leaderboardData.map(player => `
+        <tr class="${player.name === 'Vinasa' ? 'current-user' : ''}">
+            <td class="rank-cell">
+                <span class="rank-badge rank-${player.rank}">${player.rank}</span>
+            </td>
+            <td class="player-cell">
+                <div class="player-info">
+                    <div class="player-avatar">${player.name.charAt(0)}</div>
+                    <div class="player-name">${player.name}</div>
+                </div>
+            </td>
+            <td class="score-cell">${player.score.toLocaleString()}</td>
+            <td class="challenges-cell">${player.challenges}</td>
+            <td class="streak-cell">
+                <div class="streak-display">
+                    <i class="fas fa-fire"></i>
+                    ${player.streak} days
+                </div>
+            </td>
+        </tr>
+    `).join('');
+}
+
+// Initialize
+document.addEventListener('DOMContentLoaded', function() {
+    // Load leaderboard
+    loadLeaderboard();
+    
+    // Highlight current category
+    const currentPath = window.location.pathname;
+    const navItems = document.querySelectorAll('.nav-item');
+    
+    navItems.forEach(item => {
+        const href = item.getAttribute('href');
+        if (href && currentPath.includes(href)) {
+            item.classList.add('active');
+        }
+    });
+    
+    // Check user status (mock - replace with actual check)
+    window.userLoggedIn = true;
+    window.userLevel = 4;
+    
+    // Close modal when clicking outside
+    document.addEventListener('click', function(event) {
+        const modal = document.getElementById('challengeModal');
+        if (event.target === modal) {
+            closeChallengeModal();
+        }
+    });
+});
+</script>
+
+<style>
+/* Additional Styles for Modal */
+.modal-section {
+    margin: 1.5rem 0;
+    padding: 1rem;
+    background: var(--background);
+    border-radius: 10px;
+}
+
+.modal-section h5 {
+    margin: 0 0 0.5rem 0;
+    color: var(--text);
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.modal-stats {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1rem;
+    margin: 1.5rem 0;
+}
+
+.stat-item {
+    text-align: center;
+    padding: 1rem;
+    background: white;
+    border-radius: 10px;
+    border: 1px solid var(--border);
+}
+
+.stat-item i {
+    font-size: 1.5rem;
+    color: var(--warning);
+    margin-bottom: 0.5rem;
+}
+
+.stat-label {
+    display: block;
+    font-size: 0.8rem;
+    color: var(--text-light);
+}
+
+.stat-value {
+    display: block;
+    font-weight: 600;
+    color: var(--text);
+    font-size: 1.1rem;
+}
+
+/* Unlock Modal */
+.unlock-modal-content {
+    text-align: center;
+}
+
+.lock-icon-large {
+    font-size: 4rem;
+    color: var(--warning);
+    margin-bottom: 1rem;
+}
+
+.requirements-list {
+    text-align: left;
+    margin: 1.5rem 0;
+}
+
+.requirement-item {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 0.75rem;
+    margin-bottom: 0.5rem;
+    background: var(--background);
+    border-radius: 10px;
+}
+
+.requirement-progress {
+    margin-left: auto;
+    font-weight: 600;
+}
+
+.progress-summary {
+    margin: 1.5rem 0;
+}
+
+.progress-text {
+    text-align: center;
+    margin-top: 0.5rem;
+    color: var(--text-light);
+    font-size: 0.9rem;
+}
+
+/* Leaderboard Styles */
+.leaderboard-section {
+    margin-top: 3rem;
+}
+
+.leaderboard-section h2 {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 1.5rem;
+    color: var(--text);
+}
+
+.leaderboard-table {
+    background: white;
+    border-radius: 15px;
+    overflow: hidden;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+}
+
+.leaderboard-table table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.leaderboard-table th {
+    background: var(--background);
+    padding: 1rem;
+    text-align: left;
+    font-weight: 600;
+    color: var(--text);
+    border-bottom: 2px solid var(--border);
+}
+
+.leaderboard-table td {
+    padding: 1rem;
+    border-bottom: 1px solid var(--border);
+}
+
+.leaderboard-table tr:last-child td {
+    border-bottom: none;
+}
+
+.leaderboard-table tr.current-user {
+    background: var(--primary-light);
+}
+
+.rank-cell {
+    width: 80px;
+}
+
+.rank-badge {
+    display: inline-block;
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    text-align: center;
+    line-height: 30px;
+    font-weight: 600;
+    color: white;
+}
+
+.rank-1 { background: gold; }
+.rank-2 { background: silver; }
+.rank-3 { background: #cd7f32; }
+.rank-4, .rank-5 { background: var(--primary); }
+.rank-6, .rank-7, .rank-8, .rank-9, .rank-10 { background: var(--text-light); }
+
+.player-info {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.player-avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: var(--primary);
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 600;
+}
+
+.player-name {
+    font-weight: 500;
+}
+
+.streak-display {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: var(--warning);
+    font-weight: 600;
+}
+</style>
+{% endblock %}

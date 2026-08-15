@@ -1,0 +1,1779 @@
+{% extends "base.html" %}
+
+{% block title %}Tutorial - DecoDify{% endblock %}
+
+{% block extra_css %}
+<style>
+    .tutorials-container {
+        max-width: 1400px;
+        margin: 0 auto;
+        padding: 2rem 1rem;
+    }
+
+    /* Header dengan Hero Banner */
+    .tutorial-hero {
+        background: linear-gradient(135deg, 
+            rgba(139, 92, 246, 0.15), 
+            rgba(99, 102, 241, 0.1));
+        border: 2px solid rgba(139, 92, 246, 0.3);
+        border-radius: 24px;
+        padding: 3rem 2rem;
+        margin-bottom: 3rem;
+        text-align: center;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .tutorial-hero::before {
+        content: '';
+        position: absolute;
+        top: -50%;
+        left: -50%;
+        width: 200%;
+        height: 200%;
+        background: radial-gradient(
+            circle at 30% 30%,
+            rgba(139, 92, 246, 0.1) 0%,
+            transparent 50%
+        );
+        animation: float 20s infinite linear;
+    }
+
+    .hero-content {
+        position: relative;
+        z-index: 2;
+    }
+
+    .tutorial-hero h1 {
+        font-size: 3rem;
+        font-weight: 800;
+        background: linear-gradient(135deg, var(--secondary), var(--primary), var(--accent));
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        margin-bottom: 1rem;
+        text-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    }
+
+    .tutorial-hero p {
+        color: var(--text);
+        font-size: 1.2rem;
+        max-width: 800px;
+        margin: 0 auto 2rem;
+        line-height: 1.6;
+    }
+
+    .hero-stats {
+        display: flex;
+        justify-content: center;
+        gap: 3rem;
+        margin-top: 2rem;
+        flex-wrap: wrap;
+    }
+
+    .hero-stat {
+        text-align: center;
+    }
+
+    .hero-stat-number {
+        font-size: 2.5rem;
+        font-weight: 800;
+        background: linear-gradient(135deg, var(--secondary), var(--primary));
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        display: block;
+        line-height: 1;
+    }
+
+    .hero-stat-label {
+        color: var(--text-muted);
+        font-size: 0.9rem;
+        margin-top: 0.5rem;
+    }
+
+    /* Search Container Enhanced */
+    .search-container {
+        max-width: 800px;
+        margin: 0 auto 3rem;
+        position: relative;
+    }
+
+    .search-wrapper {
+        position: relative;
+    }
+
+    .search-input {
+        width: 100%;
+        padding: 1.2rem 1.2rem 1.2rem 4rem;
+        background: var(--card-bg);
+        border: 2px solid var(--glass);
+        border-radius: 16px;
+        color: var(--text);
+        font-size: 1.1rem;
+        transition: all 0.3s ease;
+        backdrop-filter: blur(10px);
+    }
+
+    .search-input:focus {
+        outline: none;
+        border-color: var(--secondary);
+        box-shadow: 0 0 0 4px rgba(139, 92, 246, 0.1);
+        transform: translateY(-2px);
+    }
+
+    .search-icon {
+        position: absolute;
+        left: 1.5rem;
+        top: 50%;
+        transform: translateY(-50%);
+        color: var(--secondary);
+        font-size: 1.2rem;
+        pointer-events: none;
+    }
+
+    .search-hints {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+        margin-top: 1rem;
+        justify-content: center;
+    }
+
+    .search-hint {
+        background: rgba(139, 92, 246, 0.1);
+        color: var(--secondary);
+        padding: 0.5rem 1rem;
+        border-radius: 20px;
+        font-size: 0.9rem;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        border: 1px solid rgba(139, 92, 246, 0.2);
+    }
+
+    .search-hint:hover {
+        background: rgba(139, 92, 246, 0.2);
+        transform: translateY(-2px);
+    }
+
+    /* Categories Grid */
+    .categories-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 1.5rem;
+        margin-bottom: 4rem;
+    }
+
+    .category-card {
+        background: var(--card-bg);
+        border: 1px solid var(--glass);
+        border-radius: 20px;
+        padding: 2rem;
+        text-decoration: none;
+        color: inherit;
+        transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.1);
+        position: relative;
+        overflow: hidden;
+        display: block;
+    }
+
+    .category-card:hover {
+        transform: translateY(-10px);
+        border-color: var(--secondary);
+        box-shadow: 0 20px 40px rgba(139, 92, 246, 0.2);
+    }
+
+    .category-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 4px;
+        background: linear-gradient(90deg, var(--secondary), var(--primary));
+        opacity: 0.8;
+    }
+
+    .category-header {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        margin-bottom: 1rem;
+    }
+
+    .category-icon {
+        width: 60px;
+        height: 60px;
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.5rem;
+        color: white;
+        flex-shrink: 0;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .category-icon::before {
+        content: '';
+        position: absolute;
+        top: -50%;
+        left: -50%;
+        width: 200%;
+        height: 200%;
+        background: linear-gradient(
+            45deg,
+            transparent,
+            rgba(255, 255, 255, 0.2),
+            transparent
+        );
+        transform: rotate(45deg);
+        animation: shine 3s infinite;
+    }
+
+    @keyframes shine {
+        0% { transform: translateX(-100%) translateY(-100%) rotate(45deg); }
+        100% { transform: translateX(100%) translateY(100%) rotate(45deg); }
+    }
+
+    .category-icon-1 { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); }
+    .category-icon-2 { background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); }
+    .category-icon-3 { background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%); }
+    .category-icon-4 { background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%); }
+    .category-icon-5 { background: linear-gradient(135deg, #fa709a 0%, #fee140 100%); }
+    .category-icon-6 { background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%); }
+
+    .category-info h3 {
+        color: var(--text);
+        margin: 0;
+        font-size: 1.3rem;
+    }
+
+    .category-count {
+        background: rgba(139, 92, 246, 0.1);
+        color: var(--secondary);
+        padding: 0.25rem 0.75rem;
+        border-radius: 20px;
+        font-size: 0.8rem;
+        font-weight: 600;
+        margin-left: auto;
+    }
+
+    .category-card p {
+        color: var(--text-muted);
+        font-size: 0.95rem;
+        line-height: 1.6;
+        margin-bottom: 1.5rem;
+    }
+
+    .category-progress {
+        margin-top: 1rem;
+    }
+
+    .progress-info {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 0.5rem;
+        font-size: 0.9rem;
+        color: var(--text-muted);
+    }
+
+    .progress-bar {
+        height: 6px;
+        background: rgba(255, 255, 255, 0.1);
+        border-radius: 3px;
+        overflow: hidden;
+    }
+
+    .progress-fill {
+        height: 100%;
+        background: linear-gradient(90deg, var(--secondary), var(--primary));
+        border-radius: 3px;
+        transition: width 1s ease;
+    }
+
+    /* Tutorial Grid Enhanced */
+    .tutorials-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+        gap: 1.5rem;
+        margin-top: 2rem;
+    }
+
+    .tutorial-card {
+        background: var(--card-bg);
+        border: 1px solid var(--glass);
+        border-radius: 18px;
+        padding: 1.5rem;
+        text-decoration: none;
+        color: inherit;
+        display: block;
+        transition: all 0.3s ease;
+        position: relative;
+        overflow: hidden;
+        opacity: 1;
+        transform: translateY(0);
+        animation: slideUp 0.5s ease forwards;
+    }
+
+    @keyframes slideUp {
+        from {
+            opacity: 0;
+            transform: translateY(20px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    .tutorial-card:hover {
+        transform: translateY(-8px);
+        border-color: var(--secondary);
+        box-shadow: 0 20px 40px rgba(139, 92, 246, 0.2);
+    }
+
+    /* Premium Card */
+    .tutorial-card.premium {
+        border: 2px solid rgba(245, 158, 11, 0.3);
+        position: relative;
+    }
+
+    .tutorial-card.premium::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        right: 0;
+        width: 80px;
+        height: 80px;
+        background: linear-gradient(135deg, #f59e0b, #d97706);
+        transform: rotate(45deg) translate(40px, -40px);
+        opacity: 0.8;
+    }
+
+    .premium-badge {
+        position: absolute;
+        top: 1rem;
+        right: 1rem;
+        background: linear-gradient(135deg, #f59e0b, #d97706);
+        color: white;
+        padding: 0.4rem 1rem;
+        border-radius: 20px;
+        font-size: 0.8rem;
+        font-weight: 700;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        z-index: 2;
+    }
+
+    /* New Tutorial */
+    .tutorial-card.new::after {
+        content: 'NEW';
+        position: absolute;
+        top: 1rem;
+        left: 1rem;
+        background: linear-gradient(135deg, var(--accent), #059669);
+        color: white;
+        padding: 0.25rem 1rem;
+        border-radius: 20px;
+        font-size: 0.7rem;
+        font-weight: 700;
+        z-index: 2;
+    }
+
+    .tutorial-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        margin-bottom: 1rem;
+    }
+
+    .difficulty-badge {
+        padding: 0.4rem 0.8rem;
+        border-radius: 20px;
+        font-size: 0.8rem;
+        font-weight: 600;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.3rem;
+    }
+
+    .difficulty-beginner {
+        background: rgba(16, 185, 129, 0.2);
+        color: var(--accent);
+        border: 1px solid rgba(16, 185, 129, 0.3);
+    }
+
+    .difficulty-intermediate {
+        background: rgba(245, 158, 11, 0.2);
+        color: var(--warning);
+        border: 1px solid rgba(245, 158, 11, 0.3);
+    }
+
+    .difficulty-advanced {
+        background: rgba(239, 68, 68, 0.2);
+        color: var(--danger);
+        border: 1px solid rgba(239, 68, 68, 0.3);
+    }
+
+    .tutorial-meta {
+        display: flex;
+        gap: 0.5rem;
+        flex-wrap: wrap;
+    }
+
+    .meta-item {
+        background: rgba(255, 255, 255, 0.05);
+        padding: 0.3rem 0.7rem;
+        border-radius: 12px;
+        font-size: 0.8rem;
+        color: var(--text-muted);
+        display: flex;
+        align-items: center;
+        gap: 0.3rem;
+    }
+
+    .tutorial-card h3 {
+        color: var(--text);
+        margin: 0 0 1rem 0;
+        font-size: 1.2rem;
+        line-height: 1.4;
+    }
+
+    .tutorial-card p {
+        color: var(--text-muted);
+        font-size: 0.95rem;
+        line-height: 1.6;
+        margin-bottom: 1.5rem;
+    }
+
+    .tutorial-tags {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+        margin-bottom: 1.5rem;
+    }
+
+    .tutorial-tag {
+        padding: 0.25rem 0.75rem;
+        background: rgba(139, 92, 246, 0.1);
+        color: var(--secondary);
+        border-radius: 12px;
+        font-size: 0.8rem;
+        border: 1px solid rgba(139, 92, 246, 0.2);
+    }
+
+    .tutorial-footer {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding-top: 1rem;
+        border-top: 1px solid var(--glass);
+    }
+
+    .tutorial-progress {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .progress-text {
+        color: var(--text-muted);
+        font-size: 0.8rem;
+        min-width: 40px;
+    }
+
+    .view-tutorial-btn {
+        padding: 0.6rem 1.5rem;
+        background: linear-gradient(135deg, var(--secondary), var(--primary));
+        color: white;
+        border: none;
+        border-radius: 10px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        white-space: nowrap;
+    }
+
+    .view-tutorial-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 20px rgba(139, 92, 246, 0.3);
+    }
+
+    .view-tutorial-btn.premium {
+        background: linear-gradient(135deg, #f59e0b, #d97706);
+    }
+
+    .view-tutorial-btn.premium:hover {
+        box-shadow: 0 8px 20px rgba(245, 158, 11, 0.3);
+    }
+
+    /* Google Reference Section */
+    .google-references {
+        margin: 4rem 0;
+        padding: 2rem;
+        background: linear-gradient(135deg, 
+            rgba(66, 133, 244, 0.1), 
+            rgba(52, 168, 83, 0.1));
+        border: 1px solid rgba(66, 133, 244, 0.2);
+        border-radius: 20px;
+        text-align: center;
+    }
+
+    .google-references h2 {
+        color: var(--text);
+        font-size: 2rem;
+        margin-bottom: 1rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 1rem;
+    }
+
+    .google-references h2 i {
+        color: #4285F4;
+        font-size: 2rem;
+    }
+
+    .google-references p {
+        color: var(--text-muted);
+        font-size: 1.1rem;
+        max-width: 800px;
+        margin: 0 auto 2rem;
+    }
+
+    .reference-search {
+        max-width: 600px;
+        margin: 2rem auto;
+        position: relative;
+    }
+
+    .reference-search input {
+        width: 100%;
+        padding: 1rem 1rem 1rem 3rem;
+        background: white;
+        border: 2px solid #4285F4;
+        border-radius: 12px;
+        color: #333;
+        font-size: 1rem;
+        box-shadow: 0 4px 12px rgba(66, 133, 244, 0.2);
+    }
+
+    .reference-search i {
+        position: absolute;
+        left: 1rem;
+        top: 50%;
+        transform: translateY(-50%);
+        color: #4285F4;
+        font-size: 1.2rem;
+    }
+
+    .reference-tips {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 1.5rem;
+        margin-top: 3rem;
+    }
+
+    .reference-tip {
+        background: var(--card-bg);
+        border: 1px solid var(--glass);
+        border-radius: 15px;
+        padding: 1.5rem;
+        text-align: left;
+    }
+
+    .reference-tip h4 {
+        color: var(--text);
+        margin-bottom: 0.5rem;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .reference-tip h4 i {
+        color: #34A853;
+    }
+
+    .reference-tip p {
+        color: var(--text-muted);
+        font-size: 0.95rem;
+        margin: 0;
+    }
+
+    /* Quick Links */
+    .quick-links {
+        margin: 3rem 0;
+    }
+
+    .quick-links h2 {
+        color: var(--text);
+        font-size: 1.8rem;
+        margin-bottom: 1.5rem;
+        text-align: center;
+    }
+
+    .links-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 1rem;
+    }
+
+    .quick-link {
+        background: var(--card-bg);
+        border: 1px solid var(--glass);
+        border-radius: 15px;
+        padding: 1.5rem;
+        text-decoration: none;
+        color: inherit;
+        transition: all 0.3s ease;
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+    }
+
+    .quick-link:hover {
+        transform: translateY(-5px);
+        border-color: var(--secondary);
+        box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+    }
+
+    .quick-link-icon {
+        width: 50px;
+        height: 50px;
+        border-radius: 10px;
+        background: linear-gradient(135deg, var(--secondary), var(--primary));
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-size: 1.2rem;
+        flex-shrink: 0;
+    }
+
+    .quick-link-content h4 {
+        color: var(--text);
+        margin: 0 0 0.25rem 0;
+    }
+
+    .quick-link-content p {
+        color: var(--text-muted);
+        font-size: 0.9rem;
+        margin: 0;
+    }
+
+    /* Responsive */
+    @media (max-width: 1024px) {
+        .tutorials-grid {
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+        }
+        
+        .categories-grid {
+            grid-template-columns: repeat(2, 1fr);
+        }
+    }
+
+    @media (max-width: 768px) {
+        .tutorial-hero h1 {
+            font-size: 2.2rem;
+        }
+        
+        .tutorial-hero p {
+            font-size: 1.1rem;
+        }
+        
+        .hero-stats {
+            gap: 2rem;
+        }
+        
+        .hero-stat-number {
+            font-size: 2rem;
+        }
+        
+        .categories-grid {
+            grid-template-columns: 1fr;
+        }
+        
+        .tutorials-grid {
+            grid-template-columns: 1fr;
+        }
+        
+        .reference-tips {
+            grid-template-columns: 1fr;
+        }
+        
+        .links-grid {
+            grid-template-columns: 1fr;
+        }
+    }
+
+    @media (max-width: 480px) {
+        .tutorial-hero {
+            padding: 2rem 1rem;
+        }
+        
+        .tutorial-hero h1 {
+            font-size: 1.8rem;
+        }
+        
+        .hero-stats {
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+        
+        .tutorial-meta {
+            flex-direction: column;
+            align-items: flex-start;
+        }
+        
+        .tutorial-footer {
+            flex-direction: column;
+            gap: 1rem;
+            align-items: flex-start;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="tutorials-container">
+    <!-- Hero Banner -->
+    <div class="tutorial-hero">
+        <div class="hero-content">
+            <h1>🎓 Gateway to Cryptography Knowledge</h1>
+            <p>Jelajahi dunia kriptografi melalui kumpulan tutorial terstruktur. Kami adalah jembatan menuju sumber belajar terbaik di internet. Mulai dari dasar hingga konsep lanjutan dengan referensi langsung ke materi terpercaya.</p>
+            
+            <div class="hero-stats">
+                <div class="hero-stat">
+                    <span class="hero-stat-number">24+</span>
+                    <span class="hero-stat-label">Tutorial Lengkap</span>
+                </div>
+                <div class="hero-stat">
+                    <span class="hero-stat-number">150+</span>
+                    <span class="hero-stat-label">Referensi Artikel</span>
+                </div>
+                <div class="hero-stat">
+                    <span class="hero-stat-number">3</span>
+                    <span class="hero-stat-label">Tingkat Kesulitan</span>
+                </div>
+                <div class="hero-stat">
+                    <span class="hero-stat-number">85%</span>
+                    <span class="hero-stat-label">User Satisfaction</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Search Section -->
+    <div class="search-container">
+        <div class="search-wrapper">
+            <input type="text" 
+                   class="search-input" 
+                   id="searchTutorials"
+                   placeholder="Cari tutorial kriptografi: Caesar cipher, RSA, AES, Blockchain..."
+                   onkeypress="handleSearch(event)">
+            <i class="fas fa-search search-icon"></i>
+        </div>
+        
+        <div class="search-hints">
+            <span class="search-hint" onclick="searchTutorial('caesar cipher')">Caesar Cipher</span>
+            <span class="search-hint" onclick="searchTutorial('vigenère')">Vigenère Cipher</span>
+            <span class="search-hint" onclick="searchTutorial('rsa encryption')">RSA Encryption</span>
+            <span class="search-hint" onclick="searchTutorial('aes')">AES</span>
+            <span class="search-hint" onclick="searchTutorial('hash function')">Hash Functions</span>
+            <span class="search-hint" onclick="searchTutorial('blockchain')">Blockchain</span>
+        </div>
+    </div>
+
+    <!-- Google References -->
+    <div class="google-references">
+        <h2><i class="fab fa-google"></i> Gateway to Google Knowledge</h2>
+        <p>Kami menghubungkan Anda langsung ke artikel, penelitian, dan sumber belajar terpercaya di Google. Setiap tutorial dilengkapi dengan referensi untuk eksplorasi lebih dalam.</p>
+        
+        <div class="reference-search">
+            <input type="text" 
+                   id="googleSearch"
+                   placeholder="Search langsung di Google untuk kriptografi..."
+                   onkeypress="searchGoogle(event)">
+            <i class="fas fa-search"></i>
+        </div>
+        
+        <div class="reference-tips">
+            <div class="reference-tip">
+                <h4><i class="fas fa-book-open"></i> Sumber Tepercaya</h4>
+                <p>Referensi dari universitas, jurnal penelitian, dan dokumentasi resmi</p>
+            </div>
+            <div class="reference-tip">
+                <h4><i class="fas fa-code"></i> Implementasi Praktis</h4>
+                <p>GitHub repositories dengan contoh kode Python, JavaScript, C++</p>
+            </div>
+            <div class="reference-tip">
+                <h4><i class="fas fa-newspaper"></i> Artikel Terbaru</h4>
+                <p>Update teknologi kriptografi dan keamanan terkini</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Categories Grid -->
+    <h2 style="color: var(--text); font-size: 2rem; margin: 3rem 0 2rem 0;">📁 Kategori Pembelajaran</h2>
+    
+    <div class="categories-grid">
+        <a href="/templates/learning/dasar_kriptografi" class="category-card">
+            <div class="category-header">
+                <div class="category-icon category-icon-1">
+                    <i class="fas fa-lock"></i>
+                </div>
+                <div class="category-info">
+                    <h3>Dasar Kriptografi</h3>
+                </div>
+                <span class="category-count">6 Tutorial</span>
+            </div>
+            <p>Konsep dasar, sejarah, dan terminologi penting untuk pemula yang baru memulai.</p>
+            <div class="category-progress">
+                <div class="progress-info">
+                    <span>Progress</span>
+                    <span>5/6 selesai</span>
+                </div>
+                <div class="progress-bar">
+                    <div class="progress-fill" style="width: 85%"></div>
+                </div>
+            </div>
+        </a>
+
+        <a href="/tutorials/klasik" class="category-card">
+            <div class="category-header">
+                <div class="category-icon category-icon-2">
+                    <i class="fas fa-landmark"></i>
+                </div>
+                <div class="category-info">
+                    <h3>Cipher Klasik</h3>
+                </div>
+                <span class="category-count">8 Tutorial</span>
+            </div>
+            <p>Cipher bersejarah dari Caesar, Vigenère, Playfair hingga Enigma Machine.</p>
+            <div class="category-progress">
+                <div class="progress-info">
+                    <span>Progress</span>
+                    <span>3/8 selesai</span>
+                </div>
+                <div class="progress-bar">
+                    <div class="progress-fill" style="width: 45%"></div>
+                </div>
+            </div>
+        </a>
+
+        <a href="/tutorials/modern" class="category-card">
+            <div class="category-header">
+                <div class="category-icon category-icon-3">
+                    <i class="fas fa-microchip"></i>
+                </div>
+                <div class="category-info">
+                    <h3>Kriptografi Modern</h3>
+                </div>
+                <span class="category-count">5 Tutorial</span>
+            </div>
+            <p>RSA, AES, Hash Functions, Diffie-Hellman, dan kriptografi asimetris modern.</p>
+            <div class="category-progress">
+                <div class="progress-info">
+                    <span>Progress</span>
+                    <span>1/5 selesai</span>
+                </div>
+                <div class="progress-bar">
+                    <div class="progress-fill" style="width: 20%"></div>
+                </div>
+            </div>
+        </a>
+
+        <a href="/tutorials/cryptanalysis" class="category-card">
+            <div class="category-header">
+                <div class="category-icon category-icon-4">
+                    <i class="fas fa-crosshairs"></i>
+                </div>
+                <div class="category-info">
+                    <h3>Kriptanalisis</h3>
+                </div>
+                <span class="category-count">5 Tutorial</span>
+            </div>
+            <p>Teknik memecahkan cipher: Frequency Analysis, Brute Force, dan Side-Channel attacks.</p>
+            <div class="category-progress">
+                <div class="progress-info">
+                    <span>Progress</span>
+                    <span>3/5 selesai</span>
+                </div>
+                <div class="progress-bar">
+                    <div class="progress-fill" style="width: 65%"></div>
+                </div>
+            </div>
+        </a>
+
+        <a href="/tutorials/applications" class="category-card">
+            <div class="category-header">
+                <div class="category-icon category-icon-5">
+                    <i class="fas fa-mobile-alt"></i>
+                </div>
+                <div class="category-info">
+                    <h3>Aplikasi Praktis</h3>
+                </div>
+                <span class="category-count">4 Tutorial</span>
+            </div>
+            <p>Implementasi dalam SSL/TLS, Blockchain, Password Security, dan Messaging Apps.</p>
+            <div class="category-progress">
+                <div class="progress-info">
+                    <span>Progress</span>
+                    <span>2/4 selesai</span>
+                </div>
+                <div class="progress-bar">
+                    <div class="progress-fill" style="width: 50%"></div>
+                </div>
+            </div>
+        </a>
+
+        <a href="/tutorials/advanced" class="category-card premium">
+            <div class="category-header">
+                <div class="category-icon category-icon-6">
+                    <i class="fas fa-rocket"></i>
+                </div>
+                <div class="category-info">
+                    <h3>Topik Lanjutan</h3>
+                </div>
+                <span class="category-count">8 Tutorial</span>
+            </div>
+            <p>Zero-Knowledge Proofs, Homomorphic Encryption, Post-Quantum Cryptography, dan lainnya.</p>
+            <div class="category-progress">
+                <div class="progress-info">
+                    <span>Progress</span>
+                    <span>0/8 selesai</span>
+                </div>
+                <div class="progress-bar">
+                    <div class="progress-fill" style="width: 0%"></div>
+                </div>
+            </div>
+            <div style="text-align: center; margin-top: 1rem;">
+                <span class="view-tutorial-btn premium">
+                    <i class="fas fa-crown"></i> Buka Akses Premium
+                </span>
+            </div>
+        </a>
+    </div>
+
+    <!-- Featured Tutorials -->
+    <h2 style="color: var(--text); font-size: 2rem; margin: 3rem 0 2rem 0;">⭐ Tutorial Unggulan</h2>
+    
+    <div class="tutorials-grid" id="tutorialsGrid">
+        <!-- Tutorial 1 -->
+        <div class="tutorial-card new" onclick="openTutorial('caesar-cipher')">
+            <div class="tutorial-header">
+                <div class="tutorial-meta">
+                    <span class="difficulty-badge difficulty-beginner">
+                        <i class="fas fa-seedling"></i> Pemula
+                    </span>
+                </div>
+                <span class="meta-item">
+                    <i class="fas fa-clock"></i> 30 min
+                </span>
+            </div>
+            
+            <h3>Caesar Cipher: Cipher Pertama dalam Sejarah</h3>
+            <p>Pelajari cipher substitusi paling terkenal yang digunakan Julius Caesar untuk komunikasi militer rahasia. Tutorial ini mencakup implementasi Python dan analisis kelemahan.</p>
+            
+            <div class="tutorial-tags">
+                <span class="tutorial-tag">Substitusi</span>
+                <span class="tutorial-tag">Sejarah</span>
+                <span class="tutorial-tag">Python</span>
+                <span class="tutorial-tag">Dasar</span>
+            </div>
+            
+            <div class="tutorial-footer">
+                <div class="tutorial-progress">
+                    <div class="progress-text">85% selesai</div>
+                </div>
+                <button class="view-tutorial-btn">
+                    <i class="fas fa-external-link-alt"></i> Pelajari Sekarang
+                </button>
+            </div>
+        </div>
+
+        <!-- Tutorial 2 -->
+        <div class="tutorial-card" onclick="openTutorial('vigenere-cipher')">
+            <div class="tutorial-header">
+                <div class="tutorial-meta">
+                    <span class="difficulty-badge difficulty-intermediate">
+                        <i class="fas fa-chart-line"></i> Menengah
+                    </span>
+                </div>
+                <span class="meta-item">
+                    <i class="fas fa-clock"></i> 45 min
+                </span>
+            </div>
+            
+            <h3>Vigenère Cipher: Polialfabetik Pertama</h3>
+            <p>Pahami tabel Vigenère dan sistem polialfabetik yang menjadi evolusi dari cipher substitusi sederhana. Termasuk implementasi dan frequency analysis.</p>
+            
+            <div class="tutorial-tags">
+                <span class="tutorial-tag">Polialfabetik</span>
+                <span class="tutorial-tag">Tabel</span>
+                <span class="tutorial-tag">Python</span>
+                <span class="tutorial-tag">Analisis</span>
+            </div>
+            
+            <div class="tutorial-footer">
+                <div class="tutorial-progress">
+                    <div class="progress-text">60% selesai</div>
+                </div>
+                <button class="view-tutorial-btn">
+                    <i class="fas fa-external-link-alt"></i> Lanjutkan
+                </button>
+            </div>
+        </div>
+
+        <!-- Tutorial 3 (Premium) -->
+        <div class="tutorial-card premium" onclick="openPremiumTutorial('rsa-encryption')">
+            <div class="premium-badge">
+                <i class="fas fa-crown"></i> PREMIUM
+            </div>
+            
+            <div class="tutorial-header">
+                <div class="tutorial-meta">
+                    <span class="difficulty-badge difficulty-advanced">
+                        <i class="fas fa-rocket"></i> Lanjutan
+                    </span>
+                </div>
+                <span class="meta-item">
+                    <i class="fas fa-clock"></i> 90 min
+                </span>
+            </div>
+            
+            <h3>RSA Encryption: Kriptografi Kunci Publik</h3>
+            <p>Pelajari matematika di balik RSA, algoritma yang mengamankan internet modern. Faktorisasi bilangan prima, totient function, dan modular arithmetic.</p>
+            
+            <div class="tutorial-tags">
+                <span class="tutorial-tag">Asimetris</span>
+                <span class="tutorial-tag">Kunci Publik</span>
+                <span class="tutorial-tag">Matematika</span>
+                <span class="tutorial-tag">Python</span>
+            </div>
+            
+            <div class="tutorial-footer">
+                <div class="tutorial-progress">
+                    <div class="progress-text">Premium</div>
+                </div>
+                <button class="view-tutorial-btn premium">
+                    <i class="fas fa-crown"></i> Upgrade untuk Akses
+                </button>
+            </div>
+        </div>
+
+        <!-- Tutorial 4 -->
+        <div class="tutorial-card" onclick="openTutorial('frequency-analysis')">
+            <div class="tutorial-header">
+                <div class="tutorial-meta">
+                    <span class="difficulty-badge difficulty-intermediate">
+                        <i class="fas fa-chart-line"></i> Menengah
+                    </span>
+                </div>
+                <span class="meta-item">
+                    <i class="fas fa-clock"></i> 40 min
+                </span>
+            </div>
+            
+            <h3>Frequency Analysis: Memecahkan Substitusi</h3>
+            <p>Gunakan analisis statistik karakter untuk memecahkan cipher substitusi tanpa mengetahui kunci. Implementasi Python dengan visualisasi data.</p>
+            
+            <div class="tutorial-tags">
+                <span class="tutorial-tag">Analisis</span>
+                <span class="tutorial-tag">Statistik</span>
+                <span class="tutorial-tag">Python</span>
+                <span class="tutorial-tag">Visualisasi</span>
+            </div>
+            
+            <div class="tutorial-footer">
+                <div class="tutorial-progress">
+                    <div class="progress-text">30% selesai</div>
+                </div>
+                <button class="view-tutorial-btn">
+                    <i class="fas fa-external-link-alt"></i> Pelajari Sekarang
+                </button>
+            </div>
+        </div>
+
+        <!-- Tutorial 5 -->
+        <div class="tutorial-card" onclick="openTutorial('hash-functions')">
+            <div class="tutorial-header">
+                <div class="tutorial-meta">
+                    <span class="difficulty-badge difficulty-intermediate">
+                        <i class="fas fa-chart-line"></i> Menengah
+                    </span>
+                </div>
+                <span class="meta-item">
+                    <i class="fas fa-clock"></i> 55 min
+                </span>
+            </div>
+            
+            <h3>Hash Functions: Keamanan Password & Integritas Data</h3>
+            <p>Pelajari MD5, SHA-256, bcrypt, dan aplikasinya dalam keamanan password, digital signatures, dan blockchain.</p>
+            
+            <div class="tutorial-tags">
+                <span class="tutorial-tag">Hash</span>
+                <span class="tutorial-tag">Password</span>
+                <span class="tutorial-tag">Blockchain</span>
+                <span class="tutorial-tag">Keamanan</span>
+            </div>
+            
+            <div class="tutorial-footer">
+                <div class="tutorial-progress">
+                    <div class="progress-text">100% selesai</div>
+                </div>
+                <button class="view-tutorial-btn">
+                    <i class="fas fa-redo"></i> Review
+                </button>
+            </div>
+        </div>
+
+        <!-- Tutorial 6 (New) -->
+        <div class="tutorial-card new" onclick="openTutorial('blockchain-crypto')">
+            <div class="tutorial-header">
+                <div class="tutorial-meta">
+                    <span class="difficulty-badge difficulty-advanced">
+                        <i class="fas fa-rocket"></i> Lanjutan
+                    </span>
+                </div>
+                <span class="meta-item">
+                    <i class="fas fa-clock"></i> 75 min
+                </span>
+            </div>
+            
+            <h3>Kriptografi dalam Blockchain & Cryptocurrency</h3>
+            <p>Pahami cryptographic hash functions, digital signatures, dan consensus algorithms yang mendukung Bitcoin dan Ethereum.</p>
+            
+            <div class="tutorial-tags">
+                <span class="tutorial-tag">Blockchain</span>
+                <span class="tutorial-tag">Bitcoin</span>
+                <span class="tutorial-tag">Cryptocurrency</span>
+                <span class="tutorial-tag">Hash</span>
+            </div>
+            
+            <div class="tutorial-footer">
+                <div class="tutorial-progress">
+                    <div class="progress-text">0% selesai</div>
+                </div>
+                <button class="view-tutorial-btn">
+                    <i class="fas fa-external-link-alt"></i> Mulai Belajar
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Quick Links to External Resources -->
+    <div class="quick-links">
+        <h2>🚀 Akses Cepat ke Sumber Belajar</h2>
+        
+        <div class="links-grid">
+            <a href="https://www.khanacademy.org/computing/computer-science/cryptography" 
+               target="_blank" 
+               class="quick-link">
+                <div class="quick-link-icon">
+                    <i class="fas fa-graduation-cap"></i>
+                </div>
+                <div class="quick-link-content">
+                    <h4>Khan Academy Cryptography</h4>
+                    <p>Video tutorial interaktif dari dasar hingga lanjutan</p>
+                </div>
+            </a>
+            
+            <a href="https://www.youtube.com/playlist?list=PL8dPuuaLjXtNlUrzyH5r6jN9ulIgZBpdo" 
+               target="_blank" 
+               class="quick-link">
+                <div class="quick-link-icon">
+                    <i class="fab fa-youtube"></i>
+                </div>
+                <div class="quick-link-content">
+                    <h4>Computerphile Cryptography</h4>
+                    <p>Kanal YouTube dengan penjelasan mendalam</p>
+                </div>
+            </a>
+            
+            <a href="https://www.coursera.org/learn/crypto" 
+               target="_blank" 
+               class="quick-link">
+                <div class="quick-link-icon">
+                    <i class="fas fa-university"></i>
+                </div>
+                <div class="quick-link-content">
+                    <h4>Stanford Cryptography Course</h4>
+                    <p>Kursus online gratis dari Stanford University</p>
+                </div>
+            </a>
+            
+            <a href="https://github.com/topics/cryptography" 
+               target="_blank" 
+               class="quick-link">
+                <div class="quick-link-icon">
+                    <i class="fab fa-github"></i>
+                </div>
+                <div class="quick-link-content">
+                    <h4>GitHub Cryptography Projects</h4>
+                    <p>Implementasi kode open source untuk dipelajari</p>
+                </div>
+            </a>
+            
+            <a href="https://cryptopals.com/" 
+               target="_blank" 
+               class="quick-link">
+                <div class="quick-link-icon">
+                    <i class="fas fa-flag-checkered"></i>
+                </div>
+                <div class="quick-link-content">
+                    <h4>CryptoPals Challenges</h4>
+                    <p>Tantangan praktis untuk melatih skill kriptografi</p>
+                </div>
+            </a>
+            
+            <a href="https://www.reddit.com/r/crypto/" 
+               target="_blank" 
+               class="quick-link">
+                <div class="quick-link-icon">
+                    <i class="fab fa-reddit"></i>
+                </div>
+                <div class="quick-link-content">
+                    <h4>r/crypto Community</h4>
+                    <p>Diskusi dengan ahli dan praktisi kriptografi</p>
+                </div>
+            </a>
+        </div>
+    </div>
+</div>
+
+<!-- Tutorial Detail Modal -->
+<div id="tutorialModal" class="tutorial-modal">
+    <div class="modal-content">
+        <button class="modal-close" onclick="closeModal()">
+            <i class="fas fa-times"></i>
+        </button>
+        
+        <div class="modal-body" id="modalBody">
+            <!-- Content will be loaded here -->
+        </div>
+    </div>
+</div>
+
+<script>
+    // Tutorial Data Structure
+    const tutorials = {
+        'caesar-cipher': {
+            title: 'Caesar Cipher: Cipher Pertama dalam Sejarah',
+            difficulty: 'beginner',
+            duration: '30 menit',
+            tags: ['Substitusi', 'Sejarah', 'Python', 'Dasar'],
+            description: 'Pelajari cipher substitusi paling terkenal yang digunakan Julius Caesar untuk komunikasi militer rahasia.',
+            content: `
+                <div class="tutorial-content">
+                    <h2>Caesar Cipher</h2>
+                    <p>Cipher substitusi sederhana di mana setiap huruf digeser sejumlah posisi tertentu dalam alfabet.</p>
+                    
+                    <h3>Google Search References:</h3>
+                    <div class="google-links">
+                        <a href="https://en.wikipedia.org/wiki/Caesar_cipher" target="_blank">
+                            <i class="fab fa-wikipedia-w"></i> Wikipedia - Caesar Cipher
+                        </a>
+                        <a href="https://www.khanacademy.org/computing/computer-science/cryptography/crypt/v/caesar-cipher" target="_blank">
+                            <i class="fas fa-graduation-cap"></i> Khan Academy Video
+                        </a>
+                        <a href="https://www.geeksforgeeks.org/caesar-cipher-in-cryptography/" target="_blank">
+                            <i class="fas fa-code"></i> GeeksforGeeks Implementation
+                        </a>
+                        <a href="https://www.youtube.com/watch?v=sMOZf4GN3oc" target="_blank">
+                            <i class="fab fa-youtube"></i> Computerphile Explanation
+                        </a>
+                    </div>
+                </div>
+            `
+        },
+        'vigenere-cipher': {
+            title: 'Vigenère Cipher: Polialfabetik Pertama',
+            difficulty: 'intermediate',
+            duration: '45 menit',
+            tags: ['Polialfabetik', 'Tabel', 'Python', 'Analisis'],
+            description: 'Pahami tabel Vigenère dan sistem polialfabetik yang menjadi evolusi dari cipher substitusi sederhana.',
+            content: `
+                <div class="tutorial-content">
+                    <h2>Vigenère Cipher</h2>
+                    <p>Cipher polialfabetik yang menggunakan serangkaian Caesar ciphers berdasarkan huruf-huruf dalam keyword.</p>
+                    
+                    <h3>Google Search References:</h3>
+                    <div class="google-links">
+                        <a href="https://en.wikipedia.org/wiki/Vigen%C3%A8re_cipher" target="_blank">
+                            <i class="fab fa-wikipedia-w"></i> Wikipedia - Vigenère Cipher
+                        </a>
+                        <a href="https://www.youtube.com/watch?v=SkJcmCaHqS0" target="_blank">
+                            <i class="fab fa-youtube"></i> 3Blue1Brown Explanation
+                        </a>
+                        <a href="https://cryptii.com/pipes/vigenere-cipher" target="_blank">
+                            <i class="fas fa-tools"></i> Online Vigenère Tool
+                        </a>
+                        <a href="https://www.cs.uri.edu/cryptography/classicalvigenere.htm" target="_blank">
+                            <i class="fas fa-university"></i> University of Rhode Island Tutorial
+                        </a>
+                    </div>
+                </div>
+            `
+        },
+        'rsa-encryption': {
+            title: 'RSA Encryption: Kriptografi Kunci Publik',
+            difficulty: 'advanced',
+            duration: '90 menit',
+            tags: ['Asimetris', 'Kunci Publik', 'Matematika', 'Python'],
+            description: 'Pelajari matematika di balik RSA, algoritma yang mengamankan internet modern.',
+            content: `
+                <div class="tutorial-content">
+                    <h2>RSA Encryption</h2>
+                    <p>Algoritma kriptografi kunci publik yang digunakan untuk enkripsi dan tanda tangan digital.</p>
+                    
+                    <h3>Google Search References:</h3>
+                    <div class="google-links">
+                        <a href="https://en.wikipedia.org/wiki/RSA_(cryptosystem)" target="_blank">
+                            <i class="fab fa-wikipedia-w"></i> Wikipedia - RSA Cryptosystem
+                        </a>
+                        <a href="https://www.youtube.com/watch?v=wXB-V_Keiu8" target="_blank">
+                            <i class="fab fa-youtube"></i> RSA Explained
+                        </a>
+                        <a href="https://cryptobook.nakov.com/asymmetric-key-ciphers/rsa-encrypt-decrypt-examples" target="_blank">
+                            <i class="fas fa-book"></i> Practical Cryptography
+                        </a>
+                        <a href="https://www.di-mgt.com.au/rsa_alg.html" target="_blank">
+                            <i class="fas fa-calculator"></i> RSA Algorithm Details
+                        </a>
+                    </div>
+                </div>
+            `
+        }
+    };
+
+    // Global Variables
+    let currentTutorial = null;
+    let isPremiumUser = false;
+
+    // Check Premium Status
+    function checkPremiumStatus() {
+        // In real app, check from localStorage or backend
+        const premium = localStorage.getItem('decoDify_premium');
+        isPremiumUser = premium === 'true';
+    }
+
+    // Open Tutorial
+    function openTutorial(tutorialId) {
+        const tutorial = tutorials[tutorialId];
+        if (!tutorial) return;
+        
+        currentTutorial = tutorialId;
+        
+        // Show tutorial in modal
+        const modal = document.getElementById('tutorialModal');
+        const modalBody = document.getElementById('modalBody');
+        
+        modalBody.innerHTML = `
+            <div class="tutorial-header">
+                <h2>${tutorial.title}</h2>
+                <div class="tutorial-meta">
+                    <span class="difficulty-badge difficulty-${tutorial.difficulty}">
+                        ${tutorial.difficulty === 'beginner' ? 'Pemula' : 
+                          tutorial.difficulty === 'intermediate' ? 'Menengah' : 'Lanjutan'}
+                    </span>
+                    <span class="duration">${tutorial.duration}</span>
+                </div>
+            </div>
+            
+            <div class="tutorial-description">
+                <p>${tutorial.description}</p>
+            </div>
+            
+            ${tutorial.content}
+            
+            <div class="tutorial-actions">
+                <button class="btn-primary" onclick="startTutorial('${tutorialId}')">
+                    <i class="fas fa-play"></i> Mulai Tutorial
+                </button>
+                <button class="btn-secondary" onclick="searchGoogleReferences('${tutorialId}')">
+                    <i class="fab fa-google"></i> Cari Referensi di Google
+                </button>
+            </div>
+        `;
+        
+        modal.style.display = 'flex';
+        document.body.style.overflow = 'hidden';
+    }
+
+    // Open Premium Tutorial
+    function openPremiumTutorial(tutorialId) {
+        if (!isPremiumUser) {
+            showUpgradeModal();
+            return;
+        }
+        openTutorial(tutorialId);
+    }
+
+    // Close Modal
+    function closeModal() {
+        const modal = document.getElementById('tutorialModal');
+        modal.style.display = 'none';
+        document.body.style.overflow = 'auto';
+    }
+
+    // Start Tutorial
+    function startTutorial(tutorialId) {
+        // In real app, navigate to tutorial page or start lesson
+        window.location.href = `/tutorial/${tutorialId}/start`;
+    }
+
+    // Search Google References
+    function searchGoogleReferences(tutorialId) {
+        const tutorial = tutorials[tutorialId];
+        const searchQuery = encodeURIComponent(tutorial.title + ' cryptography tutorial');
+        window.open(`https://www.google.com/search?q=${searchQuery}`, '_blank');
+    }
+
+    // Handle Search
+    function handleSearch(event) {
+        if (event.key === 'Enter') {
+            const searchTerm = document.getElementById('searchTutorials').value;
+            if (searchTerm.trim()) {
+                // Search in tutorials
+                filterTutorials(searchTerm.toLowerCase());
+            }
+        }
+    }
+
+    // Search Tutorial from hint
+    function searchTutorial(term) {
+        document.getElementById('searchTutorials').value = term;
+        filterTutorials(term.toLowerCase());
+    }
+
+    // Search Google from input
+    function searchGoogle(event) {
+        if (event.key === 'Enter') {
+            const searchTerm = document.getElementById('googleSearch').value;
+            if (searchTerm.trim()) {
+                const query = encodeURIComponent(searchTerm + ' cryptography');
+                window.open(`https://www.google.com/search?q=${query}`, '_blank');
+            }
+        }
+    }
+
+    // Filter Tutorials
+    function filterTutorials(searchTerm) {
+        const tutorialCards = document.querySelectorAll('.tutorial-card');
+        let found = false;
+        
+        tutorialCards.forEach(card => {
+            const title = card.querySelector('h3').textContent.toLowerCase();
+            const description = card.querySelector('p').textContent.toLowerCase();
+            const tags = Array.from(card.querySelectorAll('.tutorial-tag')).map(tag => tag.textContent.toLowerCase());
+            
+            if (title.includes(searchTerm) || 
+                description.includes(searchTerm) || 
+                tags.some(tag => tag.includes(searchTerm))) {
+                card.style.display = 'block';
+                card.style.animation = 'slideUp 0.5s ease';
+                found = true;
+            } else {
+                card.style.display = 'none';
+            }
+        });
+        
+        // Show message if no results
+        if (!found) {
+            showNoResultsMessage(searchTerm);
+        }
+    }
+
+    // Show No Results Message
+    function showNoResultsMessage(searchTerm) {
+        const modal = document.getElementById('tutorialModal');
+        const modalBody = document.getElementById('modalBody');
+        
+        modalBody.innerHTML = `
+            <div class="no-results">
+                <i class="fas fa-search" style="font-size: 3rem; color: var(--text-muted); margin-bottom: 1rem;"></i>
+                <h3>Tidak ada hasil untuk "${searchTerm}"</h3>
+                <p>Mungkin tutorial ini belum tersedia. Coba cari di Google untuk referensi:</p>
+                <div class="google-search-suggestion">
+                    <a href="https://www.google.com/search?q=${encodeURIComponent(searchTerm + ' cryptography tutorial')}" 
+                       target="_blank" 
+                       class="btn-primary">
+                        <i class="fab fa-google"></i> Cari di Google
+                    </a>
+                </div>
+                <p class="suggestion">Saran: Coba dengan kata kunci: "caesar cipher", "RSA", "AES", "hash functions"</p>
+            </div>
+        `;
+        
+        modal.style.display = 'flex';
+    }
+
+    // Show Upgrade Modal
+    function showUpgradeModal() {
+        const modal = document.getElementById('tutorialModal');
+        const modalBody = document.getElementById('modalBody');
+        
+        modalBody.innerHTML = `
+            <div class="upgrade-prompt">
+                <i class="fas fa-crown" style="font-size: 3rem; background: linear-gradient(135deg, #f59e0b, #d97706); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 1rem;"></i>
+                <h3>Akses Tutorial Premium</h3>
+                <p>Upgrade ke DecoDify Premium untuk mengakses semua tutorial lanjutan:</p>
+                <ul class="premium-features">
+                    <li><i class="fas fa-check"></i> RSA, AES, Diffie-Hellman</li>
+                    <li><i class="fas fa-check"></i> Blockchain Cryptography</li>
+                    <li><i class="fas fa-check"></i> Advanced Cryptanalysis</li>
+                    <li><i class="fas fa-check"></i> Video Course Premium</li>
+                </ul>
+                <div class="upgrade-actions">
+                    <button class="btn-premium" onclick="window.location.href='/premium'">
+                        <i class="fas fa-crown"></i> Upgrade Sekarang
+                    </button>
+                    <button class="btn-secondary" onclick="closeModal()">
+                        Nanti Saja
+                    </button>
+                </div>
+            </div>
+        `;
+        
+        modal.style.display = 'flex';
+    }
+
+    // Initialize
+    document.addEventListener('DOMContentLoaded', function() {
+        checkPremiumStatus();
+        
+        // Close modal on outside click
+        const modal = document.getElementById('tutorialModal');
+        modal.addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeModal();
+            }
+        });
+        
+        // Add click animations to cards
+        document.querySelectorAll('.tutorial-card').forEach(card => {
+            card.addEventListener('click', function() {
+                this.style.transform = 'scale(0.98)';
+                setTimeout(() => {
+                    this.style.transform = '';
+                }, 150);
+            });
+        });
+    });
+
+    // CSS for Modal
+    const modalStyles = `
+        .tutorial-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(5px);
+            z-index: 10000;
+            justify-content: center;
+            align-items: center;
+            animation: fadeIn 0.3s ease;
+        }
+        
+        .modal-content {
+            background: var(--card-bg);
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--glass);
+            border-radius: 20px;
+            padding: 2rem;
+            max-width: 800px;
+            width: 90%;
+            max-height: 90vh;
+            overflow-y: auto;
+            position: relative;
+            animation: slideUp 0.4s ease;
+        }
+        
+        .modal-close {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid var(--glass);
+            color: var(--text-muted);
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+        }
+        
+        .modal-close:hover {
+            background: rgba(239, 68, 68, 0.1);
+            color: var(--danger);
+            border-color: rgba(239, 68, 68, 0.3);
+        }
+        
+        .modal-body {
+            margin-top: 1rem;
+        }
+        
+        .tutorial-content {
+            margin: 2rem 0;
+        }
+        
+        .google-links {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            margin: 1.5rem 0;
+        }
+        
+        .google-links a {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 1rem;
+            background: rgba(66, 133, 244, 0.1);
+            border: 1px solid rgba(66, 133, 244, 0.2);
+            border-radius: 10px;
+            color: var(--text);
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+        
+        .google-links a:hover {
+            background: rgba(66, 133, 244, 0.2);
+            transform: translateX(5px);
+        }
+        
+        .google-links i {
+            font-size: 1.2rem;
+            color: #4285F4;
+        }
+        
+        .tutorial-actions {
+            display: flex;
+            gap: 1rem;
+            margin-top: 2rem;
+            flex-wrap: wrap;
+        }
+        
+        .btn-primary, .btn-secondary, .btn-premium {
+            padding: 0.75rem 1.5rem;
+            border-radius: 10px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: none;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, var(--secondary), var(--primary));
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(139, 92, 246, 0.3);
+        }
+        
+        .btn-secondary {
+            background: rgba(255, 255, 255, 0.1);
+            color: var(--text);
+            border: 1px solid var(--glass);
+        }
+        
+        .btn-secondary:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+        
+        .btn-premium {
+            background: linear-gradient(135deg, #f59e0b, #d97706);
+            color: white;
+        }
+        
+        .btn-premium:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(245, 158, 11, 0.3);
+        }
+        
+        .no-results, .upgrade-prompt {
+            text-align: center;
+            padding: 2rem;
+        }
+        
+        .premium-features {
+            list-style: none;
+            padding: 0;
+            margin: 1.5rem 0;
+        }
+        
+        .premium-features li {
+            padding: 0.5rem 0;
+            color: var(--text);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            justify-content: center;
+        }
+        
+        .premium-features i {
+            color: var(--warning);
+        }
+        
+        .upgrade-actions {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            margin-top: 2rem;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        
+        @keyframes slideUp {
+            from { transform: translateY(50px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+    `;
+    
+    // Add styles to document
+    const styleSheet = document.createElement('style');
+    styleSheet.textContent = modalStyles;
+    document.head.appendChild(styleSheet);
+</script>
+
+<!-- Google Custom Search Engine -->
+<script async src="https://cse.google.com/cse.js?cx=YOUR_GOOGLE_CSE_ID"></script>
+<div class="gcse-search"></div>
+
+<!-- Google Analytics for Search -->
+<script>
+    // Track tutorial searches
+    function trackTutorialSearch(searchTerm) {
+        // In real app, send to Google Analytics
+        console.log('Search:', searchTerm);
+    }
+    
+    // Track external link clicks
+    document.querySelectorAll('a[target="_blank"]').forEach(link => {
+        link.addEventListener('click', function() {
+            // Send analytics event
+            console.log('External link clicked:', this.href);
+        });
+    });
+</script>
+{% endblock %}

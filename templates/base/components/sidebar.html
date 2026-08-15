@@ -1,0 +1,135 @@
+<aside class="dashboard-sidebar" id="sidebar">
+    <div class="sidebar-inner">
+        <!-- User Profile Card -->
+        <div class="user-profile-card">
+            <div class="profile-header">
+                <div class="avatar-container">
+                    <div class="avatar-wrapper">
+                        {% if user_avatar and user_avatar != '' %}
+                        <img src="{{ user_avatar }}" alt="Avatar" class="avatar-img">
+                        {% else %}
+                        <div class="avatar-img">
+                            <i class="fas fa-user-secret"></i>
+                        </div>
+                        {% endif %}
+                        <div class="avatar-status online"></div>
+                        <div class="avatar-ring"></div>
+                    </div>
+                    <button class="profile-edit" aria-label="Edit Profile">
+                        <i class="fas fa-pencil-alt"></i>
+                    </button>
+                </div>
+                <div class="profile-info">
+                    <h3 class="user-name">{{ username or 'Guest' }}</h3>
+                    <div class="user-badges">
+                        {% if is_premium %}
+                        <span class="user-badge premium">
+                            <i class="fas fa-crown"></i>
+                            Premium
+                        </span>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Navigation Menu -->
+        <nav class="sidebar-nav">
+            <ul class="nav-list">
+                <li>
+                    <a href="{{ url_for('dashboard') }}" class="nav-item {% if request.endpoint == 'dashboard' %}active{% endif %}" data-section="dashboard">
+                        <div class="nav-icon">
+                            <i class="fas fa-home"></i>
+                        </div>
+                        <span class="nav-label">Dashboard</span>
+                        <div class="nav-indicator"></div>
+                    </a>
+                </li>
+                <li>
+                    <a href="{{ url_for('learn') }}" class="nav-item {% if request.endpoint == 'learn' %}active{% endif %}">
+                        <div class="nav-icon">
+                            <i class="fas fa-graduation-cap"></i>
+                        </div>
+                        <span class="nav-label">Belajar</span>
+    
+                    </a>
+                </li>
+                <li>
+                    <a href="{{ url_for('ciphers') }}" class="nav-item {% if request.endpoint == 'ciphers' %}active{% endif %}">
+                        <div class="nav-icon">
+                            <i class="fas fa-lock"></i>
+                        </div>
+                        <span class="nav-label">Semua Cipher</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="{{ url_for('challenges') }}" class="nav-item {% if request.endpoint == 'challenges' %}active{% endif %}">
+                        <div class="nav-icon">
+                            <i class="fas fa-flag-checkered"></i>
+                        </div>
+                        <span class="nav-label">Tantangan</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="{{ url_for('certificates') }}" class="nav-item {% if request.endpoint == 'certificates' %}active{% endif %}">
+                        <div class="nav-icon">
+                            <i class="fas fa-certificate"></i>
+                        </div>
+                        <span class="nav-label">Sertifikat</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="{{ url_for('achievements') }}" class="nav-item {% if request.endpoint == 'achievements' %}active{% endif %}">
+                        <div class="nav-icon">
+                            <i class="fas fa-trophy"></i>
+                        </div>
+                        <span class="nav-label">Pencapaian</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="{{ url_for('tanya_jawab') }}" class="nav-item {% if request.endpoint == 'tanya_jawab' %}active{% endif %}">
+                        <div class="nav-icon">
+                            <i class="fas fa-comments"></i>
+                        </div>
+                        <span class="nav-label">Forum Q&A</span>
+                    </a>
+                </li>
+                <li class="nav-divider"></li>
+                <li>
+                    <a href="{{ url_for('settings') }}" class="nav-item {% if request.endpoint == 'settings' %}active{% endif %}">
+                        <div class="nav-icon">
+                            <i class="fas fa-cog"></i>
+                        </div>
+                        <span class="nav-label">Pengaturan</span>
+                    </a>
+                </li>
+            </ul>
+        </nav>
+
+        <!-- Upgrade Card -->
+        {% if not is_premium %}
+        <div class="upgrade-card">
+            <div class="upgrade-icon">
+                <i class="fas fa-gem"></i>
+            </div>
+            <div class="upgrade-content">
+                <h4>Upgrade ke Premium</h4>
+                <p>Akses semua fitur eksklusif</p>
+            </div>
+            <button class="upgrade-btn" id="upgradeBtn">
+                <i class="fas fa-arrow-up"></i>
+            </button>
+        </div>
+        {% else %}
+        <div class="premium-status-card">
+            <div class="premium-icon">
+                <i class="fas fa-crown"></i>
+            </div>
+            <div class="premium-content">
+                <h4>Premium Member</h4>
+                <p>Akses penuh teraktivasi</p>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+</aside>

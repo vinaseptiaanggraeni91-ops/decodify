@@ -1,0 +1,2577 @@
+{% extends "base.html" %}
+
+{% block title %}Video Courses - DecoDify{% endblock %}
+
+{% block styles %}
+<style>
+    /* ========== VARIABLES & BASE ========== */
+    :root {
+        --primary-color-dark: #1a365d;
+        --card-bg: #ffffff;
+        --border-color: #e2e8f0;
+        --text: #2d3748;
+        --text-muted: #718096;
+        --glass: rgba(255, 255, 255, 0.1);
+        --secondary: #8B5CF6;
+        --primary: #6366F1;
+        --success: #10B981;
+        --warning: #F59E0B;
+        --danger: #EF4444;
+        --gradient-primary: linear-gradient(135deg, var(--secondary), var(--primary));
+        --gradient-success: linear-gradient(135deg, var(--success), #059669);
+        --gradient-warning: linear-gradient(135deg, var(--warning), #D97706);
+    }
+
+    body.dark-theme {
+        --card-bg: #1e293b;
+        --border-color: #334155;
+        --text: #f1f5f9;
+        --text-muted: #94a3b8;
+        --glass: rgba(255, 255, 255, 0.05);
+        --secondary: #9F7AEA;
+        --primary: #818CF8;
+    }
+
+    /* ========== CONTAINER & LAYOUT ========== */
+    .video-courses-container {
+        max-width: 1400px;
+        margin: 0 auto;
+        padding: 2rem 1.5rem;
+        min-height: 100vh;
+    }
+
+    /* ========== HEADER SECTION ========== */
+    .video-courses-header {
+        text-align: center;
+        margin-bottom: 4rem;
+        position: relative;
+        padding: 3rem 2rem;
+        background: linear-gradient(135deg, rgba(139, 92, 246, 0.15), rgba(99, 102, 241, 0.1));
+        border-radius: 24px;
+        border: 1px solid rgba(139, 92, 246, 0.25);
+        overflow: hidden;
+    }
+
+    .video-courses-header::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: radial-gradient(circle at 30% 20%, rgba(139, 92, 246, 0.1) 0%, transparent 50%),
+                    radial-gradient(circle at 70% 80%, rgba(99, 102, 241, 0.1) 0%, transparent 50%);
+    }
+
+    .header-content {
+        position: relative;
+        z-index: 2;
+    }
+
+    .video-courses-header h1 {
+        font-size: 3.5rem;
+        background: var(--gradient-primary);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        margin-bottom: 1.5rem;
+        font-weight: 900;
+        line-height: 1.2;
+    }
+
+    .video-courses-header p {
+        color: var(--text-muted);
+        font-size: 1.3rem;
+        max-width: 800px;
+        margin: 0 auto 3rem;
+        line-height: 1.7;
+    }
+
+    /* Stats Grid */
+    .stats-container {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 2rem;
+        margin-top: 3rem;
+        max-width: 1000px;
+        margin-left: auto;
+        margin-right: auto;
+    }
+
+    .stat-item {
+        text-align: center;
+        padding: 2rem 1.5rem;
+        background: var(--card-bg);
+        border-radius: 16px;
+        border: 1px solid var(--glass);
+        transition: all 0.3s ease;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .stat-item:hover {
+        transform: translateY(-5px);
+        border-color: var(--secondary);
+        box-shadow: 0 15px 30px rgba(139, 92, 246, 0.2);
+    }
+
+    .stat-item::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 4px;
+        height: 100%;
+        background: var(--gradient-primary);
+    }
+
+    .stat-number {
+        font-size: 2.8rem;
+        font-weight: 800;
+        background: var(--gradient-primary);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        display: block;
+        margin-bottom: 0.5rem;
+        line-height: 1;
+    }
+
+    .stat-label {
+        color: var(--text-muted);
+        font-size: 0.95rem;
+        text-transform: uppercase;
+        letter-spacing: 1.2px;
+        font-weight: 600;
+    }
+
+    /* ========== LEARNING PATH ========== */
+    .learning-path {
+        margin-bottom: 4rem;
+        padding: 3rem;
+        background: linear-gradient(135deg, 
+            rgba(59, 130, 246, 0.12), 
+            rgba(16, 185, 129, 0.08));
+        border-radius: 24px;
+        border: 1px solid rgba(59, 130, 246, 0.25);
+        position: relative;
+        overflow: hidden;
+    }
+
+    .learning-path::before {
+        content: '';
+        position: absolute;
+        top: -50%;
+        right: -50%;
+        width: 100%;
+        height: 200%;
+        background: radial-gradient(circle at center, rgba(59, 130, 246, 0.1) 0%, transparent 70%);
+        z-index: 1;
+    }
+
+    .path-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 3rem;
+        position: relative;
+        z-index: 2;
+    }
+
+    .path-title {
+        font-size: 2rem;
+        color: var(--text);
+        font-weight: 800;
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+    }
+
+    .path-title i {
+        font-size: 2.2rem;
+        background: linear-gradient(135deg, #3B82F6, #10B981);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+    }
+
+    .path-tag {
+        background: linear-gradient(135deg, #3B82F6, #10B981);
+        color: white;
+        padding: 0.6rem 1.5rem;
+        border-radius: 25px;
+        font-size: 0.95rem;
+        font-weight: 700;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        box-shadow: 0 4px 15px rgba(59, 130, 246, 0.3);
+    }
+
+    /* Path Steps */
+    .path-steps {
+        display: grid;
+        grid-template-columns: repeat(5, 1fr);
+        gap: 2.5rem;
+        margin: 4rem 0;
+        position: relative;
+        z-index: 2;
+    }
+
+    .path-steps::before {
+        content: '';
+        position: absolute;
+        top: 40px;
+        left: calc(10% + 20px);
+        right: calc(10% + 20px);
+        height: 6px;
+        background: linear-gradient(90deg, 
+            var(--secondary) 0%, 
+            var(--primary) 50%, 
+            #3B82F6 100%);
+        z-index: 1;
+        border-radius: 3px;
+    }
+
+    .path-step {
+        position: relative;
+        z-index: 2;
+        text-align: center;
+        padding: 1.5rem;
+        background: var(--card-bg);
+        border-radius: 18px;
+        border: 1px solid var(--glass);
+        transition: all 0.3s ease;
+    }
+
+    .path-step:hover {
+        transform: translateY(-8px);
+        border-color: var(--primary);
+        box-shadow: 0 15px 30px rgba(99, 102, 241, 0.15);
+    }
+
+    .step-number {
+        width: 70px;
+        height: 70px;
+        border-radius: 50%;
+        background: var(--gradient-primary);
+        color: white;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.8rem;
+        font-weight: 800;
+        margin: -50px auto 1.5rem;
+        box-shadow: 0 8px 25px rgba(139, 92, 246, 0.4);
+        position: relative;
+        z-index: 3;
+    }
+
+    .step-title {
+        font-size: 1.3rem;
+        color: var(--text);
+        margin-bottom: 1rem;
+        font-weight: 700;
+        min-height: 3.5rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .step-description {
+        color: var(--text-muted);
+        font-size: 0.95rem;
+        line-height: 1.6;
+        max-width: 220px;
+        margin: 0 auto;
+    }
+
+    /* ========== FILTER SECTION ========== */
+    .category-filter-section {
+        background: var(--card-bg);
+        border-radius: 20px;
+        padding: 2.5rem;
+        margin-bottom: 4rem;
+        border: 1px solid var(--glass);
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
+    }
+
+    .filter-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 2rem;
+        flex-wrap: wrap;
+        gap: 1.5rem;
+    }
+
+    .filter-title {
+        font-size: 1.8rem;
+        color: var(--text);
+        font-weight: 700;
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+    }
+
+    .filter-title i {
+        color: var(--secondary);
+        font-size: 1.5rem;
+    }
+
+    .search-box {
+        position: relative;
+        flex: 1;
+        max-width: 450px;
+        min-width: 300px;
+    }
+
+    .search-box input {
+        width: 100%;
+        padding: 1rem 1rem 1rem 3.5rem;
+        background: rgba(255, 255, 255, 0.05);
+        border: 2px solid var(--glass);
+        border-radius: 15px;
+        color: var(--text);
+        font-size: 1rem;
+        transition: all 0.3s ease;
+    }
+
+    .search-box input:focus {
+        outline: none;
+        border-color: var(--secondary);
+        box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.1);
+    }
+
+    .search-box i {
+        position: absolute;
+        left: 1.5rem;
+        top: 50%;
+        transform: translateY(-50%);
+        color: var(--text-muted);
+        font-size: 1.2rem;
+    }
+
+    /* Category Filter Buttons */
+    .category-filter {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 1rem;
+        justify-content: center;
+    }
+
+    .category-filter-btn {
+        padding: 1rem 2rem;
+        background: var(--card-bg);
+        border: 2px solid var(--glass);
+        border-radius: 15px;
+        color: var(--text-muted);
+        font-size: 0.95rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        display: flex;
+        align-items: center;
+        gap: 0.8rem;
+        min-width: 140px;
+        justify-content: center;
+    }
+
+    .category-filter-btn:hover {
+        background: rgba(139, 92, 246, 0.1);
+        color: var(--text);
+        border-color: var(--secondary);
+        transform: translateY(-3px);
+    }
+
+    .category-filter-btn.active {
+        background: var(--gradient-primary);
+        color: white;
+        border-color: transparent;
+        box-shadow: 0 8px 25px rgba(139, 92, 246, 0.3);
+    }
+
+    /* ========== COURSE GRID ========== */
+    .course-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 2.5rem;
+        margin-bottom: 4rem;
+    }
+
+    /* Course Card */
+    .course-card {
+        background: var(--card-bg);
+        border: 2px solid var(--glass);
+        border-radius: 24px;
+        overflow: hidden;
+        transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        position: relative;
+        display: flex;
+        flex-direction: column;
+        height: 100%;
+    }
+
+    .course-card:hover {
+        transform: translateY(-12px) scale(1.02);
+        border-color: var(--secondary);
+        box-shadow: 0 25px 50px rgba(139, 92, 246, 0.25);
+    }
+
+    /* Course Badges */
+    .course-badges {
+        position: absolute;
+        top: 1.2rem;
+        left: 1.2rem;
+        display: flex;
+        flex-direction: column;
+        gap: 0.6rem;
+        z-index: 3;
+    }
+
+    .course-badge {
+        padding: 0.5rem 1rem;
+        border-radius: 25px;
+        font-size: 0.8rem;
+        font-weight: 700;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        backdrop-filter: blur(10px);
+        border: 1px solid rgba(255, 255, 255, 0.15);
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    }
+
+    .badge-new { background: var(--gradient-success); color: white; }
+    .badge-popular { background: var(--gradient-warning); color: white; }
+    .badge-certificate { background: var(--gradient-primary); color: white; }
+    .badge-premium { background: linear-gradient(135deg, #FFD700, #FFA500); color: #000; }
+    .badge-free { background: linear-gradient(135deg, #10B981, #059669); color: white; }
+
+    /* Thumbnail */
+    .course-thumbnail {
+        position: relative;
+        height: 220px;
+        overflow: hidden;
+        background: linear-gradient(135deg, #1e293b, #0f172a);
+    }
+
+    .course-thumbnail img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .course-card:hover .course-thumbnail img {
+        transform: scale(1.1);
+    }
+
+    .course-thumbnail-overlay {
+        position: absolute;
+        inset: 0;
+        background: linear-gradient(to bottom, transparent 40%, rgba(0,0,0,0.9));
+        display: flex;
+        align-items: flex-end;
+        justify-content: space-between;
+        padding: 1.8rem;
+        opacity: 1;
+        transition: all 0.3s ease;
+    }
+
+    .duration-badge {
+        background: rgba(0, 0, 0, 0.85);
+        color: white;
+        padding: 0.6rem 1.2rem;
+        border-radius: 25px;
+        font-size: 0.9rem;
+        font-weight: 700;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        backdrop-filter: blur(10px);
+    }
+
+    .play-button {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        width: 70px;
+        height: 70px;
+        border-radius: 50%;
+        background: rgba(255, 255, 255, 0.95);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: var(--secondary);
+        font-size: 1.8rem;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        border: none;
+        box-shadow: 0 8px 30px rgba(0, 0, 0, 0.3);
+        z-index: 2;
+    }
+
+    .play-button:hover {
+        transform: translate(-50%, -50%) scale(1.15);
+        background: white;
+        box-shadow: 0 12px 40px rgba(139, 92, 246, 0.4);
+    }
+
+    /* Course Content */
+    .course-content {
+        padding: 2rem;
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        gap: 1.2rem;
+    }
+
+    .course-meta {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 1rem;
+    }
+
+    .course-level {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 0.6rem 1.2rem;
+        background: rgba(139, 92, 246, 0.12);
+        color: var(--secondary);
+        border-radius: 20px;
+        font-size: 0.85rem;
+        font-weight: 700;
+    }
+
+    .course-rating {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        color: #F59E0B;
+        font-size: 1rem;
+    }
+
+    .rating-count {
+        color: var(--text-muted);
+        font-size: 0.9rem;
+        margin-left: 0.3rem;
+    }
+
+    .course-title {
+        font-size: 1.4rem;
+        color: var(--text);
+        line-height: 1.4;
+        font-weight: 800;
+        margin: 0;
+        min-height: 4rem;
+    }
+
+    .course-description {
+        color: var(--text-muted);
+        font-size: 1rem;
+        line-height: 1.7;
+        margin: 0;
+        flex: 1;
+        display: -webkit-box;
+        -webkit-line-clamp: 3;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+    }
+
+    .course-details {
+        display: flex;
+        gap: 1.5rem;
+        padding: 1.5rem 0;
+        border-top: 1px solid var(--glass);
+        border-bottom: 1px solid var(--glass);
+        flex-wrap: wrap;
+    }
+
+    .detail-item {
+        display: flex;
+        align-items: center;
+        gap: 0.8rem;
+        color: var(--text-muted);
+        font-size: 0.9rem;
+    }
+
+    .detail-item i {
+        color: var(--secondary);
+        font-size: 1.1rem;
+        width: 20px;
+    }
+
+    /* Instructor */
+    .course-instructor {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+    }
+
+    .instructor-avatar {
+        width: 50px;
+        height: 50px;
+        border-radius: 50%;
+        background: var(--gradient-primary);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-weight: 700;
+        font-size: 1.2rem;
+        flex-shrink: 0;
+    }
+
+    .instructor-info {
+        flex: 1;
+    }
+
+    .instructor-info h4 {
+        color: var(--text);
+        margin: 0 0 0.3rem 0;
+        font-size: 1rem;
+        font-weight: 700;
+    }
+
+    .instructor-info p {
+        color: var(--text-muted);
+        margin: 0;
+        font-size: 0.9rem;
+    }
+
+    /* Course Footer */
+    .course-footer {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 1.5rem;
+        margin-top: auto;
+        padding-top: 1.5rem;
+        border-top: 1px solid var(--glass);
+    }
+
+    .course-progress {
+        flex: 1;
+        min-width: 200px;
+    }
+
+    .progress-info {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 0.8rem;
+    }
+
+    .progress-percentage {
+        color: var(--text);
+        font-weight: 800;
+        font-size: 1.1rem;
+    }
+
+    .progress-text {
+        color: var(--text-muted);
+        font-size: 0.9rem;
+    }
+
+    .progress-bar {
+        height: 10px;
+        background: rgba(255, 255, 255, 0.08);
+        border-radius: 5px;
+        overflow: hidden;
+    }
+
+    .progress-fill {
+        height: 100%;
+        background: var(--gradient-primary);
+        border-radius: 5px;
+        transition: width 0.6s ease;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .progress-fill::after {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: linear-gradient(90deg, 
+            transparent, 
+            rgba(255, 255, 255, 0.4), 
+            transparent);
+        animation: shimmer 2s infinite;
+    }
+
+    .course-actions {
+        display: flex;
+        gap: 1rem;
+        flex-shrink: 0;
+    }
+
+    .course-action {
+        padding: 0.9rem 1.8rem;
+        background: var(--gradient-primary);
+        color: white;
+        border: none;
+        border-radius: 12px;
+        font-weight: 700;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.7rem;
+        font-size: 0.95rem;
+        white-space: nowrap;
+        min-width: 140px;
+        justify-content: center;
+    }
+
+    .course-action:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 12px 25px rgba(139, 92, 246, 0.4);
+    }
+
+    .course-action.secondary {
+        background: transparent;
+        border: 2px solid var(--glass);
+        color: var(--text);
+    }
+
+    .course-action.secondary:hover {
+        border-color: var(--secondary);
+        background: rgba(139, 92, 246, 0.08);
+    }
+
+    /* Special Cards */
+    .featured-course {
+        grid-column: 1 / -1;
+        border: 3px solid var(--secondary);
+        background: linear-gradient(135deg, 
+            rgba(139, 92, 246, 0.12), 
+            rgba(99, 102, 241, 0.08));
+        position: relative;
+        overflow: hidden;
+    }
+
+    .featured-course::before {
+        content: '⭐ KURSUS UTAMA';
+        position: absolute;
+        top: 25px;
+        right: -35px;
+        background: var(--gradient-primary);
+        color: white;
+        padding: 0.7rem 4rem;
+        font-size: 0.85rem;
+        font-weight: 800;
+        transform: rotate(45deg);
+        letter-spacing: 1.5px;
+        z-index: 10;
+        box-shadow: 0 5px 20px rgba(139, 92, 246, 0.4);
+    }
+
+    .featured-course .course-thumbnail {
+        height: 320px;
+    }
+
+    .featured-course .course-content {
+        padding: 2.5rem;
+    }
+
+    .certificate-course {
+        border: 3px solid rgba(16, 185, 129, 0.3);
+        position: relative;
+    }
+
+    .certificate-course::after {
+        content: '📜 CERTIFICATE';
+        position: absolute;
+        top: 1rem;
+        right: 1rem;
+        background: var(--gradient-success);
+        color: white;
+        padding: 0.5rem 1rem;
+        border-radius: 20px;
+        font-size: 0.8rem;
+        font-weight: 700;
+        z-index: 3;
+    }
+
+    /* Completion Badge */
+    .completion-badge {
+        position: absolute;
+        top: 1.2rem;
+        right: 1.2rem;
+        width: 45px;
+        height: 45px;
+        background: var(--gradient-success);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        z-index: 3;
+        box-shadow: 0 6px 20px rgba(16, 185, 129, 0.4);
+        animation: pulse 2s infinite;
+    }
+
+    /* ========== PAGINATION ========== */
+    .pagination {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 0.8rem;
+        margin-top: 4rem;
+        flex-wrap: wrap;
+    }
+
+    .pagination-btn {
+        width: 45px;
+        height: 45px;
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: var(--card-bg);
+        border: 2px solid var(--glass);
+        color: var(--text);
+        cursor: pointer;
+        transition: all 0.3s ease;
+        font-weight: 600;
+    }
+
+    .pagination-btn:hover {
+        background: rgba(139, 92, 246, 0.1);
+        border-color: var(--secondary);
+        transform: translateY(-2px);
+    }
+
+    .pagination-btn.active {
+        background: var(--gradient-primary);
+        color: white;
+        border-color: transparent;
+        box-shadow: 0 8px 20px rgba(139, 92, 246, 0.3);
+    }
+
+    .pagination-dots {
+        color: var(--text-muted);
+        padding: 0 0.8rem;
+        font-size: 1.2rem;
+    }
+
+    /* ========== YOUTUBE MODAL ========== */
+    .youtube-modal {
+        display: none;
+        position: fixed;
+        inset: 0;
+        background: rgba(0, 0, 0, 0.95);
+        backdrop-filter: blur(10px);
+        z-index: 9999;
+        justify-content: center;
+        align-items: center;
+        padding: 2rem;
+        animation: fadeIn 0.3s ease;
+    }
+
+    .youtube-modal.active {
+        display: flex;
+    }
+
+    .modal-content {
+        width: 90%;
+        max-width: 1200px;
+        background: var(--card-bg);
+        border-radius: 24px;
+        overflow: hidden;
+        animation: modalSlideUp 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        box-shadow: 0 30px 60px rgba(0, 0, 0, 0.6);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .modal-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 1.8rem 2.5rem;
+        background: var(--card-bg);
+        border-bottom: 1px solid var(--glass);
+    }
+
+    .modal-title {
+        color: var(--text);
+        font-size: 1.5rem;
+        margin: 0;
+        font-weight: 700;
+        flex: 1;
+    }
+
+    .close-modal {
+        background: none;
+        border: none;
+        color: var(--text-muted);
+        font-size: 1.8rem;
+        cursor: pointer;
+        padding: 0.5rem;
+        transition: all 0.3s ease;
+        width: 45px;
+        height: 45px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .close-modal:hover {
+        color: var(--text);
+        background: rgba(255, 255, 255, 0.05);
+    }
+
+    .modal-body {
+        padding: 2.5rem;
+    }
+
+    .video-wrapper {
+        position: relative;
+        padding-bottom: 56.25%;
+        height: 0;
+        overflow: hidden;
+        border-radius: 16px;
+        background: #000;
+        border: 2px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .video-wrapper iframe {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        border: none;
+    }
+
+    .video-info {
+        margin-top: 2rem;
+        color: var(--text-muted);
+        font-size: 1rem;
+        line-height: 1.6;
+        padding: 1.5rem;
+        background: rgba(255, 255, 255, 0.03);
+        border-radius: 12px;
+        border-left: 4px solid var(--secondary);
+    }
+
+    /* ========== ANIMATIONS ========== */
+    @keyframes shimmer {
+        0% { transform: translateX(-100%); }
+        100% { transform: translateX(100%); }
+    }
+
+    @keyframes modalSlideUp {
+        from { 
+            transform: translateY(60px); 
+            opacity: 0; 
+        }
+        to { 
+            transform: translateY(0); 
+            opacity: 1; 
+        }
+    }
+
+    @keyframes fadeIn {
+        from { opacity: 0; }
+        to { opacity: 1; }
+    }
+
+    @keyframes pulse {
+        0% { transform: scale(1); }
+        50% { transform: scale(1.05); }
+        100% { transform: scale(1); }
+    }
+
+    /* ========== RESPONSIVE DESIGN ========== */
+    @media (max-width: 1400px) {
+        .course-grid {
+            grid-template-columns: repeat(2, 1fr);
+            gap: 2rem;
+        }
+        
+        .path-steps {
+            grid-template-columns: repeat(3, 1fr);
+            gap: 2rem;
+        }
+        
+        .path-steps::before {
+            display: none;
+        }
+    }
+
+    @media (max-width: 1024px) {
+        .video-courses-container {
+            padding: 1.5rem 1rem;
+        }
+        
+        .video-courses-header h1 {
+            font-size: 2.8rem;
+        }
+        
+        .stats-container {
+            grid-template-columns: repeat(2, 1fr);
+        }
+        
+        .learning-path {
+            padding: 2rem;
+        }
+        
+        .path-steps {
+            grid-template-columns: repeat(2, 1fr);
+        }
+    }
+
+    @media (max-width: 768px) {
+        .course-grid {
+            grid-template-columns: 1fr;
+        }
+        
+        .video-courses-header {
+            padding: 2rem 1rem;
+        }
+        
+        .video-courses-header h1 {
+            font-size: 2.2rem;
+        }
+        
+        .video-courses-header p {
+            font-size: 1.1rem;
+        }
+        
+        .category-filter-section {
+            padding: 1.5rem;
+        }
+        
+        .filter-header {
+            flex-direction: column;
+            align-items: stretch;
+        }
+        
+        .search-box {
+            max-width: 100%;
+            min-width: auto;
+        }
+        
+        .category-filter-btn {
+            min-width: 120px;
+            padding: 0.8rem 1.2rem;
+            font-size: 0.9rem;
+        }
+        
+        .course-actions {
+            flex-direction: column;
+            width: 100%;
+        }
+        
+        .course-action {
+            width: 100%;
+        }
+        
+        .modal-content {
+            width: 95%;
+            margin: 1rem;
+        }
+        
+        .modal-body {
+            padding: 1.5rem;
+        }
+    }
+
+    @media (max-width: 480px) {
+        .video-courses-container {
+            padding: 1rem 0.5rem;
+        }
+        
+        .video-courses-header h1 {
+            font-size: 1.8rem;
+        }
+        
+        .stats-container {
+            grid-template-columns: 1fr;
+            gap: 1rem;
+        }
+        
+        .stat-item {
+            padding: 1.5rem;
+        }
+        
+        .path-steps {
+            grid-template-columns: 1fr;
+        }
+        
+        .learning-path {
+            padding: 1.5rem;
+        }
+        
+        .category-filter {
+            justify-content: center;
+        }
+        
+        .course-content {
+            padding: 1.5rem;
+        }
+        
+        .course-title {
+            font-size: 1.2rem;
+        }
+        
+        .course-description {
+            font-size: 0.95rem;
+        }
+    }
+
+    /* ========== LOADING & EMPTY STATES ========== */
+    .loading-skeleton {
+        animation: skeleton-loading 1.5s infinite ease-in-out;
+    }
+
+    @keyframes skeleton-loading {
+        0% { opacity: 0.5; }
+        50% { opacity: 1; }
+        100% { opacity: 0.5; }
+    }
+
+    .empty-state {
+        grid-column: 1 / -1;
+        text-align: center;
+        padding: 5rem 2rem;
+        background: var(--card-bg);
+        border-radius: 24px;
+        border: 2px dashed var(--glass);
+    }
+
+    .empty-state i {
+        font-size: 5rem;
+        background: var(--gradient-primary);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        margin-bottom: 2rem;
+        display: inline-block;
+    }
+
+    .empty-state h3 {
+        color: var(--text);
+        font-size: 1.8rem;
+        margin-bottom: 1rem;
+        font-weight: 700;
+    }
+
+    .empty-state p {
+        color: var(--text-muted);
+        font-size: 1.1rem;
+        max-width: 500px;
+        margin: 0 auto 2.5rem;
+        line-height: 1.6;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="video-courses-container">
+    <!-- Header Section -->
+    <div class="video-courses-header">
+        <div class="header-content">
+            <h1>🎬 Video Course Kriptografi Lengkap</h1>
+            <p>Pelajari kriptografi dari dasar hingga mahir melalui video tutorial interaktif dalam Bahasa Indonesia. Kurikulum terstruktur oleh praktisi industri.</p>
+            
+            <div class="stats-container">
+                <div class="stat-item">
+                    <span class="stat-number">75+</span>
+                    <span class="stat-label">Video Tutorial</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-number">40+</span>
+                    <span class="stat-label">Jam Belajar</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-number">2.5K+</span>
+                    <span class="stat-label">Siswa Aktif</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-number">4.8</span>
+                    <span class="stat-label">Rating Rata-rata</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Learning Path -->
+    <div class="learning-path">
+        <div class="path-header">
+            <h2 class="path-title">
+                <i class="fas fa-map-signs"></i> Learning Path Kriptografi
+            </h2>
+            <span class="path-tag">
+                <i class="fas fa-graduation-cap"></i> Rekomendasi Urutan Belajar
+            </span>
+        </div>
+        
+        <div class="path-steps">
+            <div class="path-step">
+                <div class="step-number">1</div>
+                <h3 class="step-title">Fundamental Kriptografi</h3>
+                <p class="step-description">Konsep dasar enkripsi, sejarah, dan terminologi penting dalam kriptografi</p>
+            </div>
+            <div class="path-step">
+                <div class="step-number">2</div>
+                <h3 class="step-title">Cipher Klasik</h3>
+                <p class="step-description">Caesar, Vigenère, Playfair, dan cipher tradisional dengan implementasi</p>
+            </div>
+            <div class="path-step">
+                <div class="step-number">3</div>
+                <h3 class="step-title">Simetris Modern</h3>
+                <p class="step-description">DES, AES, dan algoritma blok modern dengan analisis keamanan</p>
+            </div>
+            <div class="path-step">
+                <div class="step-number">4</div>
+                <h3 class="step-title">Kriptografi Asimetris</h3>
+                <p class="step-description">RSA, ECC, Diffie-Hellman, dan kriptografi kunci publik</p>
+            </div>
+            <div class="path-step">
+                <div class="step-number">5</div>
+                <h3 class="step-title">Aplikasi & Implementasi</h3>
+                <p class="step-description">Implementasi dalam SSL/TLS, blockchain, dan keamanan digital</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Filter Section -->
+    <div class="category-filter-section">
+        <div class="filter-header">
+            <h2 class="filter-title">
+                <i class="fas fa-filter"></i> Filter Video Course
+            </h2>
+            <div class="search-box">
+                <i class="fas fa-search"></i>
+                <input type="text" id="courseSearch" placeholder="Cari video course (misal: AES, RSA, Python...)">
+            </div>
+        </div>
+        
+        <div class="category-filter">
+            <button class="category-filter-btn active" data-category="all">
+                <i class="fas fa-th-large"></i> Semua Course
+            </button>
+            <button class="category-filter-btn" data-category="pemula">
+                <i class="fas fa-user-graduate"></i> Level Pemula
+            </button>
+            <button class="category-filter-btn" data-category="menengah">
+                <i class="fas fa-signal"></i> Level Menengah
+            </button>
+            <button class="category-filter-btn" data-category="lanjutan">
+                <i class="fas fa-rocket"></i> Level Lanjutan
+            </button>
+            <button class="category-filter-btn" data-category="gratis">
+                <i class="fas fa-gift"></i> Course Gratis
+            </button>
+            <button class="category-filter-btn" data-category="premium">
+                <i class="fas fa-crown"></i> Premium
+            </button>
+            <button class="category-filter-btn" data-category="sertifikat">
+                <i class="fas fa-certificate"></i> Bersertifikat
+            </button>
+        </div>
+    </div>
+
+    <!-- Video Courses Grid -->
+    <div class="course-grid" id="coursesGrid">
+        <!-- Featured Course 1 -->
+        <div class="course-card featured-course" data-category="pemula gratis">
+            <div class="completion-badge">
+                <i class="fas fa-check"></i>
+            </div>
+            
+            <div class="course-badges">
+                <span class="course-badge badge-popular">
+                    <i class="fas fa-fire"></i> Paling Populer
+                </span>
+            </div>
+            
+            <div class="course-thumbnail">
+                <img src="https://img.youtube.com/vi/sMOZf4GN3oc/maxresdefault.jpg" alt="Pengantar Kriptografi">
+                <div class="course-thumbnail-overlay">
+                    <div class="duration-badge">
+                        <i class="fas fa-clock"></i> 15:30
+                    </div>
+                </div>
+                <button class="play-button" onclick="openYouTubeModal('https://www.youtube.com/embed/sMOZf4GN3oc', 'Pengantar Kriptografi Lengkap untuk Pemula')">
+                    <i class="fas fa-play"></i>
+                </button>
+            </div>
+            
+            <div class="course-content">
+                <div class="course-meta">
+                    <span class="course-level">
+                        <i class="fas fa-signal"></i> Level Pemula
+                    </span>
+                    <div class="course-rating">
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star-half-alt"></i>
+                        <span class="rating-count">4.7 (1.2K)</span>
+                    </div>
+                </div>
+                
+                <h2 class="course-title">🎯 Pengantar Kriptografi Lengkap untuk Pemula</h2>
+                <p class="course-description">
+                    Video tutorial komprehensif pengenalan kriptografi dari nol. Pelajari sejarah, konsep dasar enkripsi-dekripsi, jenis-jenis cipher, dan aplikasi praktis dalam keamanan informasi modern. Cocok untuk yang baru memulai.
+                </p>
+                
+                <div class="course-details">
+                    <div class="detail-item">
+                        <i class="fas fa-video"></i>
+                        <span>12 Video</span>
+                    </div>
+                    <div class="detail-item">
+                        <i class="fas fa-file-alt"></i>
+                        <span>5 Materi PDF</span>
+                    </div>
+                    <div class="detail-item">
+                        <i class="fas fa-code"></i>
+                        <span>Python</span>
+                    </div>
+                </div>
+                
+                <div class="course-instructor">
+                    <div class="instructor-avatar">DA</div>
+                    <div class="instructor-info">
+                        <h4>DecoDify Academy</h4>
+                        <p>Professional Cryptography Instructor</p>
+                    </div>
+                </div>
+                
+                <div class="course-footer">
+                    <div class="course-progress">
+                        <div class="progress-info">
+                            <span class="progress-percentage">100% Selesai</span>
+                            <span class="progress-text">Completed</span>
+                        </div>
+                        <div class="progress-bar">
+                            <div class="progress-fill" style="width: 100%"></div>
+                        </div>
+                    </div>
+                    
+                    <div class="course-actions">
+                        <button class="course-action" onclick="openYouTubeModal('https://www.youtube.com/embed/sMOZf4GN3oc', 'Pengantar Kriptografi Lengkap untuk Pemula')">
+                            <i class="fas fa-play-circle"></i> Tonton Ulang
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Course 2: Caesar Cipher from Indonesia Channel -->
+        <div class="course-card" data-category="pemula gratis">
+            <div class="course-badges">
+                <span class="course-badge badge-free">
+                    <i class="fas fa-gift"></i> GRATIS
+                </span>
+            </div>
+            
+            <div class="course-thumbnail">
+                <img src="https://img.youtube.com/vi/JJzQyxxQ6SM/maxresdefault.jpg" alt="Caesar Cipher">
+                <div class="course-thumbnail-overlay">
+                    <div class="duration-badge">
+                        <i class="fas fa-clock"></i> 12:45
+                    </div>
+                </div>
+                <button class="play-button" onclick="openYouTubeModal('https://www.youtube.com/embed/JJzQyxxQ6SM', 'Caesar Cipher Tutorial Lengkap Bahasa Indonesia')">
+                    <i class="fas fa-play"></i>
+                </button>
+            </div>
+            
+            <div class="course-content">
+                <div class="course-meta">
+                    <span class="course-level">
+                        <i class="fas fa-signal"></i> Level Pemula
+                    </span>
+                    <div class="course-rating">
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="far fa-star"></i>
+                        <span class="rating-count">4.2 (856)</span>
+                    </div>
+                </div>
+                
+                <h3 class="course-title">🔐 Caesar Cipher: Tutorial Lengkap & Implementasi Python</h3>
+                <p class="course-description">
+                    Pelajari cipher paling terkenal dalam sejarah kriptografi. Video ini membahas konsep shift cipher, enkripsi/dekripsi manual, implementasi program Python, dan analisis kelemahan cipher ini.
+                </p>
+                
+                <div class="course-details">
+                    <div class="detail-item">
+                        <i class="fas fa-code"></i>
+                        <span>Python 3</span>
+                    </div>
+                    <div class="detail-item">
+                        <i class="fas fa-history"></i>
+                        <span>Cipher Klasik</span>
+                    </div>
+                </div>
+                
+                <div class="course-instructor">
+                    <div class="instructor-avatar">KP</div>
+                    <div class="instructor-info">
+                        <h4>Kriptografi Pemula</h4>
+                        <p>YouTube Crypto Educator</p>
+                    </div>
+                </div>
+                
+                <div class="course-footer">
+                    <div class="course-progress">
+                        <div class="progress-info">
+                            <span class="progress-percentage">85% Selesai</span>
+                            <span class="progress-text">Tersisa 2 menit</span>
+                        </div>
+                        <div class="progress-bar">
+                            <div class="progress-fill" style="width: 85%"></div>
+                        </div>
+                    </div>
+                    
+                    <div class="course-actions">
+                        <button class="course-action" onclick="openYouTubeModal('https://www.youtube.com/embed/JJzQyxxQ6SM', 'Caesar Cipher Tutorial Lengkap Bahasa Indonesia')">
+                            <i class="fas fa-play-circle"></i> Lanjutkan
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Course 3: Vigenère Cipher (Premium) -->
+        <div class="course-card premium" data-category="menengah premium sertifikat">
+            <div class="course-badges">
+                <span class="course-badge badge-premium">
+                    <i class="fas fa-crown"></i> PREMIUM
+                </span>
+                <span class="course-badge badge-certificate">
+                    <i class="fas fa-certificate"></i> SERTIFIKAT
+                </span>
+            </div>
+            
+            <div class="course-thumbnail">
+                <img src="https://img.youtube.com/vi/SkJcmCaHqS0/maxresdefault.jpg" alt="Vigenère Cipher">
+                <div class="course-thumbnail-overlay">
+                    <div class="duration-badge">
+                        <i class="fas fa-clock"></i> 18:20
+                    </div>
+                </div>
+                <button class="play-button" onclick="checkPremiumAccess('vigenere', 'https://www.youtube.com/embed/SkJcmCaHqS0')">
+                    <i class="fas fa-play"></i>
+                </button>
+            </div>
+            
+            <div class="course-content">
+                <div class="course-meta">
+                    <span class="course-level">
+                        <i class="fas fa-signal"></i> Level Menengah
+                    </span>
+                    <div class="course-rating">
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <span class="rating-count">5.0 (432)</span>
+                    </div>
+                </div>
+                
+                <h3 class="course-title">🔑 Vigenère Cipher: Polialfabetik Lengkap + Code</h3>
+                <p class="course-description">
+                    Pahami konsep cipher polialfabetik melalui Vigenère cipher yang revolusioner. Video lengkap dengan tabel Vigenère, autokey cipher, implementasi Python, dan teknik kriptanalisis.
+                </p>
+                
+                <div class="course-details">
+                    <div class="detail-item">
+                        <i class="fas fa-file-code"></i>
+                        <span>Source Code</span>
+                    </div>
+                    <div class="detail-item">
+                        <i class="fas fa-tasks"></i>
+                        <span>3 Proyek</span>
+                    </div>
+                </div>
+                
+                <div class="course-instructor">
+                    <div class="instructor-avatar">BK</div>
+                    <div class="instructor-info">
+                        <h4>Belajar Kriptografi</h4>
+                        <p>YouTube Channel</p>
+                    </div>
+                </div>
+                
+                <div class="course-footer">
+                    <button class="course-action" onclick="checkPremiumAccess('vigenere', 'https://www.youtube.com/embed/SkJcmCaHqS0')">
+                        <i class="fas fa-crown"></i> Akses Premium
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Course 4: RSA from Indonesian Channel -->
+        <div class="course-card certificate-course" data-category="lanjutan premium sertifikat">
+            <div class="course-badges">
+                <span class="course-badge badge-premium">
+                    <i class="fas fa-crown"></i> PREMIUM
+                </span>
+                <span class="course-badge badge-popular">
+                    <i class="fas fa-chart-line"></i> Tren
+                </span>
+            </div>
+            
+            <div class="course-thumbnail">
+                <img src="https://img.youtube.com/vi/JPaIY7og6lI/maxresdefault.jpg" alt="RSA Encryption">
+                <div class="course-thumbnail-overlay">
+                    <div class="duration-badge">
+                        <i class="fas fa-clock"></i> 25:45
+                    </div>
+                </div>
+                <button class="play-button" onclick="checkPremiumAccess('rsa', 'https://www.youtube.com/embed/JPaIY7og6lI')">
+                    <i class="fas fa-play"></i>
+                </button>
+            </div>
+            
+            <div class="course-content">
+                <div class="course-meta">
+                    <span class="course-level">
+                        <i class="fas fa-signal"></i> Level Lanjutan
+                    </span>
+                    <div class="course-rating">
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star-half-alt"></i>
+                        <span class="rating-count">4.8 (721)</span>
+                    </div>
+                </div>
+                
+                <h3 class="course-title">🔒 RSA Encryption: Kriptografi Kunci Publik Lengkap</h3>
+                <p class="course-description">
+                    Video mendalam tentang algoritma RSA oleh praktisi industri. Pelajari teori bilangan prima, Extended Euclidean Algorithm, enkripsi/dekripsi RSA, implementasi Python, dan aplikasi dalam SSL/TLS.
+                </p>
+                
+                <div class="course-details">
+                    <div class="detail-item">
+                        <i class="fas fa-lock"></i>
+                        <span>Keamanan Digital</span>
+                    </div>
+                    <div class="detail-item">
+                        <i class="fas fa-shield-alt"></i>
+                        <span>Implementasi</span>
+                    </div>
+                </div>
+                
+                <div class="course-instructor">
+                    <div class="instructor-avatar">TI</div>
+                    <div class="instructor-info">
+                        <h4>Teknologi Informasi ID</h4>
+                        <p>Security Specialist</p>
+                    </div>
+                </div>
+                
+                <div class="course-footer">
+                    <button class="course-action" onclick="checkPremiumAccess('rsa', 'https://www.youtube.com/embed/JPaIY7og6lI')">
+                        <i class="fas fa-crown"></i> Akses Premium
+                    </button>
+                    <button class="course-action secondary" onclick="openYouTubeModal('https://www.youtube.com/embed/JPaIY7og6lI', 'Preview RSA Encryption')">
+                        <i class="fas fa-eye"></i> Preview
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Course 5: AES Tutorial from Indonesian Channel -->
+        <div class="course-card premium" data-category="lanjutan premium">
+            <div class="course-badges">
+                <span class="course-badge badge-premium">
+                    <i class="fas fa-crown"></i> PREMIUM
+                </span>
+                <span class="course-badge badge-new">
+                    <i class="fas fa-rocket"></i> Baru
+                </span>
+            </div>
+            
+            <div class="course-thumbnail">
+                <img src="https://img.youtube.com/vi/VYv-cBeuJ2c/maxresdefault.jpg" alt="AES Encryption">
+                <div class="course-thumbnail-overlay">
+                    <div class="duration-badge">
+                        <i class="fas fa-clock"></i> 22:30
+                    </div>
+                </div>
+                <button class="play-button" onclick="checkPremiumAccess('aes', 'https://www.youtube.com/embed/VYv-cBeuJ2c')">
+                    <i class="fas fa-play"></i>
+                </button>
+            </div>
+            
+            <div class="course-content">
+                <div class="course-meta">
+                    <span class="course-level">
+                        <i class="fas fa-signal"></i> Expert
+                    </span>
+                    <div class="course-rating">
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <span class="rating-count">5.0 (312)</span>
+                    </div>
+                </div>
+                
+                <h3 class="course-title">🛡️ AES Encryption: Advanced Encryption Standard Tutorial</h3>
+                <p class="course-description">
+                    Kursus komprehensif Advanced Encryption Standard (AES) dalam Bahasa Indonesia. Pelajari struktur Rijndael, SubBytes, ShiftRows, MixColumns, AddRoundKey, implementasi hardware/software, dan analisis keamanan.
+                </p>
+                
+                <div class="course-details">
+                    <div class="detail-item">
+                        <i class="fas fa-microchip"></i>
+                        <span>Hardware/Software</span>
+                    </div>
+                    <div class="detail-item">
+                        <i class="fas fa-project-diagram"></i>
+                        <span>Architecture</span>
+                    </div>
+                </div>
+                
+                <div class="course-instructor">
+                    <div class="instructor-avatar">SI</div>
+                    <div class="instructor-info">
+                        <h4>Security Indonesia</h4>
+                        <p>Crypto Engineer</p>
+                    </div>
+                </div>
+                
+                <div class="course-footer">
+                    <button class="course-action" onclick="checkPremiumAccess('aes', 'https://www.youtube.com/embed/VYv-cBeuJ2c')">
+                        <i class="fas fa-crown"></i> Enroll Now
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Course 6: Cryptanalysis from Indonesian Channel -->
+        <div class="course-card" data-category="menengah gratis">
+            <div class="course-thumbnail">
+                <img src="https://img.youtube.com/vi/LaWp_Kq0cKs/maxresdefault.jpg" alt="Cryptanalysis">
+                <div class="course-thumbnail-overlay">
+                    <div class="duration-badge">
+                        <i class="fas fa-clock"></i> 20:15
+                    </div>
+                </div>
+                <button class="play-button" onclick="openYouTubeModal('https://www.youtube.com/embed/LaWp_Kq0cKs', 'Teknik Kriptanalisis untuk Pemula')">
+                    <i class="fas fa-play"></i>
+                </button>
+            </div>
+            
+            <div class="course-content">
+                <div class="course-meta">
+                    <span class="course-level">
+                        <i class="fas fa-signal"></i> Level Menengah
+                    </span>
+                    <div class="course-rating">
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="far fa-star"></i>
+                        <span class="rating-count">4.3 (543)</span>
+                    </div>
+                </div>
+                
+                <h3 class="course-title">🕵️‍♂️ Kriptanalisis: Teknik Memecahkan Cipher Klasik</h3>
+                <p class="course-description">
+                    Pelajari seni memecahkan cipher tanpa kunci dalam Bahasa Indonesia. Video ini membahas frequency analysis, known-plaintext attack, chosen-plaintext attack, brute force, dan teknik cryptanalysis modern.
+                </p>
+                
+                <div class="course-details">
+                    <div class="detail-item">
+                        <i class="fas fa-chart-bar"></i>
+                        <span>Analisis Statistik</span>
+                    </div>
+                    <div class="detail-item">
+                        <i class="fas fa-tools"></i>
+                        <span>Tools & Software</span>
+                    </div>
+                </div>
+                
+                <div class="course-instructor">
+                    <div class="instructor-avatar">KA</div>
+                    <div class="instructor-info">
+                        <h4>Kripto Analisis</h4>
+                        <p>Professional Cryptanalyst</p>
+                    </div>
+                </div>
+                
+                <div class="course-footer">
+                    <div class="course-progress">
+                        <div class="progress-info">
+                            <span class="progress-percentage">45% Selesai</span>
+                            <span class="progress-text">Tersisa 11 menit</span>
+                        </div>
+                        <div class="progress-bar">
+                            <div class="progress-fill" style="width: 45%"></div>
+                        </div>
+                    </div>
+                    
+                    <button class="course-action" onclick="openYouTubeModal('https://www.youtube.com/embed/LaWp_Kq0cKs', 'Teknik Kriptanalisis untuk Pemula')">
+                        <i class="fas fa-play-circle"></i> Lanjutkan
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Course 7: Playfair Cipher -->
+        <div class="course-card" data-category="pemula gratis">
+            <div class="course-badges">
+                <span class="course-badge badge-new">
+                    <i class="fas fa-bolt"></i> Baru
+                </span>
+            </div>
+            
+            <div class="course-thumbnail">
+                <img src="https://img.youtube.com/vi/7lVegAOvU94/maxresdefault.jpg" alt="Playfair Cipher">
+                <div class="course-thumbnail-overlay">
+                    <div class="duration-badge">
+                        <i class="fas fa-clock"></i> 16:40
+                    </div>
+                </div>
+                <button class="play-button" onclick="openYouTubeModal('https://www.youtube.com/embed/7lVegAOvU94', 'Playfair Cipher Tutorial Lengkap')">
+                    <i class="fas fa-play"></i>
+                </button>
+            </div>
+            
+            <div class="course-content">
+                <div class="course-meta">
+                    <span class="course-level">
+                        <i class="fas fa-signal"></i> Level Pemula
+                    </span>
+                    <div class="course-rating">
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star-half-alt"></i>
+                        <span class="rating-count">4.6 (321)</span>
+                    </div>
+                </div>
+                
+                <h3 class="course-title">🧩 Playfair Cipher: Digraph Substitution Cipher</h3>
+                <p class="course-description">
+                    Pelajari Playfair cipher yang digunakan dalam Perang Dunia. Video tutorial lengkap pembuatan matrix 5x5, aturan enkripsi/dekripsi, implementasi Python, dan analisis keamanannya.
+                </p>
+                
+                <div class="course-details">
+                    <div class="detail-item">
+                        <i class="fas fa-chess-board"></i>
+                        <span>Matrix 5x5</span>
+                    </div>
+                    <div class="detail-item">
+                        <i class="fas fa-code"></i>
+                        <span>Python Code</span>
+                    </div>
+                </div>
+                
+                <div class="course-instructor">
+                    <div class="instructor-avatar">BK</div>
+                    <div class="instructor-info">
+                        <h4>Belajar Kriptografi</h4>
+                        <p>YouTube Educator</p>
+                    </div>
+                </div>
+                
+                <div class="course-footer">
+                    <div class="course-progress">
+                        <div class="progress-info">
+                            <span class="progress-percentage">60% Selesai</span>
+                            <span class="progress-text">Tersisa 7 menit</span>
+                        </div>
+                        <div class="progress-bar">
+                            <div class="progress-fill" style="width: 60%"></div>
+                        </div>
+                    </div>
+                    
+                    <button class="course-action" onclick="openYouTubeModal('https://www.youtube.com/embed/7lVegAOvU94', 'Playfair Cipher Tutorial Lengkap')">
+                        <i class="fas fa-play-circle"></i> Lanjutkan
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Course 8: Hash Functions -->
+        <div class="course-card premium" data-category="lanjutan premium sertifikat">
+            <div class="course-badges">
+                <span class="course-badge badge-premium">
+                    <i class="fas fa-crown"></i> PREMIUM
+                </span>
+            </div>
+            
+            <div class="course-thumbnail">
+                <img src="https://img.youtube.com/vi/bBC-nXj3Ng4/maxresdefault.jpg" alt="Hash Functions">
+                <div class="course-thumbnail-overlay">
+                    <div class="duration-badge">
+                        <i class="fas fa-clock"></i> 28:10
+                    </div>
+                </div>
+                <button class="play-button" onclick="checkPremiumAccess('hash', 'https://www.youtube.com/embed/bBC-nXj3Ng4')">
+                    <i class="fas fa-play"></i>
+                </button>
+            </div>
+            
+            <div class="course-content">
+                <div class="course-meta">
+                    <span class="course-level">
+                        <i class="fas fa-signal"></i> Expert
+                    </span>
+                    <div class="course-rating">
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star-half-alt"></i>
+                        <span class="rating-count">4.7 (298)</span>
+                    </div>
+                </div>
+                
+                <h3 class="course-title">📊 Fungsi Hash Kriptografi: MD5, SHA-1, SHA-256</h3>
+                <p class="course-description">
+                    Pahami fungsi hash kriptografi dalam Bahasa Indonesia. Pelajari konsep hash, collision resistance, implementasi MD5, SHA-1, SHA-256, dan aplikasi dalam blockchain serta digital signatures.
+                </p>
+                
+                <div class="course-details">
+                    <div class="detail-item">
+                        <i class="fab fa-bitcoin"></i>
+                        <span>Blockchain</span>
+                    </div>
+                    <div class="detail-item">
+                        <i class="fas fa-network-wired"></i>
+                        <span>Digital Signature</span>
+                    </div>
+                </div>
+                
+                <div class="course-instructor">
+                    <div class="instructor-avatar">SK</div>
+                    <div class="instructor-info">
+                        <h4>Security & Kripto</h4>
+                        <p>Blockchain Specialist</p>
+                    </div>
+                </div>
+                
+                <div class="course-footer">
+                    <button class="course-action" onclick="checkPremiumAccess('hash', 'https://www.youtube.com/embed/bBC-nXj3Ng4')">
+                        <i class="fas fa-crown"></i> Akses Premium
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Course 9: DES Algorithm -->
+        <div class="course-card" data-category="menengah gratis">
+            <div class="course-thumbnail">
+                <img src="https://img.youtube.com/vi/2BlduGQIv7k/maxresdefault.jpg" alt="DES Algorithm">
+                <div class="course-thumbnail-overlay">
+                    <div class="duration-badge">
+                        <i class="fas fa-clock"></i> 19:25
+                    </div>
+                </div>
+                <button class="play-button" onclick="openYouTubeModal('https://www.youtube.com/embed/2BlduGQIv7k', 'DES Algorithm Tutorial')">
+                    <i class="fas fa-play"></i>
+                </button>
+            </div>
+            
+            <div class="course-content">
+                <div class="course-meta">
+                    <span class="course-level">
+                        <i class="fas fa-signal"></i> Level Menengah
+                    </span>
+                    <div class="course-rating">
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="far fa-star"></i>
+                        <span class="rating-count">4.4 (412)</span>
+                    </div>
+                </div>
+                
+                <h3 class="course-title">🔐 DES Algorithm: Data Encryption Standard</h3>
+                <p class="course-description">
+                    Pelajari Data Encryption Standard (DES) yang menjadi standar selama 20 tahun. Video tutorial lengkap tentang Feistel structure, S-boxes, P-boxes, dan implementasi DES dalam Python.
+                </p>
+                
+                <div class="course-details">
+                    <div class="detail-item">
+                        <i class="fas fa-history"></i>
+                        <span>Sejarah DES</span>
+                    </div>
+                    <div class="detail-item">
+                        <i class="fas fa-code"></i>
+                        <span>Implementasi</span>
+                    </div>
+                </div>
+                
+                <div class="course-instructor">
+                    <div class="instructor-avatar">TI</div>
+                    <div class="instructor-info">
+                        <h4>Teknik Informatika</h4>
+                        <p>Crypto Educator</p>
+                    </div>
+                </div>
+                
+                <div class="course-footer">
+                    <div class="course-progress">
+                        <div class="progress-info">
+                            <span class="progress-percentage">30% Selesai</span>
+                            <span class="progress-text">Tersisa 14 menit</span>
+                        </div>
+                        <div class="progress-bar">
+                            <div class="progress-fill" style="width: 30%"></div>
+                        </div>
+                    </div>
+                    
+                    <button class="course-action" onclick="openYouTubeModal('https://www.youtube.com/embed/2BlduGQIv7k', 'DES Algorithm Tutorial')">
+                        <i class="fas fa-play-circle"></i> Lanjutkan
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Course 10: Blockchain Cryptography -->
+        <div class="course-card premium" data-category="lanjutan premium">
+            <div class="course-badges">
+                <span class="course-badge badge-premium">
+                    <i class="fas fa-crown"></i> PREMIUM
+                </span>
+                <span class="course-badge badge-popular">
+                    <i class="fas fa-bitcoin"></i> Blockchain
+                </span>
+            </div>
+            
+            <div class="course-thumbnail">
+                <img src="https://img.youtube.com/vi/ZL9Po8tCAuI/maxresdefault.jpg" alt="Blockchain Crypto">
+                <div class="course-thumbnail-overlay">
+                    <div class="duration-badge">
+                        <i class="fas fa-clock"></i> 32:15
+                    </div>
+                </div>
+                <button class="play-button" onclick="checkPremiumAccess('blockchain', 'https://www.youtube.com/embed/ZL9Po8tCAuI')">
+                    <i class="fas fa-play"></i>
+                </button>
+            </div>
+            
+            <div class="course-content">
+                <div class="course-meta">
+                    <span class="course-level">
+                        <i class="fas fa-signal"></i> Expert
+                    </span>
+                    <div class="course-rating">
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star-half-alt"></i>
+                        <span class="rating-count">4.9 (567)</span>
+                    </div>
+                </div>
+                
+                <h3 class="course-title">⛓️ Kriptografi Blockchain: Bitcoin & Ethereum</h3>
+                <p class="course-description">
+                    Video mendalam tentang kriptografi di balik blockchain. Pelajari digital signatures (ECDSA), merkle trees, proof-of-work, proof-of-stake, dan keamanan cryptocurrency dalam Bahasa Indonesia.
+                </p>
+                
+                <div class="course-details">
+                    <div class="detail-item">
+                        <i class="fab fa-ethereum"></i>
+                        <span>Ethereum</span>
+                    </div>
+                    <div class="detail-item">
+                        <i class="fas fa-shield-alt"></i>
+                        <span>Smart Contracts</span>
+                    </div>
+                </div>
+                
+                <div class="course-instructor">
+                    <div class="instructor-avatar">CB</div>
+                    <div class="instructor-info">
+                        <h4>Crypto Blockchain ID</h4>
+                        <p>Blockchain Expert</p>
+                    </div>
+                </div>
+                
+                <div class="course-footer">
+                    <button class="course-action" onclick="checkPremiumAccess('blockchain', 'https://www.youtube.com/embed/ZL9Po8tCAuI')">
+                        <i class="fas fa-crown"></i> Akses Premium
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Course 11: Diffie-Hellman Key Exchange -->
+        <div class="course-card" data-category="menengah gratis">
+            <div class="course-badges">
+                <span class="course-badge badge-new">
+                    <i class="fas fa-star"></i> Hot
+                </span>
+            </div>
+            
+            <div class="course-thumbnail">
+                <img src="https://img.youtube.com/vi/YjrfmOYRY7k/maxresdefault.jpg" alt="Diffie-Hellman">
+                <div class="course-thumbnail-overlay">
+                    <div class="duration-badge">
+                        <i class="fas fa-clock"></i> 17:50
+                    </div>
+                </div>
+                <button class="play-button" onclick="openYouTubeModal('https://www.youtube.com/embed/YjrfmOYRY7k', 'Diffie-Hellman Key Exchange Tutorial')">
+                    <i class="fas fa-play"></i>
+                </button>
+            </div>
+            
+            <div class="course-content">
+                <div class="course-meta">
+                    <span class="course-level">
+                        <i class="fas fa-signal"></i> Level Menengah
+                    </span>
+                    <div class="course-rating">
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star-half-alt"></i>
+                        <span class="rating-count">4.7 (389)</span>
+                    </div>
+                </div>
+                
+                <h3 class="course-title">🤝 Diffie-Hellman Key Exchange: Secure Communication</h3>
+                <p class="course-description">
+                    Pelajari Diffie-Hellman key exchange yang memungkinkan dua pihak untuk membagi kunci rahasia melalui channel publik. Tutorial lengkap dengan contoh numerik dan implementasi Python.
+                </p>
+                
+                <div class="course-details">
+                    <div class="detail-item">
+                        <i class="fas fa-key"></i>
+                        <span>Key Exchange</span>
+                    </div>
+                    <div class="detail-item">
+                        <i class="fas fa-exchange-alt"></i>
+                        <span>Secure Channel</span>
+                    </div>
+                </div>
+                
+                <div class="course-instructor">
+                    <div class="instructor-avatar">SK</div>
+                    <div class="instructor-info">
+                        <h4>Security Knowledge</h4>
+                        <p>Network Security Expert</p>
+                    </div>
+                </div>
+                
+                <div class="course-footer">
+                    <div class="course-progress">
+                        <div class="progress-info">
+                            <span class="progress-percentage">75% Selesai</span>
+                            <span class="progress-text">Tersisa 4 menit</span>
+                        </div>
+                        <div class="progress-bar">
+                            <div class="progress-fill" style="width: 75%"></div>
+                        </div>
+                    </div>
+                    
+                    <button class="course-action" onclick="openYouTubeModal('https://www.youtube.com/embed/YjrfmOYRY7k', 'Diffie-Hellman Key Exchange Tutorial')">
+                        <i class="fas fa-play-circle"></i> Lanjutkan
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Course 12: Elliptic Curve Cryptography -->
+        <div class="course-card premium" data-category="lanjutan premium sertifikat">
+            <div class="course-badges">
+                <span class="course-badge badge-premium">
+                    <i class="fas fa-crown"></i> PREMIUM
+                </span>
+                <span class="course-badge badge-certificate">
+                    <i class="fas fa-certificate"></i> SERTIFIKAT
+                </span>
+            </div>
+            
+            <div class="course-thumbnail">
+                <img src="https://img.youtube.com/vi/dCvB-mhkT0w/maxresdefault.jpg" alt="ECC">
+                <div class="course-thumbnail-overlay">
+                    <div class="duration-badge">
+                        <i class="fas fa-clock"></i> 29:40
+                    </div>
+                </div>
+                <button class="play-button" onclick="checkPremiumAccess('ecc', 'https://www.youtube.com/embed/dCvB-mhkT0w')">
+                    <i class="fas fa-play"></i>
+                </button>
+            </div>
+            
+            <div class="course-content">
+                <div class="course-meta">
+                    <span class="course-level">
+                        <i class="fas fa-signal"></i> Expert
+                    </span>
+                    <div class="course-rating">
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <span class="rating-count">5.0 (256)</span>
+                    </div>
+                </div>
+                
+                <h3 class="course-title">📈 Elliptic Curve Cryptography (ECC): Modern Crypto</h3>
+                <p class="course-description">
+                    Pelajari Elliptic Curve Cryptography yang menjadi standar modern. Video tutorial komprehensif tentang kurva eliptik, point addition, scalar multiplication, dan implementasi ECDSA dalam Python.
+                </p>
+                
+                <div class="course-details">
+                    <div class="detail-item">
+                        <i class="fas fa-chart-line"></i>
+                        <span>Modern Crypto</span>
+                    </div>
+                    <div class="detail-item">
+                        <i class="fas fa-mobile-alt"></i>
+                        <span>Mobile Security</span>
+                    </div>
+                </div>
+                
+                <div class="course-instructor">
+                    <div class="instructor-avatar">MS</div>
+                    <div class="instructor-info">
+                        <h4>Modern Security</h4>
+                        <p>Crypto Researcher</p>
+                    </div>
+                </div>
+                
+                <div class="course-footer">
+                    <button class="course-action" onclick="checkPremiumAccess('ecc', 'https://www.youtube.com/embed/dCvB-mhkT0w')">
+                        <i class="fas fa-crown"></i> Enroll Now
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Pagination -->
+    <div class="pagination">
+        <button class="pagination-btn">
+            <i class="fas fa-chevron-left"></i>
+        </button>
+        <button class="pagination-btn active">1</button>
+        <button class="pagination-btn">2</button>
+        <button class="pagination-btn">3</button>
+        <span class="pagination-dots">...</span>
+        <button class="pagination-btn">5</button>
+        <button class="pagination-btn">
+            <i class="fas fa-chevron-right"></i>
+        </button>
+    </div>
+
+    <!-- YouTube Modal -->
+    <div class="youtube-modal" id="youtubeModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title" id="modalTitle"></h3>
+                <button class="close-modal" onclick="closeYouTubeModal()">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="video-wrapper">
+                    <iframe id="modalVideo" 
+                        src=""
+                        title="YouTube video player" 
+                        frameborder="0" 
+                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
+                        allowfullscreen>
+                    </iframe>
+                </div>
+                <div class="video-info">
+                    <p><strong>💡 Tips Belajar:</strong> Sistem akan merekam progress pembelajaran Anda secara otomatis. Jangan lupa mengerjakan quiz dan praktik coding untuk pemahaman yang lebih baik.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Initialize courses data
+        const courses = [
+            {
+                id: 1,
+                title: "Pengantar Kriptografi Lengkap untuk Pemula",
+                category: ["pemula", "gratis"],
+                youtubeId: "sMOZf4GN3oc",
+                duration: "15:30",
+                progress: 100,
+                premium: false
+            },
+            {
+                id: 2,
+                title: "Caesar Cipher: Tutorial Lengkap & Implementasi Python",
+                category: ["pemula", "gratis"],
+                youtubeId: "JJzQyxxQ6SM",
+                duration: "12:45",
+                progress: 85,
+                premium: false
+            },
+            // Add more courses...
+        ];
+
+        // Category Filter
+        const filterButtons = document.querySelectorAll('.category-filter-btn');
+        const courseCards = document.querySelectorAll('.course-card');
+        const searchInput = document.getElementById('courseSearch');
+        
+        // Initialize active filter
+        let activeFilter = 'all';
+        let activeSearchTerm = '';
+
+        filterButtons.forEach(button => {
+            button.addEventListener('click', function() {
+                activeFilter = this.getAttribute('data-category');
+                
+                // Update active button
+                filterButtons.forEach(btn => {
+                    btn.classList.remove('active');
+                });
+                this.classList.add('active');
+                
+                // Apply filter
+                filterCourses(activeFilter, activeSearchTerm);
+            });
+        });
+
+        // Search Functionality with debounce
+        let searchTimeout;
+        searchInput.addEventListener('input', function() {
+            clearTimeout(searchTimeout);
+            activeSearchTerm = this.value.toLowerCase().trim();
+            
+            searchTimeout = setTimeout(() => {
+                filterCourses(activeFilter, activeSearchTerm);
+            }, 300);
+        });
+
+        // Filter courses function
+        function filterCourses(category, searchTerm = '') {
+            let visibleCount = 0;
+            
+            courseCards.forEach(card => {
+                const cardCategories = card.getAttribute('data-category');
+                const title = card.querySelector('.course-title').textContent.toLowerCase();
+                const description = card.querySelector('.course-description').textContent.toLowerCase();
+                const instructor = card.querySelector('.instructor-info h4').textContent.toLowerCase();
+                
+                const matchesCategory = category === 'all' || cardCategories.includes(category);
+                const matchesSearch = !searchTerm || 
+                    title.includes(searchTerm) || 
+                    description.includes(searchTerm) ||
+                    instructor.includes(searchTerm);
+                
+                if (matchesCategory && matchesSearch) {
+                    card.style.display = 'flex';
+                    card.style.opacity = '0';
+                    card.style.transform = 'translateY(20px)';
+                    
+                    setTimeout(() => {
+                        card.style.opacity = '1';
+                        card.style.transform = 'translateY(0)';
+                    }, visibleCount * 50);
+                    
+                    visibleCount++;
+                } else {
+                    card.style.opacity = '0';
+                    card.style.transform = 'translateY(20px)';
+                    setTimeout(() => {
+                        card.style.display = 'none';
+                    }, 300);
+                }
+            });
+            
+            // Show/hide empty state
+            toggleEmptyState(visibleCount === 0);
+            
+            // Update pagination visibility
+            updatePagination(visibleCount);
+        }
+
+        // Empty state functions
+        function toggleEmptyState(show) {
+            let emptyState = document.querySelector('.empty-state');
+            
+            if (show && !emptyState) {
+                emptyState = document.createElement('div');
+                emptyState.className = 'empty-state';
+                emptyState.innerHTML = `
+                    <i class="fas fa-search"></i>
+                    <h3>Tidak Ada Course yang Ditemukan</h3>
+                    <p>Maaf, tidak ada course yang sesuai dengan filter atau pencarian Anda. Coba gunakan kata kunci lain atau reset filter.</p>
+                    <div style="display: flex; gap: 1rem; justify-content: center; margin-top: 2rem;">
+                        <button class="course-action" onclick="resetFilters()">
+                            <i class="fas fa-redo"></i> Reset Filter
+                        </button>
+                        <button class="course-action secondary" onclick="document.getElementById('courseSearch').focus()">
+                            <i class="fas fa-search"></i> Cari Lagi
+                        </button>
+                    </div>
+                `;
+                document.getElementById('coursesGrid').appendChild(emptyState);
+            } else if (!show && emptyState) {
+                emptyState.remove();
+            }
+        }
+
+        function updatePagination(visibleCount) {
+            const pagination = document.querySelector('.pagination');
+            if (visibleCount === 0) {
+                pagination.style.display = 'none';
+            } else {
+                pagination.style.display = 'flex';
+            }
+        }
+
+        window.resetFilters = function() {
+            filterButtons.forEach(btn => {
+                btn.classList.remove('active');
+                if (btn.getAttribute('data-category') === 'all') {
+                    btn.classList.add('active');
+                    activeFilter = 'all';
+                }
+            });
+            
+            searchInput.value = '';
+            activeSearchTerm = '';
+            filterCourses('all', '');
+            searchInput.focus();
+        };
+
+        // Progress bar animation
+        const progressBars = document.querySelectorAll('.progress-fill');
+        progressBars.forEach(bar => {
+            const width = bar.style.width;
+            bar.style.width = '0%';
+            setTimeout(() => {
+                bar.style.width = width;
+            }, 500);
+        });
+
+        // Initialize
+        filterCourses('all', '');
+    });
+
+    // YouTube Modal Functions
+    function openYouTubeModal(videoUrl, title) {
+        const modal = document.getElementById('youtubeModal');
+        const modalVideo = document.getElementById('modalVideo');
+        const modalTitle = document.getElementById('modalTitle');
+        
+        // Add autoplay parameter
+        const autoplayUrl = videoUrl.includes('?') ? 
+            `${videoUrl}&autoplay=1&rel=0&modestbranding=1` : 
+            `${videoUrl}?autoplay=1&rel=0&modestbranding=1`;
+        
+        modalVideo.src = autoplayUrl;
+        modalTitle.textContent = title;
+        modal.classList.add('active');
+        document.body.style.overflow = 'hidden';
+        
+        // Track video start
+        trackVideoStart(title, videoUrl);
+        
+        // Add keyboard shortcut
+        document.addEventListener('keydown', handleModalKeydown);
+    }
+
+    function closeYouTubeModal() {
+        const modal = document.getElementById('youtubeModal');
+        const modalVideo = document.getElementById('modalVideo');
+        
+        // Pause video and track progress
+        if (modalVideo.src) {
+            trackVideoProgress(modalVideo.src, document.getElementById('modalTitle').textContent);
+        }
+        
+        modalVideo.src = '';
+        modal.classList.remove('active');
+        document.body.style.overflow = 'auto';
+        
+        // Remove keyboard shortcut
+        document.removeEventListener('keydown', handleModalKeydown);
+    }
+
+    function handleModalKeydown(e) {
+        if (e.key === 'Escape') {
+            closeYouTubeModal();
+        }
+        if (e.key === ' ' && document.activeElement.tagName !== 'INPUT') {
+            e.preventDefault();
+            const iframe = document.getElementById('modalVideo');
+            if (iframe) {
+                const iframeWindow = iframe.contentWindow;
+                iframeWindow.postMessage('{"event":"command","func":"pauseVideo","args":""}', '*');
+            }
+        }
+    }
+
+    // Close modal when clicking outside
+    document.getElementById('youtubeModal').addEventListener('click', function(e) {
+        if (e.target === this) {
+            closeYouTubeModal();
+        }
+    });
+
+    // Premium access check
+    function checkPremiumAccess(course, videoUrl) {
+        const isPremium = localStorage.getItem('decodify_premium') === 'true';
+        const courseTitles = {
+            'vigenere': 'Vigenère Cipher: Polialfabetik Lengkap + Code',
+            'rsa': 'RSA Encryption: Kriptografi Kunci Publik Lengkap',
+            'aes': 'AES Encryption: Advanced Encryption Standard Tutorial',
+            'hash': 'Fungsi Hash Kriptografi: MD5, SHA-1, SHA-256',
+            'blockchain': 'Kriptografi Blockchain: Bitcoin & Ethereum',
+            'ecc': 'Elliptic Curve Cryptography (ECC): Modern Crypto'
+        };
+        
+        if (!isPremium) {
+            showUpgradeModal(course, courseTitles[course]);
+        } else {
+            openYouTubeModal(videoUrl, courseTitles[course]);
+        }
+    }
+
+    // Show upgrade modal
+    function showUpgradeModal(courseId, courseTitle) {
+        const modal = document.createElement('div');
+        modal.className = 'youtube-modal active';
+        modal.innerHTML = `
+            <div class="modal-content" style="max-width: 600px;">
+                <div class="modal-header">
+                    <h3 class="modal-title">🔒 Upgrade ke Premium untuk Akses Lengkap</h3>
+                    <button class="close-modal" onclick="this.parentElement.parentElement.remove(); document.body.style.overflow='auto'">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div style="text-align: center; padding: 2rem;">
+                        <div style="background: linear-gradient(135deg, #FFD700, #FFA500); width: 80px; height: 80px; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 1.5rem;">
+                            <i class="fas fa-crown" style="font-size: 2.5rem; color: white;"></i>
+                        </div>
+                        <h3 style="color: var(--text); margin-bottom: 1rem; font-size: 1.5rem;">Akses Premium Diperlukan</h3>
+                        <p style="color: var(--text-muted); margin-bottom: 1.5rem; line-height: 1.6;">
+                            Course <strong>"${courseTitle}"</strong> hanya tersedia untuk member premium. Upgrade sekarang untuk mengakses:
+                        </p>
+                        
+                        <div style="background: rgba(139, 92, 246, 0.1); padding: 1.5rem; border-radius: 12px; margin-bottom: 2rem; text-align: left;">
+                            <div style="display: flex; align-items: center; gap: 1rem; margin-bottom: 0.8rem;">
+                                <i class="fas fa-check-circle" style="color: #10B981;"></i>
+                                <span>75+ Video Tutorial Lengkap</span>
+                            </div>
+                            <div style="display: flex; align-items: center; gap: 1rem; margin-bottom: 0.8rem;">
+                                <i class="fas fa-check-circle" style="color: #10B981;"></i>
+                                <span>Source Code & Proyek Praktis</span>
+                            </div>
+                            <div style="display: flex; align-items: center; gap: 1rem; margin-bottom: 0.8rem;">
+                                <i class="fas fa-check-circle" style="color: #10B981;"></i>
+                                <span>Sertifikat Penyelesaian</span>
+                            </div>
+                            <div style="display: flex; align-items: center; gap: 1rem;">
+                                <i class="fas fa-check-circle" style="color: #10B981;"></i>
+                                <span>Akses Forum Premium</span>
+                            </div>
+                        </div>
+                        
+                        <div style="display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap;">
+                            <button class="course-action" onclick="upgradeToPremium()" style="min-width: 180px;">
+                                <i class="fas fa-rocket"></i> Upgrade Premium
+                            </button>
+                            <button class="course-action secondary" onclick="this.parentElement.parentElement.parentElement.parentElement.remove(); document.body.style.overflow='auto'" style="min-width: 180px;">
+                                <i class="fas fa-clock"></i> Nanti Saja
+                            </button>
+                        </div>
+                        
+                        <p style="color: var(--text-muted); font-size: 0.9rem; margin-top: 1.5rem;">
+                            <i class="fas fa-info-circle"></i> 30-day money-back guarantee
+                        </p>
+                    </div>
+                </div>
+            </div>
+        `;
+        document.body.appendChild(modal);
+        document.body.style.overflow = 'hidden';
+    }
+
+    function upgradeToPremium() {
+        // In production, this would redirect to payment page
+        localStorage.setItem('decodify_premium', 'true');
+        
+        // Show success message
+        const modal = document.querySelector('.youtube-modal.active');
+        if (modal) {
+            modal.innerHTML = `
+                <div class="modal-content" style="max-width: 500px;">
+                    <div class="modal-body">
+                        <div style="text-align: center; padding: 3rem 2rem;">
+                            <div style="background: linear-gradient(135deg, #10B981, #059669); width: 100px; height: 100px; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 2rem;">
+                                <i class="fas fa-check" style="font-size: 3rem; color: white;"></i>
+                            </div>
+                            <h3 style="color: var(--text); margin-bottom: 1rem; font-size: 1.8rem;">🎉 Upgrade Berhasil!</h3>
+                            <p style="color: var(--text-muted); margin-bottom: 2rem; line-height: 1.6;">
+                                Selamat! Anda sekarang memiliki akses premium ke semua course. Mulai belajar sekarang!
+                            </p>
+                            <button class="course-action" onclick="location.reload()" style="min-width: 200px;">
+                                <i class="fas fa-play-circle"></i> Mulai Belajar
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+    }
+
+    // Mock analytics functions
+    function trackVideoStart(title, url) {
+        console.log('Video started:', title);
+        // In production, send to analytics service
+    }
+
+    function trackVideoProgress(url, title) {
+        console.log('Video progress tracked:', title);
+        // In production, update user progress in database
+    }
+
+    // Handle responsive layout
+    function handleResize() {
+        const grid = document.getElementById('coursesGrid');
+        const width = window.innerWidth;
+        
+        if (width < 768) {
+            grid.style.gridTemplateColumns = '1fr';
+        } else if (width < 1400) {
+            grid.style.gridTemplateColumns = 'repeat(2, 1fr)';
+        } else {
+            grid.style.gridTemplateColumns = 'repeat(3, 1fr)';
+        }
+    }
+
+    window.addEventListener('resize', handleResize);
+    handleResize();
+</script>
+{% endblock %}

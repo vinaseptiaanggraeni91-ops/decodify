@@ -1,0 +1,483 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container py-5">
+    <!-- Page Header -->
+    <div class="search-hero-section mb-5">
+        <div class="row justify-content-center">
+            <div class="col-lg-10 col-xl-8 text-center">
+                <h1 class="display-5 fw-bold mb-3">Cari Konten Pembelajaran</h1>
+                <p class="lead text-muted mb-4">
+                    Temukan cipher, modul, tantangan, dan materi kriptografi yang Anda butuhkan
+                </p>
+                
+                <!-- Search Box -->
+                <div class="search-container mx-auto mb-3">
+                    <form action="/search" method="get" class="position-relative">
+                        <div class="input-group input-group-lg shadow-sm rounded-pill overflow-hidden">
+                            <span class="input-group-text bg-white border-0 ps-4">
+                                <i class="fas fa-search text-muted"></i>
+                            </span>
+                            <input type="text" 
+                                   name="q" 
+                                   class="form-control border-0 py-3" 
+                                   placeholder="Masukkan kata kunci pencarian (contoh: Caesar, RSA, Enkripsi)"
+                                   value="{{ search_term }}"
+                                   autocomplete="off"
+                                   autofocus>
+                            <button class="btn btn-gradient-primary px-4 border-0" type="submit">
+                                <span class="d-none d-md-inline">Cari</span>
+                                <i class="fas fa-search d-inline d-md-none"></i>
+                            </button>
+                        </div>
+                        <div class="search-suggestions mt-3">
+                            <small class="text-muted">Coba: </small>
+                            <a href="/search?q=caesar" class="badge bg-light text-dark text-decoration-none me-2">Caesar</a>
+                            <a href="/search?q=vigenere" class="badge bg-light text-dark text-decoration-none me-2">Vigenère</a>
+                            <a href="/search?q=rsa" class="badge bg-light text-dark text-decoration-none me-2">RSA</a>
+                            <a href="/search?q=enkripsi" class="badge bg-light text-dark text-decoration-none me-2">Enkripsi</a>
+                        </div>
+                    </form>
+                </div>
+                
+                {% if search_term %}
+                <div class="search-meta mt-4">
+                    <div class="d-flex align-items-center justify-content-center">
+                        <div class="text-muted me-3">
+                            <i class="fas fa-info-circle me-1"></i>
+                            <span>Menampilkan hasil untuk: <strong class="text-dark">"{{ search_term }}"</strong></span>
+                        </div>
+                        <div class="vr mx-3"></div>
+                        <div class="text-muted">
+                            <i class="fas fa-chart-bar me-1"></i>
+                            <span>{{ total }} hasil ditemukan</span>
+                        </div>
+                    </div>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <!-- Search Results -->
+    {% if search_term %}
+    <div class="search-results-section">
+        {% if total > 0 %}
+        <!-- Results Summary -->
+        <div class="row mb-5">
+            <div class="col-12">
+                <div class="d-flex justify-content-between align-items-center border-bottom pb-3">
+                    <h3 class="h5 fw-semibold mb-0">Hasil Pencarian</h3>
+                    <div class="d-flex align-items-center">
+                        <span class="me-3 text-muted small">Kategori:</span>
+                        <div class="btn-group btn-group-sm" role="group">
+                            {% if results.ciphers %}
+                            <button type="button" class="btn btn-outline-primary active" data-filter="ciphers">
+                                Cipher <span class="badge bg-primary ms-1">{{ results.ciphers|length }}</span>
+                            </button>
+                            {% endif %}
+                            {% if results.modules %}
+                            <button type="button" class="btn btn-outline-success" data-filter="modules">
+                                Modul <span class="badge bg-success ms-1">{{ results.modules|length }}</span>
+                            </button>
+                            {% endif %}
+                            {% if results.challenges %}
+                            <button type="button" class="btn btn-outline-warning" data-filter="challenges">
+                                Tantangan <span class="badge bg-warning ms-1">{{ results.challenges|length }}</span>
+                            </button>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Ciphers Results -->
+        {% if results.ciphers %}
+        <div class="results-category mb-5" data-category="ciphers">
+            <div class="d-flex align-items-center mb-4">
+                <div class="category-icon me-3">
+                    <div class="bg-primary bg-opacity-10 rounded-circle p-3">
+                        <i class="fas fa-lock fa-lg text-primary"></i>
+                    </div>
+                </div>
+                <div>
+                    <h4 class="h5 fw-semibold mb-0">Cipher</h4>
+                    <p class="text-muted small mb-0">{{ results.ciphers|length }} cipher ditemukan</p>
+                </div>
+            </div>
+            
+            <div class="row g-4">
+                {% for cipher in results.ciphers %}
+                <div class="col-md-6 col-lg-4">
+                    <div class="card h-100 border-0 shadow-sm hover-lift transition-all">
+                        <div class="card-body p-4">
+                            <div class="d-flex align-items-start mb-3">
+                                <div class="bg-primary bg-opacity-10 rounded p-3 me-3">
+                                    <i class="fas fa-lock text-primary fa-lg"></i>
+                                </div>
+                                <div>
+                                    <h5 class="card-title fw-semibold mb-1">{{ cipher.name }}</h5>
+                                    <span class="badge bg-primary bg-opacity-10 text-primary small">Cipher</span>
+                                </div>
+                            </div>
+                            <p class="card-text text-muted small mb-4">
+                                Algoritma kriptografi untuk mengenkripsi dan mendekripsi pesan
+                            </p>
+                            <div class="d-flex justify-content-between align-items-center">
+                                <a href="{{ cipher.url }}" class="btn btn-sm btn-outline-primary">
+                                    Pelajari <i class="fas fa-arrow-right ms-1"></i>
+                                </a>
+                                <div class="text-muted small">
+                                    <i class="far fa-clock me-1"></i> 15 menit
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card-footer bg-transparent border-top-0 pt-0">
+                            <div class="d-flex justify-content-between small">
+                                <span class="text-muted">
+                                    <i class="far fa-star text-warning me-1"></i> 4.5
+                                </span>
+                                <span class="text-muted">
+                                    <i class="far fa-user me-1"></i> Pemula
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+        {% endif %}
+
+        <!-- Learning Modules Results -->
+        {% if results.modules %}
+        <div class="results-category mb-5" data-category="modules">
+            <div class="d-flex align-items-center mb-4">
+                <div class="category-icon me-3">
+                    <div class="bg-success bg-opacity-10 rounded-circle p-3">
+                        <i class="fas fa-book fa-lg text-success"></i>
+                    </div>
+                </div>
+                <div>
+                    <h4 class="h5 fw-semibold mb-0">Modul Belajar</h4>
+                    <p class="text-muted small mb-0">{{ results.modules|length }} modul ditemukan</p>
+                </div>
+            </div>
+            
+            <div class="row">
+                {% for module in results.modules %}
+                <div class="col-12 mb-3">
+                    <div class="card border-0 shadow-sm hover-lift transition-all">
+                        <div class="card-body p-4">
+                            <div class="row align-items-center">
+                                <div class="col-md-8">
+                                    <div class="d-flex align-items-start">
+                                        <div class="bg-success bg-opacity-10 rounded p-3 me-3">
+                                            <i class="fas fa-book text-success"></i>
+                                        </div>
+                                        <div>
+                                            <h5 class="fw-semibold mb-1">{{ module.name }}</h5>
+                                            <p class="text-muted small mb-2">
+                                                Modul pembelajaran lengkap tentang kriptografi dengan penjelasan mendalam
+                                            </p>
+                                            <div class="d-flex align-items-center">
+                                                <span class="badge bg-success bg-opacity-10 text-success me-2">
+                                                    {{ module.category }}
+                                                </span>
+                                                <span class="badge bg-light text-muted small">
+                                                    <i class="far fa-file-alt me-1"></i> 8 bagian
+                                                </span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-4 text-md-end mt-3 mt-md-0">
+                                    <a href="{{ module.url }}" class="btn btn-success btn-gradient">
+                                        Buka Modul <i class="fas fa-arrow-right ms-1"></i>
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+        {% endif %}
+
+        <!-- Challenges Results -->
+        {% if results.challenges %}
+        <div class="results-category mb-5" data-category="challenges">
+            <div class="d-flex align-items-center mb-4">
+                <div class="category-icon me-3">
+                    <div class="bg-warning bg-opacity-10 rounded-circle p-3">
+                        <i class="fas fa-flag fa-lg text-warning"></i>
+                    </div>
+                </div>
+                <div>
+                    <h4 class="h5 fw-semibold mb-0">Tantangan</h4>
+                    <p class="text-muted small mb-0">{{ results.challenges|length }} tantangan ditemukan</p>
+                </div>
+            </div>
+            
+            <div class="row g-4">
+                {% for challenge in results.challenges %}
+                <div class="col-md-6">
+                    <div class="card h-100 border-0 shadow-sm hover-lift transition-all">
+                        <div class="card-body p-4">
+                            <div class="d-flex justify-content-between align-items-start mb-3">
+                                <div>
+                                    <h5 class="fw-semibold mb-1">{{ challenge.name }}</h5>
+                                    <div class="d-flex align-items-center mb-2">
+                                        <span class="badge bg-warning bg-opacity-10 text-warning me-2">
+                                            <i class="fas fa-trophy me-1"></i> Tantangan
+                                        </span>
+                                        <span class="badge bg-secondary bg-opacity-10 text-dark">
+                                            {{ challenge.cipher }}
+                                        </span>
+                                    </div>
+                                </div>
+                                <div class="text-warning">
+                                    <i class="fas fa-medal fa-xl"></i>
+                                </div>
+                            </div>
+                            <p class="text-muted small mb-4">
+                                Uji kemampuan Anda dengan tantangan kriptografi praktis. Selesaikan untuk mendapatkan poin!
+                            </p>
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div>
+                                    <span class="badge bg-light text-muted small me-2">
+                                        <i class="fas fa-star me-1"></i> 50 poin
+                                    </span>
+                                    <span class="badge bg-light text-muted small">
+                                        <i class="fas fa-users me-1"></i> 245 penyelesai
+                                    </span>
+                                </div>
+                                <a href="{{ challenge.url }}" class="btn btn-warning btn-gradient btn-sm">
+                                    Coba Tantangan <i class="fas fa-play ms-1"></i>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+        {% endif %}
+        
+        {% else %}
+        <!-- No Results Found -->
+        <div class="no-results text-center py-5 my-5">
+            <div class="mb-4">
+                <div class="empty-state-icon mx-auto">
+                    <i class="fas fa-search fa-4x text-muted"></i>
+                </div>
+            </div>
+            <h3 class="h4 fw-semibold mb-3">Tidak ada hasil ditemukan</h3>
+            <p class="text-muted mb-4 mx-auto" style="max-width: 500px;">
+                Maaf, kami tidak dapat menemukan konten yang sesuai dengan pencarian "<strong>{{ search_term }}</strong>". Coba gunakan kata kunci yang berbeda atau lebih umum.
+            </p>
+            <div class="suggestions mt-4">
+                <h6 class="text-muted mb-3">Coba pencarian populer:</h6>
+                <div class="d-flex flex-wrap gap-2 justify-content-center">
+                    <a href="/search?q=caesar" class="btn btn-outline-primary">Cipher Caesar</a>
+                    <a href="/search?q=vigenere" class="btn btn-outline-primary">Vigenère Cipher</a>
+                    <a href="/search?q=enkripsi+asimetris" class="btn btn-outline-primary">Enkripsi Asimetris</a>
+                    <a href="/search?q=modul+dasar" class="btn btn-outline-success">Modul Dasar</a>
+                    <a href="/search?q=tantangan+kripto" class="btn btn-outline-warning">Tantangan Kripto</a>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+    {% else %}
+    <!-- Empty Search State -->
+    <div class="empty-search-state">
+        <div class="row justify-content-center">
+            <div class="col-lg-10 text-center">
+                <div class="card border-0 shadow-lg overflow-hidden">
+                    <div class="card-body p-5">
+                        <div class="py-4">
+                            <div class="mb-4">
+                                <div class="search-icon-display mx-auto">
+                                    <i class="fas fa-search fa-5x text-primary opacity-25"></i>
+                                </div>
+                            </div>
+                            <h3 class="h4 fw-semibold mb-3">Apa yang ingin Anda pelajari?</h3>
+                            <p class="text-muted mb-5">
+                                Jelajahi berbagai konten pembelajaran kriptografi yang tersedia
+                            </p>
+                            
+                            <div class="row g-4">
+                                <div class="col-md-3">
+                                    <a href="/search?q=caesar" class="card category-card text-decoration-none">
+                                        <div class="card-body text-center p-4">
+                                            <div class="icon-wrapper mb-3">
+                                                <div class="bg-primary bg-opacity-10 rounded-circle p-3 mx-auto">
+                                                    <i class="fas fa-exchange-alt fa-2x text-primary"></i>
+                                                </div>
+                                            </div>
+                                            <h5 class="fw-semibold mb-2">Cipher Klasik</h5>
+                                            <p class="text-muted small mb-0">Caesar, Vigenère, Substitusi</p>
+                                        </div>
+                                    </a>
+                                </div>
+                                
+                                <div class="col-md-3">
+                                    <a href="/search?q=modern" class="card category-card text-decoration-none">
+                                        <div class="card-body text-center p-4">
+                                            <div class="icon-wrapper mb-3">
+                                                <div class="bg-success bg-opacity-10 rounded-circle p-3 mx-auto">
+                                                    <i class="fas fa-microchip fa-2x text-success"></i>
+                                                </div>
+                                            </div>
+                                            <h5 class="fw-semibold mb-2">Cipher Modern</h5>
+                                            <p class="text-muted small mb-0">AES, RSA, Enkripsi Modern</p>
+                                        </div>
+                                    </a>
+                                </div>
+                                
+                                <div class="col-md-3">
+                                    <a href="/search?q=modul" class="card category-card text-decoration-none">
+                                        <div class="card-body text-center p-4">
+                                            <div class="icon-wrapper mb-3">
+                                                <div class="bg-info bg-opacity-10 rounded-circle p-3 mx-auto">
+                                                    <i class="fas fa-graduation-cap fa-2x text-info"></i>
+                                                </div>
+                                            </div>
+                                            <h5 class="fw-semibold mb-2">Modul Belajar</h5>
+                                            <p class="text-muted small mb-0">Materi pembelajaran lengkap</p>
+                                        </div>
+                                    </a>
+                                </div>
+                                
+                                <div class="col-md-3">
+                                    <a href="/search?q=tantangan" class="card category-card text-decoration-none">
+                                        <div class="card-body text-center p-4">
+                                            <div class="icon-wrapper mb-3">
+                                                <div class="bg-warning bg-opacity-10 rounded-circle p-3 mx-auto">
+                                                    <i class="fas fa-puzzle-piece fa-2x text-warning"></i>
+                                                </div>
+                                            </div>
+                                            <h5 class="fw-semibold mb-2">Tantangan</h5>
+                                            <p class="text-muted small mb-0">Latihan dan praktik</p>
+                                        </div>
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+</div>
+
+<style>
+    /* Custom Styles for Professional Look */
+    .btn-gradient-primary {
+        background: linear-gradient(135deg, #4e54c8, #8f94fb);
+        color: white;
+        border: none;
+    }
+    
+    .btn-gradient-primary:hover {
+        background: linear-gradient(135deg, #3a3fa0, #7a7fd9);
+        color: white;
+    }
+    
+    .btn-gradient-success {
+        background: linear-gradient(135deg, #11998e, #38ef7d);
+        color: white;
+        border: none;
+    }
+    
+    .btn-gradient-warning {
+        background: linear-gradient(135deg, #f46b45, #eea849);
+        color: white;
+        border: none;
+    }
+    
+    .hover-lift {
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+    
+    .hover-lift:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 25px rgba(0,0,0,0.1) !important;
+    }
+    
+    .transition-all {
+        transition: all 0.3s ease;
+    }
+    
+    .category-card {
+        border: 1px solid rgba(0,0,0,0.08);
+        transition: all 0.3s ease;
+    }
+    
+    .category-card:hover {
+        border-color: var(--bs-primary);
+        transform: translateY(-5px);
+    }
+    
+    .search-container .input-group {
+        border: 2px solid transparent;
+        background: linear-gradient(white, white) padding-box,
+                    linear-gradient(135deg, #4e54c8, #8f94fb) border-box;
+    }
+    
+    .results-category {
+        opacity: 1;
+        transition: opacity 0.3s ease;
+    }
+    
+    .results-category.hidden {
+        display: none;
+        opacity: 0;
+    }
+    
+    /* Responsive adjustments */
+    @media (max-width: 768px) {
+        .search-hero-section h1 {
+            font-size: 2rem;
+        }
+        
+        .search-container .input-group-lg {
+            border-radius: 12px !important;
+        }
+    }
+</style>
+
+<script>
+    // Filter functionality for category buttons
+    document.addEventListener('DOMContentLoaded', function() {
+        const filterButtons = document.querySelectorAll('[data-filter]');
+        const categories = document.querySelectorAll('.results-category');
+        
+        filterButtons.forEach(button => {
+            button.addEventListener('click', function() {
+                const filter = this.getAttribute('data-filter');
+                
+                // Update button states
+                filterButtons.forEach(btn => {
+                    btn.classList.remove('active');
+                });
+                this.classList.add('active');
+                
+                // Show/hide categories
+                categories.forEach(category => {
+                    const categoryType = category.getAttribute('data-category');
+                    if (filter === 'all' || categoryType === filter) {
+                        category.classList.remove('hidden');
+                    } else {
+                        category.classList.add('hidden');
+                    }
+                });
+            });
+        });
+    });
+</script>
+{% endblock %}

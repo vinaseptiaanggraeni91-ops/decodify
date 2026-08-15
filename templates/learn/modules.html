@@ -1,0 +1,2418 @@
+{% extends "base.html" %}
+
+{% block title %}Tutorial - DecoDify{% endblock %}
+
+{% block styles %}
+<style>
+    :root {
+        /* CSS Variables */
+        --primary: #8b5cf6;
+        --secondary: #6366f1;
+        --accent: #10b981;
+        --warning: #f59e0b;
+        --danger: #ef4444;
+        --card-bg: rgba(255, 255, 255, 0.05);
+        --glass: rgba(255, 255, 255, 0.1);
+        --text: #f8fafc;
+        --text-muted: #94a3b8;
+        --bg-primary: #0f172a;
+        --gradient-primary: linear-gradient(135deg, var(--secondary), var(--primary));
+        --gradient-accent: linear-gradient(135deg, var(--accent), #059669);
+        --gradient-warning: linear-gradient(135deg, #f59e0b, #d97706);
+    }
+
+    body {
+        background: var(--bg-primary);
+        color: var(--text);
+        font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    }
+
+    /* Main Container */
+    .tutorials-container {
+        max-width: 1400px;
+        margin: 0 auto;
+        padding: 2rem 1rem;
+        min-height: 100vh;
+        opacity: 0;
+        animation: fadeIn 0.5s ease forwards;
+    }
+
+    @keyframes fadeIn {
+        to { opacity: 1; }
+    }
+
+    /* Hero Section */
+    .tutorial-hero {
+        background: linear-gradient(135deg, 
+            rgba(139, 92, 246, 0.15), 
+            rgba(99, 102, 241, 0.1));
+        border: 2px solid rgba(139, 92, 246, 0.3);
+        border-radius: 24px;
+        padding: 3rem 2rem;
+        margin-bottom: 3rem;
+        text-align: center;
+        position: relative;
+        overflow: hidden;
+        backdrop-filter: blur(10px);
+    }
+
+    .tutorial-hero::before {
+        content: '';
+        position: absolute;
+        top: -50%;
+        left: -50%;
+        width: 200%;
+        height: 200%;
+        background: radial-gradient(
+            circle at 30% 30%,
+            rgba(139, 92, 246, 0.1) 0%,
+            transparent 50%
+        );
+        animation: float 20s infinite linear;
+    }
+
+    @keyframes float {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+    }
+
+    .hero-content {
+        position: relative;
+        z-index: 2;
+    }
+
+    .tutorial-hero h1 {
+        font-size: 3rem;
+        font-weight: 800;
+        background: var(--gradient-primary);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        margin-bottom: 1rem;
+        text-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    }
+
+    .tutorial-hero p {
+        color: var(--text);
+        font-size: 1.2rem;
+        max-width: 800px;
+        margin: 0 auto 2rem;
+        line-height: 1.6;
+        opacity: 0.9;
+    }
+
+    .hero-stats {
+        display: flex;
+        justify-content: center;
+        gap: 3rem;
+        margin-top: 2rem;
+        flex-wrap: wrap;
+    }
+
+    .hero-stat {
+        text-align: center;
+        transition: transform 0.3s ease;
+    }
+
+    .hero-stat:hover {
+        transform: translateY(-5px);
+    }
+
+    .hero-stat-number {
+        font-size: 2.5rem;
+        font-weight: 800;
+        background: var(--gradient-primary);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        display: block;
+        line-height: 1;
+    }
+
+    .hero-stat-label {
+        color: var(--text-muted);
+        font-size: 0.9rem;
+        margin-top: 0.5rem;
+    }
+
+    /* Enhanced Search Container */
+    .search-container {
+        max-width: 800px;
+        margin: 0 auto 3rem;
+        position: relative;
+    }
+
+    .search-wrapper {
+        position: relative;
+        display: flex;
+        gap: 1rem;
+    }
+
+    .search-input {
+        flex: 1;
+        padding: 1.2rem 1.2rem 1.2rem 4rem;
+        background: var(--card-bg);
+        border: 2px solid var(--glass);
+        border-radius: 16px;
+        color: var(--text);
+        font-size: 1.1rem;
+        transition: all 0.3s ease;
+        backdrop-filter: blur(10px);
+    }
+
+    .search-input:focus {
+        outline: none;
+        border-color: var(--secondary);
+        box-shadow: 0 0 0 4px rgba(139, 92, 246, 0.1);
+        transform: translateY(-2px);
+    }
+
+    .search-icon {
+        position: absolute;
+        left: 1.5rem;
+        top: 50%;
+        transform: translateY(-50%);
+        color: var(--secondary);
+        font-size: 1.2rem;
+        pointer-events: none;
+        z-index: 2;
+    }
+
+    .search-actions {
+        display: flex;
+        gap: 0.5rem;
+    }
+
+    .search-btn {
+        padding: 1.2rem 2rem;
+        background: var(--gradient-primary);
+        color: white;
+        border: none;
+        border-radius: 16px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        white-space: nowrap;
+    }
+
+    .search-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 20px rgba(139, 92, 246, 0.3);
+    }
+
+    .search-btn.google {
+        background: linear-gradient(135deg, #4285F4, #34A853);
+    }
+
+    .search-btn.google:hover {
+        box-shadow: 0 8px 20px rgba(66, 133, 244, 0.3);
+    }
+
+    .search-hints {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+        margin-top: 1rem;
+        justify-content: center;
+    }
+
+    .search-hint {
+        background: rgba(139, 92, 246, 0.1);
+        color: var(--secondary);
+        padding: 0.5rem 1rem;
+        border-radius: 20px;
+        font-size: 0.9rem;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        border: 1px solid rgba(139, 92, 246, 0.2);
+    }
+
+    .search-hint:hover {
+        background: rgba(139, 92, 246, 0.2);
+        transform: translateY(-2px);
+    }
+
+    /* Categories Grid */
+    .categories-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 1.5rem;
+        margin-bottom: 4rem;
+    }
+
+    .category-card {
+        background: var(--card-bg);
+        border: 1px solid var(--glass);
+        border-radius: 20px;
+        padding: 2rem;
+        text-decoration: none;
+        color: inherit;
+        transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.1);
+        position: relative;
+        overflow: hidden;
+        display: block;
+        cursor: pointer;
+        backdrop-filter: blur(10px);
+    }
+
+    .category-card:hover {
+        transform: translateY(-10px);
+        border-color: var(--secondary);
+        box-shadow: 0 20px 40px rgba(139, 92, 246, 0.2);
+    }
+
+    .category-card.active {
+        border-color: var(--accent);
+        box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.2);
+    }
+
+    .category-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 4px;
+        background: var(--gradient-primary);
+        opacity: 0.8;
+    }
+
+    .category-header {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        margin-bottom: 1rem;
+    }
+
+    .category-icon {
+        width: 60px;
+        height: 60px;
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.5rem;
+        color: white;
+        flex-shrink: 0;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .category-icon::before {
+        content: '';
+        position: absolute;
+        top: -50%;
+        left: -50%;
+        width: 200%;
+        height: 200%;
+        background: linear-gradient(
+            45deg,
+            transparent,
+            rgba(255, 255, 255, 0.2),
+            transparent
+        );
+        transform: rotate(45deg);
+        animation: shine 3s infinite;
+    }
+
+    @keyframes shine {
+        0% { transform: translateX(-100%) translateY(-100%) rotate(45deg); }
+        100% { transform: translateX(100%) translateY(100%) rotate(45deg); }
+    }
+
+    .category-icon-1 { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); }
+    .category-icon-2 { background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); }
+    .category-icon-3 { background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%); }
+    .category-icon-4 { background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%); }
+    .category-icon-5 { background: linear-gradient(135deg, #fa709a 0%, #fee140 100%); }
+    .category-icon-6 { background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%); }
+
+    .category-info h3 {
+        color: var(--text);
+        margin: 0;
+        font-size: 1.3rem;
+    }
+
+    .category-count {
+        background: rgba(139, 92, 246, 0.1);
+        color: var(--secondary);
+        padding: 0.25rem 0.75rem;
+        border-radius: 20px;
+        font-size: 0.8rem;
+        font-weight: 600;
+        margin-left: auto;
+    }
+
+    .category-card p {
+        color: var(--text-muted);
+        font-size: 0.95rem;
+        line-height: 1.6;
+        margin-bottom: 1.5rem;
+    }
+
+    .category-progress {
+        margin-top: 1rem;
+    }
+
+    .progress-info {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 0.5rem;
+        font-size: 0.9rem;
+        color: var(--text-muted);
+    }
+
+    .progress-bar {
+        height: 6px;
+        background: rgba(255, 255, 255, 0.1);
+        border-radius: 3px;
+        overflow: hidden;
+    }
+
+    .progress-fill {
+        height: 100%;
+        background: var(--gradient-primary);
+        border-radius: 3px;
+        transition: width 1s ease;
+        width: 0%;
+    }
+
+    /* Tutorial Grid */
+    .tutorials-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+        gap: 1.5rem;
+        margin-top: 2rem;
+        animation: slideUp 0.5s ease;
+    }
+
+    @keyframes slideUp {
+        from {
+            opacity: 0;
+            transform: translateY(20px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    .tutorial-card {
+        background: var(--card-bg);
+        border: 1px solid var(--glass);
+        border-radius: 18px;
+        padding: 1.5rem;
+        text-decoration: none;
+        color: inherit;
+        display: block;
+        transition: all 0.3s ease;
+        position: relative;
+        overflow: hidden;
+        backdrop-filter: blur(10px);
+        animation: cardAppear 0.5s ease forwards;
+        animation-delay: calc(var(--card-index, 0) * 0.05s);
+        opacity: 0;
+    }
+
+    @keyframes cardAppear {
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    .tutorial-card:hover {
+        transform: translateY(-8px);
+        border-color: var(--secondary);
+        box-shadow: 0 20px 40px rgba(139, 92, 246, 0.2);
+    }
+
+    /* Premium Card */
+    .tutorial-card.premium {
+        border: 2px solid rgba(245, 158, 11, 0.3);
+        position: relative;
+    }
+
+    .tutorial-card.premium::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        right: 0;
+        width: 80px;
+        height: 80px;
+        background: var(--gradient-warning);
+        transform: rotate(45deg) translate(40px, -40px);
+        opacity: 0.8;
+    }
+
+    .premium-badge {
+        position: absolute;
+        top: 1rem;
+        right: 1rem;
+        background: var(--gradient-warning);
+        color: white;
+        padding: 0.4rem 1rem;
+        border-radius: 20px;
+        font-size: 0.8rem;
+        font-weight: 700;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        z-index: 2;
+    }
+
+    /* New Tutorial */
+    .tutorial-card.new::after {
+        content: 'NEW';
+        position: absolute;
+        top: 1rem;
+        left: 1rem;
+        background: var(--gradient-accent);
+        color: white;
+        padding: 0.25rem 1rem;
+        border-radius: 20px;
+        font-size: 0.7rem;
+        font-weight: 700;
+        z-index: 2;
+    }
+
+    .tutorial-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        margin-bottom: 1rem;
+    }
+
+    .difficulty-badge {
+        padding: 0.4rem 0.8rem;
+        border-radius: 20px;
+        font-size: 0.8rem;
+        font-weight: 600;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.3rem;
+    }
+
+    .difficulty-beginner {
+        background: rgba(16, 185, 129, 0.2);
+        color: var(--accent);
+        border: 1px solid rgba(16, 185, 129, 0.3);
+    }
+
+    .difficulty-intermediate {
+        background: rgba(245, 158, 11, 0.2);
+        color: var(--warning);
+        border: 1px solid rgba(245, 158, 11, 0.3);
+    }
+
+    .difficulty-advanced {
+        background: rgba(239, 68, 68, 0.2);
+        color: var(--danger);
+        border: 1px solid rgba(239, 68, 68, 0.3);
+    }
+
+    .tutorial-meta {
+        display: flex;
+        gap: 0.5rem;
+        flex-wrap: wrap;
+    }
+
+    .meta-item {
+        background: rgba(255, 255, 255, 0.05);
+        padding: 0.3rem 0.7rem;
+        border-radius: 12px;
+        font-size: 0.8rem;
+        color: var(--text-muted);
+        display: flex;
+        align-items: center;
+        gap: 0.3rem;
+    }
+
+    .tutorial-card h3 {
+        color: var(--text);
+        margin: 0 0 1rem 0;
+        font-size: 1.2rem;
+        line-height: 1.4;
+    }
+
+    .tutorial-card p {
+        color: var(--text-muted);
+        font-size: 0.95rem;
+        line-height: 1.6;
+        margin-bottom: 1.5rem;
+    }
+
+    .tutorial-tags {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+        margin-bottom: 1.5rem;
+    }
+
+    .tutorial-tag {
+        padding: 0.25rem 0.75rem;
+        background: rgba(139, 92, 246, 0.1);
+        color: var(--secondary);
+        border-radius: 12px;
+        font-size: 0.8rem;
+        border: 1px solid rgba(139, 92, 246, 0.2);
+    }
+
+    .tutorial-footer {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding-top: 1rem;
+        border-top: 1px solid var(--glass);
+    }
+
+    .tutorial-progress {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .progress-text {
+        color: var(--text-muted);
+        font-size: 0.8rem;
+        min-width: 40px;
+    }
+
+    .view-tutorial-btn {
+        padding: 0.6rem 1.5rem;
+        background: var(--gradient-primary);
+        color: white;
+        border: none;
+        border-radius: 10px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        white-space: nowrap;
+    }
+
+    .view-tutorial-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 20px rgba(139, 92, 246, 0.3);
+    }
+
+    .view-tutorial-btn.premium {
+        background: var(--gradient-warning);
+    }
+
+    .view-tutorial-btn.premium:hover {
+        box-shadow: 0 8px 20px rgba(245, 158, 11, 0.3);
+    }
+
+    /* Learning Path */
+    .google-references {
+        margin: 4rem 0;
+        padding: 2rem;
+        background: linear-gradient(135deg, 
+            rgba(66, 133, 244, 0.1), 
+            rgba(52, 168, 83, 0.1));
+        border: 1px solid rgba(66, 133, 244, 0.2);
+        border-radius: 20px;
+        text-align: center;
+        backdrop-filter: blur(10px);
+    }
+
+    .google-references h2 {
+        color: var(--text);
+        font-size: 2rem;
+        margin-bottom: 1rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 1rem;
+    }
+
+    .google-references h2 i {
+        color: #4285F4;
+        font-size: 2rem;
+    }
+
+    .google-references p {
+        color: var(--text-muted);
+        font-size: 1.1rem;
+        max-width: 800px;
+        margin: 0 auto 2rem;
+    }
+
+    .reference-tips {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 1.5rem;
+        margin-top: 3rem;
+    }
+
+    .reference-tip {
+        background: var(--card-bg);
+        border: 1px solid var(--glass);
+        border-radius: 15px;
+        padding: 1.5rem;
+        text-align: left;
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+
+    .reference-tip:hover {
+        transform: translateY(-5px);
+        border-color: #34A853;
+    }
+
+    .reference-tip h4 {
+        color: var(--text);
+        margin-bottom: 0.5rem;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .reference-tip h4 i {
+        color: #34A853;
+    }
+
+    .reference-tip p {
+        color: var(--text-muted);
+        font-size: 0.95rem;
+        margin: 0;
+    }
+
+    /* Quick Links */
+    .quick-links {
+        margin: 3rem 0;
+    }
+
+    .quick-links h2 {
+        color: var(--text);
+        font-size: 1.8rem;
+        margin-bottom: 1.5rem;
+        text-align: center;
+    }
+
+    .links-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 1rem;
+    }
+
+    .quick-link {
+        background: var(--card-bg);
+        border: 1px solid var(--glass);
+        border-radius: 15px;
+        padding: 1.5rem;
+        text-decoration: none;
+        color: inherit;
+        transition: all 0.3s ease;
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        backdrop-filter: blur(10px);
+    }
+
+    .quick-link:hover {
+        transform: translateY(-5px);
+        border-color: var(--secondary);
+        box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+    }
+
+    .quick-link-icon {
+        width: 50px;
+        height: 50px;
+        border-radius: 10px;
+        background: var(--gradient-primary);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-size: 1.2rem;
+        flex-shrink: 0;
+    }
+
+    .quick-link-content h4 {
+        color: var(--text);
+        margin: 0 0 0.25rem 0;
+    }
+
+    .quick-link-content p {
+        color: var(--text-muted);
+        font-size: 0.9rem;
+        margin: 0;
+    }
+
+    /* Modal Styles */
+    .tutorial-modal {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.8);
+        backdrop-filter: blur(5px);
+        z-index: 10000;
+        justify-content: center;
+        align-items: center;
+        animation: fadeIn 0.3s ease;
+        padding: 1rem;
+    }
+    
+    .modal-content {
+        background: var(--card-bg);
+        backdrop-filter: blur(20px);
+        border: 1px solid var(--glass);
+        border-radius: 20px;
+        padding: 2rem;
+        max-width: 800px;
+        width: 90%;
+        max-height: 90vh;
+        overflow-y: auto;
+        position: relative;
+        animation: slideUp 0.4s ease;
+    }
+    
+    .modal-close {
+        position: absolute;
+        top: 1rem;
+        right: 1rem;
+        background: rgba(255, 255, 255, 0.1);
+        border: 1px solid var(--glass);
+        color: var(--text-muted);
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: all 0.3s ease;
+        z-index: 2;
+    }
+    
+    .modal-close:hover {
+        background: rgba(239, 68, 68, 0.1);
+        color: var(--danger);
+        border-color: rgba(239, 68, 68, 0.3);
+    }
+    
+    .modal-body {
+        margin-top: 1rem;
+    }
+    
+    .tutorial-content {
+        margin: 2rem 0;
+    }
+    
+    .google-links {
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+        margin: 1.5rem 0;
+    }
+    
+    .google-links a {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        padding: 1rem;
+        background: rgba(66, 133, 244, 0.1);
+        border: 1px solid rgba(66, 133, 244, 0.2);
+        border-radius: 10px;
+        color: var(--text);
+        text-decoration: none;
+        transition: all 0.3s ease;
+    }
+    
+    .google-links a:hover {
+        background: rgba(66, 133, 244, 0.2);
+        transform: translateX(5px);
+    }
+    
+    .google-links i {
+        font-size: 1.2rem;
+        color: #4285F4;
+    }
+    
+    .tutorial-actions {
+        display: flex;
+        gap: 1rem;
+        margin-top: 2rem;
+        flex-wrap: wrap;
+    }
+    
+    .btn-primary, .btn-secondary, .btn-premium {
+        padding: 0.75rem 1.5rem;
+        border-radius: 10px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        border: none;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+    
+    .btn-primary {
+        background: var(--gradient-primary);
+        color: white;
+    }
+    
+    .btn-primary:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 20px rgba(139, 92, 246, 0.3);
+    }
+    
+    .btn-secondary {
+        background: rgba(255, 255, 255, 0.1);
+        color: var(--text);
+        border: 1px solid var(--glass);
+    }
+    
+    .btn-secondary:hover {
+        background: rgba(255, 255, 255, 0.2);
+    }
+    
+    .btn-premium {
+        background: var(--gradient-warning);
+        color: white;
+    }
+    
+    .btn-premium:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 20px rgba(245, 158, 11, 0.3);
+    }
+    
+    .no-results, .upgrade-prompt {
+        text-align: center;
+        padding: 2rem;
+    }
+    
+    .premium-features {
+        list-style: none;
+        padding: 0;
+        margin: 1.5rem 0;
+    }
+    
+    .premium-features li {
+        padding: 0.5rem 0;
+        color: var(--text);
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        justify-content: center;
+    }
+    
+    .premium-features i {
+        color: var(--warning);
+    }
+    
+    .upgrade-actions {
+        display: flex;
+        gap: 1rem;
+        justify-content: center;
+        margin-top: 2rem;
+    }
+
+    /* Loading Spinner */
+    .loading-spinner {
+        display: none;
+        justify-content: center;
+        align-items: center;
+        flex-direction: column;
+        gap: 1rem;
+        padding: 3rem;
+    }
+
+    .spinner {
+        width: 50px;
+        height: 50px;
+        border: 3px solid rgba(139, 92, 246, 0.2);
+        border-top-color: var(--primary);
+        border-radius: 50%;
+        animation: spin 1s linear infinite;
+    }
+
+    @keyframes spin {
+        to { transform: rotate(360deg); }
+    }
+
+    /* Notification */
+    .notification {
+        position: fixed;
+        bottom: 2rem;
+        right: 2rem;
+        background: var(--card-bg);
+        border: 1px solid var(--glass);
+        border-radius: 12px;
+        padding: 1rem 1.5rem;
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        backdrop-filter: blur(20px);
+        z-index: 1000;
+        transform: translateY(100px);
+        opacity: 0;
+        transition: all 0.3s ease;
+    }
+
+    .notification.show {
+        transform: translateY(0);
+        opacity: 1;
+    }
+
+    .notification.success {
+        border-left: 4px solid var(--accent);
+    }
+
+    .notification.warning {
+        border-left: 4px solid var(--warning);
+    }
+
+    .notification.error {
+        border-left: 4px solid var(--danger);
+    }
+
+    /* Search Results */
+    .search-results-info {
+        background: rgba(139, 92, 246, 0.1);
+        border: 1px solid rgba(139, 92, 246, 0.2);
+        border-radius: 12px;
+        padding: 1rem;
+        margin: 1rem 0;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .clear-search {
+        background: transparent;
+        border: 1px solid var(--glass);
+        color: var(--text-muted);
+        padding: 0.5rem 1rem;
+        border-radius: 8px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+
+    .clear-search:hover {
+        background: rgba(139, 92, 246, 0.1);
+        color: var(--secondary);
+    }
+
+    /* Code Editor in Modal */
+    .code-editor {
+        background: rgba(0, 0, 0, 0.3);
+        border: 1px solid var(--glass);
+        border-radius: 10px;
+        padding: 1rem;
+        font-family: 'Consolas', 'Monaco', monospace;
+        font-size: 14px;
+        color: var(--text);
+        width: 100%;
+        min-height: 300px;
+        resize: vertical;
+        line-height: 1.5;
+    }
+
+    .code-output {
+        background: rgba(0, 0, 0, 0.3);
+        border: 1px solid var(--glass);
+        border-radius: 10px;
+        padding: 1rem;
+        min-height: 100px;
+        font-family: 'Consolas', 'Monaco', monospace;
+        font-size: 14px;
+        color: var(--accent);
+        white-space: pre-wrap;
+        word-break: break-all;
+    }
+
+    /* Responsive */
+    @media (max-width: 1024px) {
+        .tutorials-grid {
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+        }
+        
+        .categories-grid {
+            grid-template-columns: repeat(2, 1fr);
+        }
+
+        .search-wrapper {
+            flex-direction: column;
+        }
+
+        .search-actions {
+            width: 100%;
+        }
+
+        .search-btn {
+            flex: 1;
+            justify-content: center;
+        }
+    }
+
+    @media (max-width: 768px) {
+        .tutorial-hero h1 {
+            font-size: 2.2rem;
+        }
+        
+        .tutorial-hero p {
+            font-size: 1.1rem;
+        }
+        
+        .hero-stats {
+            gap: 2rem;
+        }
+        
+        .hero-stat-number {
+            font-size: 2rem;
+        }
+        
+        .categories-grid {
+            grid-template-columns: 1fr;
+        }
+        
+        .tutorials-grid {
+            grid-template-columns: 1fr;
+        }
+        
+        .reference-tips {
+            grid-template-columns: 1fr;
+        }
+        
+        .links-grid {
+            grid-template-columns: 1fr;
+        }
+        
+        .modal-content {
+            padding: 1.5rem;
+            width: 95%;
+        }
+        
+        .tutorial-actions {
+            flex-direction: column;
+        }
+        
+        .btn-primary, .btn-secondary, .btn-premium {
+            width: 100%;
+            justify-content: center;
+        }
+
+        .google-references {
+            padding: 1.5rem;
+        }
+    }
+
+    @media (max-width: 480px) {
+        .tutorial-hero {
+            padding: 2rem 1rem;
+        }
+        
+        .tutorial-hero h1 {
+            font-size: 1.8rem;
+        }
+        
+        .hero-stats {
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+        
+        .tutorial-meta {
+            flex-direction: column;
+            align-items: flex-start;
+        }
+        
+        .tutorial-footer {
+            flex-direction: column;
+            gap: 1rem;
+            align-items: flex-start;
+        }
+        
+        .view-tutorial-btn {
+            width: 100%;
+            justify-content: center;
+        }
+
+        .modal-content {
+            padding: 1rem;
+        }
+
+        .notification {
+            left: 1rem;
+            right: 1rem;
+            bottom: 1rem;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="tutorials-container">
+    <!-- Hero Banner -->
+    <div class="tutorial-hero">
+        <div class="hero-content">
+            <h1>🎓 Complete Cryptography Learning Journey</h1>
+            <p>Mulai dari konsep paling dasar hingga teknologi kriptografi terkini. 30+ tutorial terstruktur dengan implementasi praktis Python.</p>
+            
+            <div class="hero-stats">
+                <div class="hero-stat">
+                    <span class="hero-stat-number">30+</span>
+                    <span class="hero-stat-label">Tutorial Lengkap</span>
+                </div>
+                <div class="hero-stat">
+                    <span class="hero-stat-number">200+</span>
+                    <span class="hero-stat-label">Contoh Kode</span>
+                </div>
+                <div class="hero-stat">
+                    <span class="hero-stat-number">5</span>
+                    <span class="hero-stat-label">Level Kesulitan</span>
+                </div>
+                <div class="hero-stat">
+                    <span class="hero-stat-number" id="completionRate">95%</span>
+                    <span class="hero-stat-label">Completion Rate</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Enhanced Search Section -->
+    <div class="search-container">
+        <div class="search-wrapper">
+            <input type="text" 
+                   class="search-input" 
+                   id="searchTutorials"
+                   placeholder="Cari tutorial: Enigma, RSA, Blockchain, Zero-Knowledge, Quantum..."
+                   autocomplete="off">
+            <i class="fas fa-search search-icon"></i>
+            
+            <div class="search-actions">
+                <button class="search-btn" onclick="performSearch()">
+                    <i class="fas fa-search"></i> Search
+                </button>
+                <button class="search-btn google" onclick="searchOnGoogle()">
+                    <i class="fab fa-google"></i> Google Search
+                </button>
+            </div>
+        </div>
+        
+        <div class="search-hints">
+            <span class="search-hint" onclick="searchTutorial('dasar kriptografi')">Konsep Dasar</span>
+            <span class="search-hint" onclick="searchTutorial('matematika kriptografi')">Matematika</span>
+            <span class="search-hint" onclick="searchTutorial('quantum cryptography')">Quantum</span>
+            <span class="search-hint" onclick="searchTutorial('blockchain security')">Blockchain</span>
+            <span class="search-hint" onclick="searchTutorial('penetration testing')">Security Testing</span>
+        </div>
+
+        <!-- Search Results Info -->
+        <div class="search-results-info" id="searchResultsInfo" style="display: none;">
+            <span id="resultsCount">0 results found</span>
+            <button class="clear-search" onclick="clearSearch()">
+                <i class="fas fa-times"></i> Clear Search
+            </button>
+        </div>
+    </div>
+
+    <!-- Learning Path -->
+    <div class="google-references">
+        <h2><i class="fas fa-road"></i> Learning Path Terstruktur</h2>
+        <p>Ikuti roadmap pembelajaran dari dasar hingga advanced. Setiap level membangun fondasi untuk level berikutnya.</p>
+        
+        <div class="reference-tips">
+            <div class="reference-tip" onclick="navigateLearningPath(1)">
+                <h4><i class="fas fa-layer-group"></i> Level 1: Fundamentals</h4>
+                <p>Konsep dasar, sejarah, terminologi, dan cipher klasik</p>
+            </div>
+            <div class="reference-tip" onclick="navigateLearningPath(2)">
+                <h4><i class="fas fa-cogs"></i> Level 2: Modern Symmetric</h4>
+                <p>Block ciphers, stream ciphers, dan mode operasi</p>
+            </div>
+            <div class="reference-tip" onclick="navigateLearningPath(3)">
+                <h4><i class="fas fa-lock-open"></i> Level 3: Public Key</h4>
+                <p>RSA, ECC, digital signatures, dan key exchange</p>
+            </div>
+            <div class="reference-tip" onclick="navigateLearningPath(4)">
+                <h4><i class="fas fa-rocket"></i> Level 4: Advanced Topics</h4>
+                <p>Quantum crypto, homomorphic encryption, ZK proofs</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Categories Grid -->
+    <h2 style="color: var(--text); font-size: 2rem; margin: 3rem 0 2rem 0;">📚 Learning Modules</h2>
+    
+    <div class="categories-grid">
+        <!-- Module 1: Fundamental Concepts -->
+        <div class="category-card active" onclick="filterByCategory('fundamentals')" data-category="fundamentals">
+            <div class="category-header">
+                <div class="category-icon category-icon-1">
+                    <i class="fas fa-brain"></i>
+                </div>
+                <div class="category-info">
+                    <h3>Fundamental Concepts</h3>
+                </div>
+                <span class="category-count">8 Tutorial</span>
+            </div>
+            <p>Pengenalan kriptografi: definisi, tujuan, sejarah, terminologi, dan konsep keamanan dasar.</p>
+            <div class="category-progress">
+                <div class="progress-info">
+                    <span>Progress Anda</span>
+                    <span>70%</span>
+                </div>
+                <div class="progress-bar">
+                    <div class="progress-fill" style="width: 70%"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Module 2: Classical Cryptography -->
+        <div class="category-card" onclick="filterByCategory('classical')" data-category="classical">
+            <div class="category-header">
+                <div class="category-icon category-icon-2">
+                    <i class="fas fa-history"></i>
+                </div>
+                <div class="category-info">
+                    <h3>Classical Cryptography</h3>
+                </div>
+                <span class="category-count">10 Tutorial</span>
+            </div>
+            <p>Cipher bersejarah: Caesar, Vigenère, Playfair, Enigma, dan teknik cryptanalysis klasik.</p>
+            <div class="category-progress">
+                <div class="progress-info">
+                    <span>Progress Anda</span>
+                    <span>60%</span>
+                </div>
+                <div class="progress-bar">
+                    <div class="progress-fill" style="width: 60%"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Module 3: Mathematics for Crypto -->
+        <div class="category-card" onclick="filterByCategory('mathematics')" data-category="mathematics">
+            <div class="category-header">
+                <div class="category-icon category-icon-3">
+                    <i class="fas fa-calculator"></i>
+                </div>
+                <div class="category-info">
+                    <h3>Mathematical Foundations</h3>
+                </div>
+                <span class="category-count">12 Tutorial</span>
+            </div>
+            <p>Teori bilangan, aljabar abstrak, finite fields, probability, dan complexity theory.</p>
+            <div class="category-progress">
+                <div class="progress-info">
+                    <span>Progress Anda</span>
+                    <span>40%</span>
+                </div>
+                <div class="progress-bar">
+                    <div class="progress-fill" style="width: 40%"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Module 4: Symmetric Cryptography -->
+        <div class="category-card" onclick="filterByCategory('symmetric')" data-category="symmetric">
+            <div class="category-header">
+                <div class="category-icon category-icon-4">
+                    <i class="fas fa-key"></i>
+                </div>
+                <div class="category-info">
+                    <h3>Symmetric Cryptography</h3>
+                </div>
+                <span class="category-count">15 Tutorial</span>
+            </div>
+            <p>DES, AES, Twofish, Serpent, mode operasi, dan implementasi modern.</p>
+            <div class="category-progress">
+                <div class="progress-info">
+                    <span>Progress Anda</span>
+                    <span>55%</span>
+                </div>
+                <div class="progress-bar">
+                    <div class="progress-fill" style="width: 55%"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Module 5: Asymmetric Cryptography -->
+        <div class="category-card" onclick="filterByCategory('asymmetric')" data-category="asymmetric">
+            <div class="category-header">
+                <div class="category-icon category-icon-5">
+                    <i class="fas fa-lock-open"></i>
+                </div>
+                <div class="category-info">
+                    <h3>Asymmetric Cryptography</h3>
+                </div>
+                <span class="category-count">18 Tutorial</span>
+            </div>
+            <p>RSA, ECC, DH, DSA, elliptic curves, dan aplikasi praktis.</p>
+            <div class="category-progress">
+                <div class="progress-info">
+                    <span>Progress Anda</span>
+                    <span>30%</span>
+                </div>
+                <div class="progress-bar">
+                    <div class="progress-fill" style="width: 30%"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Module 6: Advanced Topics -->
+        <div class="category-card" onclick="filterByCategory('advanced')" data-category="advanced">
+            <div class="category-header">
+                <div class="category-icon category-icon-6">
+                    <i class="fas fa-rocket"></i>
+                </div>
+                <div class="category-info">
+                    <h3>Advanced Cryptography</h3>
+                </div>
+                <span class="category-count">20 Tutorial</span>
+            </div>
+            <p>Post-quantum, homomorphic, zero-knowledge, MPC, dan kriptografi modern.</p>
+            <div class="category-progress">
+                <div class="progress-info">
+                    <span>Progress Anda</span>
+                    <span>15%</span>
+                </div>
+                <div class="progress-bar">
+                    <div class="progress-fill" style="width: 15%"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Featured Tutorials -->
+    <h2 style="color: var(--text); font-size: 2rem; margin: 3rem 0 2rem 0;">📖 Tutorial Library</h2>
+    
+    <div class="tutorials-grid" id="tutorialsGrid">
+        <!-- Tutorial cards will be dynamically loaded -->
+        <div class="loading-spinner" id="tutorialsLoading">
+            <div class="spinner"></div>
+            <p>Loading tutorials...</p>
+        </div>
+    </div>
+
+    <!-- Practical Projects Section -->
+    <div class="google-references" style="background: linear-gradient(135deg, rgba(139, 92, 246, 0.1), rgba(16, 185, 129, 0.1)); border-color: rgba(139, 92, 246, 0.2);">
+        <h2><i class="fas fa-laptop-code"></i> Hands-On Projects</h2>
+        <p>Terapkan pengetahuan dengan proyek praktis dari berbagai tingkat kesulitan.</p>
+        
+        <div class="reference-tips">
+            <div class="reference-tip" onclick="searchOnGoogle('Caesar Cipher Python project tutorial')">
+                <h4><i class="fas fa-code"></i> Project 1: Caesar Cipher Tool</h4>
+                <p>Buat GUI tool untuk enkripsi/dekripsi Caesar cipher dengan Python</p>
+            </div>
+            <div class="reference-tip" onclick="searchOnGoogle('Password Manager AES encryption Python')">
+                <h4><i class="fas fa-shield-alt"></i> Project 2: Password Manager</h4>
+                <p>Buat password manager dengan AES encryption dan secure key storage</p>
+            </div>
+            <div class="reference-tip" onclick="searchOnGoogle('Secure Chat App RSA AES Python')">
+                <h4><i class="fas fa-comments"></i> Project 3: Secure Chat App</h4>
+                <p>Implementasi chat E2E encrypted dengan RSA dan AES hybrid encryption</p>
+            </div>
+            <div class="reference-tip" onclick="searchOnGoogle('Cryptocurrency wallet ECC Python tutorial')">
+                <h4><i class="fas fa-bitcoin"></i> Project 4: Crypto Wallet</h4>
+                <p>Buat cryptocurrency wallet dengan ECC signatures dan HD wallets</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Quick Links to External Resources -->
+    <div class="quick-links">
+        <h2>🚀 Resources & Tools</h2>
+        
+        <div class="links-grid">
+            <!-- Link 1 -->
+            <a href="https://www.coursera.org/specializations/cryptography" 
+               class="quick-link" 
+               target="_blank"
+               data-track="coursera_crypto">
+                <div class="quick-link-icon">
+                    <i class="fas fa-graduation-cap"></i>
+                </div>
+                <div class="quick-link-content">
+                    <h4>Coursera Cryptography</h4>
+                    <p>Specialization oleh Stanford University</p>
+                </div>
+            </a>
+
+            <!-- Link 2 -->
+            <a href="https://cryptopals.com/" 
+               class="quick-link" 
+               target="_blank"
+               data-track="cryptopals">
+                <div class="quick-link-icon">
+                    <i class="fas fa-laptop-code"></i>
+                </div>
+                <div class="quick-link-content">
+                    <h4>CryptoPals Challenges</h4>
+                    <p>Set challange praktik breaking cryptography</p>
+                </div>
+            </a>
+
+            <!-- Link 3 -->
+            <a href="https://github.com/pycryptodome/pycryptodome" 
+               class="quick-link" 
+               target="_blank"
+               data-track="pycryptodome">
+                <div class="quick-link-icon">
+                    <i class="fab fa-python"></i>
+                </div>
+                <div class="quick-link-content">
+                    <h4>PyCryptodome</h4>
+                    <p>Python cryptography library dengan berbagai algoritma</p>
+                </div>
+            </a>
+
+            <!-- Link 4 -->
+            <a href="https://www.nist.gov/topics/cryptography" 
+               class="quick-link" 
+               target="_blank"
+               data-track="nist_crypto">
+                <div class="quick-link-icon">
+                    <i class="fas fa-university"></i>
+                </div>
+                <div class="quick-link-content">
+                    <h4>NIST Cryptography</h4>
+                    <p>Standar resmi dari National Institute of Standards</p>
+                </div>
+            </a>
+
+            <!-- Link 5 -->
+            <a href="https://cryptii.com/" 
+               class="quick-link" 
+               target="_blank"
+               data-track="cryptii">
+                <div class="quick-link-icon">
+                    <i class="fas fa-tools"></i>
+                </div>
+                <div class="quick-link-content">
+                    <h4>Cryptii Online Tools</h4>
+                    <p>Koleksi tools cryptography online interaktif</p>
+                </div>
+            </a>
+
+            <!-- Link 6 -->
+            <a href="https://www.khanacademy.org/computing/computer-science/cryptography" 
+               class="quick-link" 
+               target="_blank"
+               data-track="khan_crypto">
+                <div class="quick-link-icon">
+                    <i class="fas fa-chalkboard-teacher"></i>
+                </div>
+                <div class="quick-link-content">
+                    <h4>Khan Academy Crypto</h4>
+                    <p>Kursus gratis dengan visualisasi interaktif</p>
+                </div>
+            </a>
+        </div>
+    </div>
+</div>
+
+<!-- Tutorial Detail Modal -->
+<div id="tutorialModal" class="tutorial-modal">
+    <div class="modal-content">
+        <button class="modal-close" onclick="closeModal()">
+            <i class="fas fa-times"></i>
+        </button>
+        
+        <div class="modal-body" id="modalBody">
+            <!-- Content will be loaded here -->
+        </div>
+    </div>
+</div>
+
+<!-- Notification -->
+<div class="notification" id="notification">
+    <i class="fas fa-check-circle"></i>
+    <span id="notificationMessage"></span>
+</div>
+
+<script>
+    // ====================
+    // GLOBAL VARIABLES
+    // ====================
+    let currentTutorial = null;
+    let isPremiumUser = false;
+    let currentCategory = 'fundamentals';
+    let currentSearchTerm = '';
+    let tutorialsData = {};
+    let userProgress = {};
+
+    // ====================
+    // TUTORIAL DATA
+    // ====================
+    const TUTORIALS = {
+        'what-is-cryptography': {
+            id: 'what-is-cryptography',
+            title: 'Apa itu Kriptografi? Pengertian Dasar',
+            difficulty: 'beginner',
+            duration: '20 menit',
+            tags: ['Dasar', 'Konsep', 'Terminologi', 'Pengenalan'],
+            category: 'fundamentals',
+            level: 1,
+            description: 'Memahami definisi, tujuan, dan prinsip dasar kriptografi. Confidentiality, integrity, authentication, non-repudiation.',
+            content: `
+                <div class="tutorial-content">
+                    <h2>Pengenalan Kriptografi</h2>
+                    <p>Kriptografi (dari bahasa Yunani: κρυπτός, "tersembunyi, rahasia"; dan γράφειν, "menulis") adalah praktik dan studi teknik untuk komunikasi yang aman di hadapan pihak ketiga yang tidak diinginkan.</p>
+                    
+                    <h3>Prinsip Dasar Keamanan (CIA Triad):</h3>
+                    <ul>
+                        <li><strong>Confidentiality (Kerahasiaan):</strong> Informasi hanya dapat diakses oleh pihak yang berwenang</li>
+                        <li><strong>Integrity (Integritas):</strong> Informasi tidak dapat diubah tanpa otorisasi</li>
+                        <li><strong>Authentication (Autentikasi):</strong> Memverifikasi identitas pengirim dan penerima</li>
+                    </ul>
+                    
+                    <h3>Google Search References:</h3>
+                    <div class="google-links">
+                        <a href="https://en.wikipedia.org/wiki/Cryptography" target="_blank" onclick="trackExternalLink('wikipedia_crypto')">
+                            <i class="fab fa-wikipedia-w"></i> Wikipedia - Cryptography
+                        </a>
+                        <a href="https://www.khanacademy.org/computing/computer-science/cryptography" target="_blank" onclick="trackExternalLink('khan_crypto')">
+                            <i class="fas fa-graduation-cap"></i> Khan Academy Course
+                        </a>
+                    </div>
+                </div>
+            `
+        },
+        'caesar-cipher': {
+            id: 'caesar-cipher',
+            title: 'Caesar Cipher: Cipher Pertama dalam Sejarah',
+            difficulty: 'beginner',
+            duration: '30 menit',
+            tags: ['Substitusi', 'Sejarah', 'Python', 'Dasar'],
+            category: 'classical',
+            level: 1,
+            description: 'Pelajari cipher substitusi paling terkenal yang digunakan Julius Caesar untuk komunikasi militer rahasia.',
+            content: `
+                <div class="tutorial-content">
+                    <h2>Caesar Cipher</h2>
+                    <p>Cipher substitusi sederhana di mana setiap huruf digeser sejumlah posisi tertentu dalam alfabet.</p>
+                    
+                    <h3>Implementasi Python:</h3>
+                    <pre><code>def caesar_cipher(text, shift):
+    result = ""
+    for char in text:
+        if char.isalpha():
+            ascii_offset = 65 if char.isupper() else 97
+            result += chr((ord(char) - ascii_offset + shift) % 26 + ascii_offset)
+        else:
+            result += char
+    return result
+
+# Contoh penggunaan
+plaintext = "HELLO"
+ciphertext = caesar_cipher(plaintext, 3)
+print(ciphertext)  # KHOOR</code></pre>
+                </div>
+            `
+        },
+        // Add more tutorials here...
+        'aes-encryption': {
+            id: 'aes-encryption',
+            title: 'AES: Advanced Encryption Standard',
+            difficulty: 'intermediate',
+            duration: '120 menit',
+            tags: ['Simetris', 'Block Cipher', 'Standar', 'Python'],
+            category: 'symmetric',
+            level: 3,
+            premium: true,
+            description: 'Standar enkripsi modern yang digunakan pemerintah AS. Pelajari Rijndael algorithm dan implementasinya.',
+            content: `
+                <div class="tutorial-content">
+                    <h2>AES Encryption</h2>
+                    <p>Advanced Encryption Standard adalah spesifikasi untuk enkripsi data elektronik.</p>
+                </div>
+            `
+        }
+    };
+
+    // ====================
+    // INITIALIZATION
+    // ====================
+    document.addEventListener('DOMContentLoaded', function() {
+        initializeApp();
+    });
+
+    async function initializeApp() {
+        try {
+            // Check user status
+            await checkUserStatus();
+            
+            // Load user progress
+            loadUserProgress();
+            
+            // Initialize tutorials
+            initializeTutorials();
+            
+            // Setup event listeners
+            setupEventListeners();
+            
+            // Update stats
+            updateStats();
+            
+            // Show welcome for new users
+            showWelcomeMessage();
+            
+        } catch (error) {
+            console.error('Initialization error:', error);
+            showNotification('Error initializing application', 'error');
+        }
+    }
+
+    // ====================
+    // USER MANAGEMENT
+    // ====================
+    async function checkUserStatus() {
+        try {
+            // Check local storage first
+            const premium = localStorage.getItem('decoDify_premium');
+            isPremiumUser = premium === 'true';
+            
+            // You can add backend check here
+            // const response = await fetch('/api/user/status');
+            // const data = await response.json();
+            // isPremiumUser = data.premium;
+            
+            return isPremiumUser;
+        } catch (error) {
+            console.error('Error checking user status:', error);
+            return false;
+        }
+    }
+
+    function loadUserProgress() {
+        const progress = localStorage.getItem('decoDify_progress');
+        userProgress = progress ? JSON.parse(progress) : {};
+        
+        // Initialize progress for all tutorials
+        Object.keys(TUTORIALS).forEach(tutorialId => {
+            if (!userProgress[tutorialId]) {
+                userProgress[tutorialId] = {
+                    progress: 0,
+                    lastAccessed: null,
+                    completed: false
+                };
+            }
+        });
+        
+        saveUserProgress();
+    }
+
+    function saveUserProgress() {
+        localStorage.setItem('decoDify_progress', JSON.stringify(userProgress));
+    }
+
+    // ====================
+    // TUTORIAL MANAGEMENT
+    // ====================
+    function initializeTutorials() {
+        const grid = document.getElementById('tutorialsGrid');
+        const loading = document.getElementById('tutorialsLoading');
+        
+        // Hide loading
+        loading.style.display = 'none';
+        
+        // Clear grid
+        grid.innerHTML = '';
+        
+        // Filter tutorials by current category
+        let filteredTutorials = Object.values(TUTORIALS).filter(tutorial => 
+            tutorial.category === currentCategory
+        );
+        
+        // If search term exists, filter by search
+        if (currentSearchTerm) {
+            filteredTutorials = filteredTutorials.filter(tutorial => 
+                tutorial.title.toLowerCase().includes(currentSearchTerm) ||
+                tutorial.description.toLowerCase().includes(currentSearchTerm) ||
+                tutorial.tags.some(tag => tag.toLowerCase().includes(currentSearchTerm))
+            );
+        }
+        
+        // Show search results info
+        const resultsInfo = document.getElementById('searchResultsInfo');
+        const resultsCount = document.getElementById('resultsCount');
+        
+        if (currentSearchTerm) {
+            resultsInfo.style.display = 'flex';
+            resultsCount.textContent = `${filteredTutorials.length} hasil ditemukan untuk "${currentSearchTerm}"`;
+        } else {
+            resultsInfo.style.display = 'none';
+        }
+        
+        // Display tutorials
+        if (filteredTutorials.length === 0) {
+            grid.innerHTML = `
+                <div class="no-results" style="grid-column: 1 / -1; text-align: center; padding: 3rem;">
+                    <i class="fas fa-search" style="font-size: 3rem; color: var(--text-muted); margin-bottom: 1rem;"></i>
+                    <h3>Tidak ada tutorial ditemukan</h3>
+                    <p>Coba gunakan kata kunci yang berbeda atau pilih kategori lain.</p>
+                </div>
+            `;
+            return;
+        }
+        
+        // Create tutorial cards
+        filteredTutorials.forEach((tutorial, index) => {
+            const progress = userProgress[tutorial.id]?.progress || 0;
+            const isNew = !userProgress[tutorial.id]?.lastAccessed;
+            
+            const card = document.createElement('div');
+            card.className = `tutorial-card ${tutorial.premium ? 'premium' : ''} ${isNew ? 'new' : ''}`;
+            card.style.setProperty('--card-index', index);
+            card.onclick = () => openTutorial(tutorial.id);
+            
+            card.innerHTML = `
+                ${tutorial.premium ? `
+                    <div class="premium-badge">
+                        <i class="fas fa-crown"></i> PREMIUM
+                    </div>
+                ` : ''}
+                
+                <div class="tutorial-header">
+                    <span class="difficulty-badge difficulty-${tutorial.difficulty}">
+                        <i class="fas fa-${getDifficultyIcon(tutorial.difficulty)}"></i>
+                        ${getLevelText(tutorial.level)}
+                    </span>
+                    <span class="meta-item">
+                        <i class="far fa-clock"></i> ${tutorial.duration}
+                    </span>
+                </div>
+                
+                <h3>${tutorial.title}</h3>
+                <p>${tutorial.description}</p>
+                
+                <div class="tutorial-tags">
+                    ${tutorial.tags.map(tag => `<span class="tutorial-tag">${tag}</span>`).join('')}
+                </div>
+                
+                <div class="tutorial-footer">
+                    <div class="tutorial-progress">
+                        <div class="progress-text">${progress}%</div>
+                        <div class="progress-bar" style="width: 100px;">
+                            <div class="progress-fill" style="width: ${progress}%"></div>
+                        </div>
+                    </div>
+                    <button class="view-tutorial-btn ${tutorial.premium ? 'premium' : ''}" 
+                            onclick="event.stopPropagation(); ${tutorial.premium ? 'openPremiumTutorial(\'' + tutorial.id + '\')' : 'openTutorial(\'' + tutorial.id + '\')'}">
+                        <i class="fas ${tutorial.premium ? 'fa-lock' : 'fa-play'}"></i>
+                        ${tutorial.premium ? 'Premium' : progress > 0 ? 'Lanjutkan' : 'Mulai'}
+                    </button>
+                </div>
+            `;
+            
+            grid.appendChild(card);
+        });
+    }
+
+    function getDifficultyIcon(difficulty) {
+        switch(difficulty) {
+            case 'beginner': return 'seedling';
+            case 'intermediate': return 'chart-line';
+            case 'advanced': return 'fire';
+            default: return 'circle';
+        }
+    }
+
+    function getLevelText(level) {
+        switch(level) {
+            case 1: return 'Level 1';
+            case 2: return 'Level 2';
+            case 3: return 'Level 3';
+            case 4: return 'Level 4';
+            case 5: return 'Level 5';
+            default: return `Level ${level}`;
+        }
+    }
+
+    // ====================
+    // SEARCH FUNCTIONALITY
+    // ====================
+    function performSearch() {
+        const searchInput = document.getElementById('searchTutorials');
+        const term = searchInput.value.trim().toLowerCase();
+        
+        if (!term) {
+            showNotification('Masukkan kata kunci pencarian', 'warning');
+            return;
+        }
+        
+        currentSearchTerm = term;
+        initializeTutorials();
+        trackSearch(term);
+    }
+
+    function searchTutorial(term) {
+        const searchInput = document.getElementById('searchTutorials');
+        searchInput.value = term;
+        performSearch();
+    }
+
+    function searchOnGoogle(customQuery = null) {
+        let query = customQuery;
+        
+        if (!query) {
+            const searchInput = document.getElementById('searchTutorials');
+            query = searchInput.value.trim();
+            
+            if (!query) {
+                showNotification('Masukkan kata kunci untuk pencarian Google', 'warning');
+                return;
+            }
+            
+            query += ' cryptography tutorial python code example';
+        }
+        
+        const encodedQuery = encodeURIComponent(query);
+        const googleUrl = `https://www.google.com/search?q=${encodedQuery}`;
+        
+        window.open(googleUrl, '_blank');
+        trackExternalLink('google_search');
+    }
+
+    function clearSearch() {
+        const searchInput = document.getElementById('searchTutorials');
+        searchInput.value = '';
+        currentSearchTerm = '';
+        initializeTutorials();
+    }
+
+    // ====================
+    // TUTORIAL VIEWER
+    // ====================
+    function openTutorial(tutorialId) {
+        const tutorial = TUTORIALS[tutorialId];
+        if (!tutorial) {
+            showNotification('Tutorial tidak ditemukan', 'error');
+            return;
+        }
+        
+        currentTutorial = tutorialId;
+        trackTutorialView(tutorialId);
+        
+        // Update user progress
+        if (!userProgress[tutorialId]) {
+            userProgress[tutorialId] = {
+                progress: 10,
+                lastAccessed: new Date().toISOString(),
+                completed: false
+            };
+        } else {
+            userProgress[tutorialId].lastAccessed = new Date().toISOString();
+            if (userProgress[tutorialId].progress < 10) {
+                userProgress[tutorialId].progress = 10;
+            }
+        }
+        saveUserProgress();
+        
+        // Show modal
+        const modal = document.getElementById('tutorialModal');
+        const modalBody = document.getElementById('modalBody');
+        
+        modalBody.innerHTML = `
+            <div class="tutorial-header">
+                <h2>${tutorial.title}</h2>
+                <div class="tutorial-meta">
+                    <span class="difficulty-badge difficulty-${tutorial.difficulty}">
+                        <i class="fas fa-${getDifficultyIcon(tutorial.difficulty)}"></i>
+                        ${getLevelText(tutorial.level)}
+                    </span>
+                    <span class="meta-item">
+                        <i class="far fa-clock"></i> ${tutorial.duration}
+                    </span>
+                    <span class="meta-item">
+                        <i class="fas fa-tags"></i> ${tutorial.category}
+                    </span>
+                </div>
+            </div>
+            
+            <div class="tutorial-description">
+                <p>${tutorial.description}</p>
+            </div>
+            
+            ${tutorial.content}
+            
+            <div class="tutorial-tags" style="margin: 1.5rem 0;">
+                ${tutorial.tags.map(tag => `<span class="tutorial-tag">${tag}</span>`).join('')}
+            </div>
+            
+            <div class="tutorial-actions">
+                <button class="btn-primary" onclick="startTutorial('${tutorialId}')">
+                    <i class="fas fa-play"></i> Mulai Tutorial
+                </button>
+                <button class="btn-secondary" onclick="searchOnGoogle('${tutorial.title} cryptography')">
+                    <i class="fab fa-google"></i> Cari di Google
+                </button>
+                <button class="btn-secondary" onclick="downloadNotes('${tutorialId}')">
+                    <i class="fas fa-download"></i> Download Notes
+                </button>
+                ${tutorial.premium ? `
+                    <button class="btn-premium" onclick="showUpgradeModal()">
+                        <i class="fas fa-crown"></i> Upgrade untuk Code Editor
+                    </button>
+                ` : `
+                    <button class="btn-secondary" onclick="openCodeEditor('${tutorialId}')">
+                        <i class="fas fa-code"></i> Code Editor
+                    </button>
+                `}
+            </div>
+        `;
+        
+        modal.style.display = 'flex';
+        document.body.style.overflow = 'hidden';
+    }
+
+    function openPremiumTutorial(tutorialId) {
+        if (!isPremiumUser) {
+            showUpgradeModal();
+            return;
+        }
+        openTutorial(tutorialId);
+    }
+
+    function startTutorial(tutorialId) {
+        const tutorial = TUTORIALS[tutorialId];
+        if (!tutorial) return;
+        
+        updateProgress(tutorialId, 25);
+        showNotification(`Tutorial "${tutorial.title}" dimulai!`, 'success');
+        closeModal();
+    }
+
+    function openCodeEditor(tutorialId) {
+        const tutorial = TUTORIALS[tutorialId];
+        if (!tutorial) return;
+        
+        const modal = document.getElementById('tutorialModal');
+        const modalBody = document.getElementById('modalBody');
+        
+        modalBody.innerHTML = `
+            <div class="tutorial-header">
+                <h2><i class="fas fa-code"></i> Code Editor: ${tutorial.title}</h2>
+            </div>
+            
+            <div style="margin: 1.5rem 0;">
+                <h3><i class="fas fa-terminal"></i> Edit Kode Python</h3>
+                <textarea class="code-editor" id="codeEditor" placeholder="Tulis kode Python Anda di sini...">
+# Contoh kode dari tutorial
+def caesar_cipher(text, shift):
+    result = ""
+    for char in text:
+        if char.isalpha():
+            ascii_offset = 65 if char.isupper() else 97
+            result += chr((ord(char) - ascii_offset + shift) % 26 + ascii_offset)
+        else:
+            result += char
+    return result
+
+# Tes fungsi
+print(caesar_cipher("HELLO", 3))  # Output: KHOOR</textarea>
+            </div>
+            
+            <div style="margin: 1.5rem 0;">
+                <h3><i class="fas fa-play-circle"></i> Output</h3>
+                <div class="code-output" id="codeOutput">
+                    Klik "Run Code" untuk melihat output...
+                </div>
+            </div>
+            
+            <div class="tutorial-actions">
+                <button class="btn-primary" onclick="runPythonCode()">
+                    <i class="fas fa-play"></i> Run Code
+                </button>
+                <button class="btn-secondary" onclick="openTutorial('${tutorialId}')">
+                    <i class="fas fa-arrow-left"></i> Kembali
+                </button>
+                <button class="btn-secondary" onclick="copyCodeToClipboard()">
+                    <i class="fas fa-copy"></i> Copy Code
+                </button>
+                <button class="btn-secondary" onclick="saveCode()">
+                    <i class="fas fa-save"></i> Save Code
+                </button>
+            </div>
+        `;
+        
+        modal.style.display = 'flex';
+    }
+
+    function runPythonCode() {
+        const code = document.getElementById('codeEditor').value;
+        const output = document.getElementById('codeOutput');
+        
+        output.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Menjalankan kode...';
+        
+        // Simulate code execution (in production, this would call a backend)
+        setTimeout(() => {
+            try {
+                // For security, we don't actually execute arbitrary code
+                // This is a simulation
+                const lines = code.split('\n').length;
+                const functions = (code.match(/def\s+\w+/g) || []).length;
+                const imports = (code.match(/import\s+\w+/g) || []).length;
+                
+                output.innerHTML = `
+                    <div style="color: var(--accent);">
+                        <i class="fas fa-check-circle"></i> Kode berhasil dijalankan (simulasi)
+                    </div>
+                    <div style="margin-top: 1rem; color: var(--text-muted);">
+                        <div>Jumlah baris: ${lines}</div>
+                        <div>Fungsi ditemukan: ${functions}</div>
+                        <div>Import ditemukan: ${imports}</div>
+                    </div>
+                    <div style="margin-top: 1rem; padding: 0.5rem; background: rgba(16, 185, 129, 0.1); border-radius: 5px;">
+                        <i class="fas fa-info-circle"></i> Untuk keamanan, eksekusi kode sebenarnya dilakukan di backend.
+                    </div>
+                `;
+            } catch (error) {
+                output.innerHTML = `
+                    <div style="color: var(--danger);">
+                        <i class="fas fa-exclamation-circle"></i> Error: ${error.message}
+                    </div>
+                `;
+            }
+        }, 1500);
+    }
+
+    // ====================
+    // PROGRESS MANAGEMENT
+    // ====================
+    function updateProgress(tutorialId, increment = 10) {
+        if (!userProgress[tutorialId]) {
+            userProgress[tutorialId] = {
+                progress: increment,
+                lastAccessed: new Date().toISOString(),
+                completed: increment >= 100
+            };
+        } else {
+            const newProgress = Math.min(userProgress[tutorialId].progress + increment, 100);
+            userProgress[tutorialId].progress = newProgress;
+            userProgress[tutorialId].lastAccessed = new Date().toISOString();
+            userProgress[tutorialId].completed = newProgress >= 100;
+        }
+        
+        saveUserProgress();
+        updateStats();
+        
+        // Update UI if tutorial card exists
+        const card = document.querySelector(`[onclick*="${tutorialId}"]`);
+        if (card) {
+            const progressText = card.querySelector('.progress-text');
+            const progressFill = card.querySelector('.progress-fill');
+            if (progressText && progressFill) {
+                progressText.textContent = userProgress[tutorialId].progress + '%';
+                progressFill.style.width = userProgress[tutorialId].progress + '%';
+            }
+        }
+        
+        // Update category progress
+        updateCategoryProgress();
+    }
+
+    function updateCategoryProgress() {
+        document.querySelectorAll('.category-card').forEach(card => {
+            const category = card.dataset.category;
+            const tutorialsInCategory = Object.values(TUTORIALS).filter(t => t.category === category);
+            
+            if (tutorialsInCategory.length === 0) return;
+            
+            let totalProgress = 0;
+            tutorialsInCategory.forEach(tutorial => {
+                totalProgress += userProgress[tutorial.id]?.progress || 0;
+            });
+            
+            const avgProgress = Math.round(totalProgress / tutorialsInCategory.length);
+            
+            const progressFill = card.querySelector('.progress-fill');
+            const progressText = card.querySelector('.progress-info span:last-child');
+            
+            if (progressFill && progressText) {
+                progressFill.style.width = avgProgress + '%';
+                progressText.textContent = avgProgress + '%';
+            }
+        });
+    }
+
+    function updateStats() {
+        // Calculate overall completion rate
+        const totalTutorials = Object.keys(TUTORIALS).length;
+        let completedTutorials = 0;
+        
+        Object.values(userProgress).forEach(progress => {
+            if (progress.completed) completedTutorials++;
+        });
+        
+        const completionRate = Math.round((completedTutorials / totalTutorials) * 100);
+        document.getElementById('completionRate').textContent = completionRate + '%';
+    }
+
+    // ====================
+    // CATEGORY FILTERING
+    // ====================
+    function filterByCategory(category) {
+        currentCategory = category;
+        currentSearchTerm = ''; // Clear search when switching categories
+        document.getElementById('searchTutorials').value = '';
+        
+        // Update active category
+        document.querySelectorAll('.category-card').forEach(card => {
+            card.classList.remove('active');
+            if (card.dataset.category === category) {
+                card.classList.add('active');
+            }
+        });
+        
+        initializeTutorials();
+        
+        // Scroll to tutorials grid
+        document.getElementById('tutorialsGrid').scrollIntoView({
+            behavior: 'smooth',
+            block: 'start'
+        });
+    }
+
+    function navigateLearningPath(level) {
+        let category;
+        switch(level) {
+            case 1: category = 'fundamentals'; break;
+            case 2: category = 'classical'; break;
+            case 3: category = 'symmetric'; break;
+            case 4: category = 'asymmetric'; break;
+            case 5: category = 'advanced'; break;
+            default: category = 'fundamentals';
+        }
+        filterByCategory(category);
+    }
+
+    // ====================
+    // MODAL MANAGEMENT
+    // ====================
+    function closeModal() {
+        const modal = document.getElementById('tutorialModal');
+        modal.style.display = 'none';
+        document.body.style.overflow = 'auto';
+    }
+
+    function showUpgradeModal() {
+        const modal = document.getElementById('tutorialModal');
+        const modalBody = document.getElementById('modalBody');
+        
+        modalBody.innerHTML = `
+            <div class="upgrade-prompt">
+                <div style="background: var(--gradient-warning); width: 80px; height: 80px; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 1rem;">
+                    <i class="fas fa-crown" style="font-size: 2.5rem; color: white;"></i>
+                </div>
+                <h3>Unlock Premium Features</h3>
+                <p>Upgrade untuk akses ke semua tutorial advanced:</p>
+                <ul class="premium-features">
+                    <li><i class="fas fa-check" style="color: var(--accent);"></i> Akses ke semua tutorial premium</li>
+                    <li><i class="fas fa-check" style="color: var(--accent);"></i> Code editor dengan eksekusi langsung</li>
+                    <li><i class="fas fa-check" style="color: var(--accent);"></i> Download materi lengkap</li>
+                    <li><i class="fas fa-check" style="color: var(--accent);"></i> Sertifikat penyelesaian</li>
+                </ul>
+                <div class="upgrade-actions">
+                    <button class="btn-premium" onclick="upgradeAccount()">
+                        <i class="fas fa-crown"></i> Upgrade Now - $12.99/month
+                    </button>
+                    <button class="btn-secondary" onclick="closeModal()">
+                        <i class="far fa-clock"></i> Maybe Later
+                    </button>
+                </div>
+                <p style="font-size: 0.8rem; color: var(--text-muted); margin-top: 1rem;">
+                    Bebas batalkan kapan saja. Tersedia uji coba gratis 7 hari.
+                </p>
+            </div>
+        `;
+        
+        modal.style.display = 'flex';
+    }
+
+    function upgradeAccount() {
+        // Simulate upgrade process
+        localStorage.setItem('decoDify_premium', 'true');
+        isPremiumUser = true;
+        
+        showNotification('🎉 Akun Anda telah diupgrade ke Premium!', 'success');
+        
+        // Reload the current tutorial if it was premium
+        if (currentTutorial && TUTORIALS[currentTutorial]?.premium) {
+            openTutorial(currentTutorial);
+        } else {
+            closeModal();
+        }
+        
+        trackExternalLink('premium_upgrade');
+    }
+
+    // ====================
+    // UTILITY FUNCTIONS
+    // ====================
+    function showNotification(message, type = 'success') {
+        const notification = document.getElementById('notification');
+        const messageElement = document.getElementById('notificationMessage');
+        
+        notification.className = `notification ${type}`;
+        messageElement.textContent = message;
+        
+        notification.classList.add('show');
+        
+        setTimeout(() => {
+            notification.classList.remove('show');
+        }, 3000);
+    }
+
+    function downloadNotes(tutorialId) {
+        const tutorial = TUTORIALS[tutorialId];
+        if (!tutorial) return;
+        
+        const content = `
+TUTORIAL NOTES: ${tutorial.title}
+====================================
+
+Difficulty: ${tutorial.difficulty}
+Duration: ${tutorial.duration}
+Category: ${tutorial.category}
+Level: ${tutorial.level}
+
+DESCRIPTION:
+${tutorial.description}
+
+CONTENT:
+${tutorial.content.replace(/<[^>]*>/g, '')}
+
+Generated by DecoDify Cryptography Platform
+Date: ${new Date().toLocaleDateString()}
+        `;
+        
+        const blob = new Blob([content], { type: 'text/plain' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `decoDify-${tutorialId}-notes.txt`;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+        
+        showNotification('📄 Notes berhasil di-download!', 'success');
+        trackExternalLink('download_notes');
+    }
+
+    function copyCodeToClipboard() {
+        const codeEditor = document.getElementById('codeEditor');
+        if (codeEditor) {
+            navigator.clipboard.writeText(codeEditor.value)
+                .then(() => showNotification('📋 Kode disalin ke clipboard!', 'success'))
+                .catch(() => showNotification('❌ Gagal menyalin kode', 'error'));
+        }
+    }
+
+    function saveCode() {
+        showNotification('💾 Fitur save code tersedia untuk akun Premium', 'warning');
+    }
+
+    // ====================
+    // EVENT LISTENERS
+    // ====================
+    function setupEventListeners() {
+        // Search input
+        const searchInput = document.getElementById('searchTutorials');
+        searchInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                performSearch();
+            }
+        });
+        
+        // Modal close on outside click
+        const modal = document.getElementById('tutorialModal');
+        modal.addEventListener('click', (e) => {
+            if (e.target === modal) {
+                closeModal();
+            }
+        });
+        
+        // External link tracking
+        document.querySelectorAll('[data-track]').forEach(link => {
+            link.addEventListener('click', function() {
+                trackExternalLink(this.dataset.track);
+            });
+        });
+        
+        // Escape key to close modal
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') {
+                closeModal();
+            }
+        });
+    }
+
+    // ====================
+    // ANALYTICS & TRACKING
+    // ====================
+    function trackTutorialView(tutorialId) {
+        console.log('Tutorial viewed:', tutorialId);
+        // In production, send to analytics backend
+        // fetch('/api/analytics/tutorial-view', {
+        //     method: 'POST',
+        //     body: JSON.stringify({ tutorialId })
+        // });
+    }
+
+    function trackSearch(term) {
+        console.log('Search performed:', term);
+        // Analytics tracking
+    }
+
+    function trackExternalLink(source) {
+        console.log('External link clicked:', source);
+        // Analytics tracking
+    }
+
+    // ====================
+    // WELCOME MESSAGE
+    // ====================
+    function showWelcomeMessage() {
+        const hasSeenWelcome = localStorage.getItem('decoDify_welcome_seen');
+        if (!hasSeenWelcome) {
+            setTimeout(() => {
+                showNotification('🎉 Selamat datang di DecoDify! Mulai belajar kriptografi dari dasar hingga advanced.', 'success');
+                localStorage.setItem('decoDify_welcome_seen', 'true');
+            }, 1000);
+        }
+    }
+
+    // ====================
+    // BACKEND INTEGRATION
+    // ====================
+    // These functions would be implemented in your app.py
+    async function fetchTutorials() {
+        // Example backend call
+        // try {
+        //     const response = await fetch('/api/tutorials');
+        //     return await response.json();
+        // } catch (error) {
+        //     console.error('Error fetching tutorials:', error);
+        //     return TUTORIALS; // Fallback to local data
+        // }
+        return TUTORIALS;
+    }
+
+    async function saveProgressToBackend() {
+        // Example backend call
+        // try {
+        //     await fetch('/api/progress', {
+        //         method: 'POST',
+        //         headers: { 'Content-Type': 'application/json' },
+        //         body: JSON.stringify(userProgress)
+        //     });
+        // } catch (error) {
+        //     console.error('Error saving progress:', error);
+        // }
+    }
+</script>
+{% endblock %}

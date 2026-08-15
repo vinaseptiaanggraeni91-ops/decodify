@@ -1,0 +1,22 @@
+<div class="main-header">
+    <div class="header-search">
+        <i class="fas fa-search"></i>
+        <input type="text" placeholder="Cari cipher, tantangan..." class="search-input" id="globalSearch">
+    </div>
+    <div class="header-actions">
+        <button class="header-action" aria-label="Notifications" id="notificationsBtn">
+            <i class="fas fa-bell"></i>
+            <span class="notification-badge">{{ unread_notifications or '0' }}</span>
+        </button>
+        <button class="header-action" aria-label="Messages" id="messagesBtn">
+            <i class="fas fa-envelope"></i>
+        </button>
+        <div class="weather-info">
+            <i class="fas fa-cloud-sun"></i>
+            <span>{{ weather_temp or '28' }}°C</span>
+        </div>
+        <button class="header-action theme-toggle" id="themeToggle" aria-label="Toggle Theme">
+            <i class="fas fa-moon"></i>
+        </button>
+    </div>
+</div>

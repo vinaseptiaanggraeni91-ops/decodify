@@ -1,0 +1,244 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard - DecoDify{% endblock %}
+
+{% block content %}
+<!-- DASHBOARD SECTION -->
+<section id="dashboard-section" class="dashboard-section active">
+    <!-- Welcome Banner -->
+    <div class="welcome-banner">
+        <div class="banner-content">
+            <div class="greeting">
+                <h1>Selamat Datang, <span class="username">{{ username or 'Explorer' }}</span>!</h1>
+                <p>Mulai petualangan kriptografi Anda hari ini</p>
+            </div>
+            <div class="banner-stats">
+                <div class="stat-pill">
+                    <i class="fas fa-fire"></i>
+                    <span>{{ streak_days or '0' }} Day Streak</span>
+                </div>
+                <div class="stat-pill">
+                    <i class="fas fa-chart-line"></i>
+                    <span>{{ progress_percentage or '0' }}% Progress</span>
+                </div>
+                <div class="stat-pill">
+                    <i class="fas fa-bolt"></i>
+                    <span>{{ user_xp or '0' }} XP</span>
+                </div>
+            </div>
+        </div>
+        <div class="banner-decoration">
+            <div class="crypto-animation">
+                <div class="encryption-ring"></div>
+                <div class="binary-code">01001011 01010010 01001001 01010000 01010100 01001111</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Quick Stats Grid -->
+    <div class="stats-grid">
+        <div class="stat-card">
+            <div class="stat-icon primary">
+                <i class="fas fa-chart-line"></i>
+            </div>
+            <div class="stat-content">
+                <h3>{{ progress_percentage or '0' }}%</h3>
+                <p>Progress Pembelajaran</p>
+            </div>
+            <div class="stat-trend up">
+                <i class="fas fa-arrow-up"></i> 12%
+            </div>
+        </div>
+        
+        <div class="stat-card">
+            <div class="stat-icon success">
+                <i class="fas fa-lock-open"></i>
+            </div>
+            <div class="stat-content">
+                <h3>{{ completed_ciphers or '0' }}/13</h3>
+                <p>Cipher Dikuasai</p>
+            </div>
+            <div class="stat-trend up">
+                <i class="fas fa-plus"></i> 2 baru
+            </div>
+        </div>
+        
+        <div class="stat-card">
+            <div class="stat-icon warning">
+                <i class="fas fa-trophy"></i>
+            </div>
+            <div class="stat-content">
+                <h3>{{ streak_days or '0' }}</h3>
+                <p>Streak</p>
+            </div>
+            <div class="stat-trend">
+                <i class="fas fa-fire"></i> Keep going!
+            </div>
+        </div>
+        
+        <div class="stat-card premium-card">
+            <div class="stat-icon premium">
+                <i class="fas fa-crown"></i>
+            </div>
+            <div class="stat-content">
+                <h3>{{ 'Premium' if is_premium else 'Free' }}</h3>
+                <p>Status Akun</p>
+            </div>
+            {% if not is_premium %}
+            <button class="btn-upgrade" id="headerUpgradeBtn">Upgrade</button>
+            {% else %}
+            <div class="premium-badge">
+                <i class="fas fa-check"></i> Active
+            </div>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Recent Activity -->
+    <div class="recent-activity-card">
+        <div class="card-header">
+            <h3><i class="fas fa-history"></i> Recent Activity</h3>
+            <a href="/activity" class="view-all">View All</a>
+        </div>
+        <div class="activity-list" id="recentActivities">
+            <!-- Activities will be loaded via JavaScript -->
+            <div class="loading-activity">
+                <i class="fas fa-spinner fa-spin"></i> Loading activities...
+            </div>
+        </div>
+    </div>
+
+    <!-- Featured Ciphers -->
+    <div class="featured-section">
+        <div class="section-title">
+            <h2><i class="fas fa-star"></i> Featured Ciphers</h2>
+            <a href="/ciphers" class="view-all">Browse All</a>
+        </div>
+        <div class="cipher-grid" id="featuredCiphers">
+            <!-- Ciphers will be loaded via JavaScript -->
+            <div class="loading-ciphers">
+                <i class="fas fa-spinner fa-spin"></i> Loading featured ciphers...
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    // Load dashboard data dynamically
+    document.addEventListener('DOMContentLoaded', function() {
+        // Load recent activities
+        fetch('/api/dashboard/activities')
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    const container = document.getElementById('recentActivities');
+                    if (data.activities.length > 0) {
+                        container.innerHTML = data.activities.map(activity => `
+                            <div class="activity-item">
+                                <div class="activity-icon ${activity.type}">
+                                    <i class="fas fa-${getActivityIcon(activity.type)}"></i>
+                                </div>
+                                <div class="activity-content">
+                                    <h4>${activity.description}</h4>
+                                    <p class="activity-time">${formatTime(activity.timestamp)}</p>
+                                </div>
+                                <div class="activity-badge ${getActivityBadgeClass(activity.type)}">
+                                    +${activity.xp_gained || 0} XP
+                                </div>
+                            </div>
+                        `).join('');
+                    } else {
+                        container.innerHTML = '<div class="no-activities">No recent activities</div>';
+                    }
+                }
+            });
+
+        // Load featured ciphers
+        fetch('/api/dashboard/cipher-progress')
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    const container = document.getElementById('featuredCiphers');
+                    const featured = data.data.slice(0, 3); // Get first 3 ciphers
+                    container.innerHTML = featured.map(cipher => `
+                        <div class="cipher-card">
+                            <div class="cipher-icon">
+                                <i class="fas fa-${getCipherIcon(cipher.code)}"></i>
+                            </div>
+                            <div class="cipher-content">
+                                <h4>${cipher.name}</h4>
+                                <p>${cipher.year} - ${cipher.difficulty}</p>
+                                <div class="cipher-progress">
+                                    <div class="progress-bar small">
+                                        <div class="progress-fill" style="width: ${cipher.completion}%"></div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="cipher-status ${cipher.difficulty}">
+                                ${cipher.completion === 100 ? 'Mastered' : 
+                                  cipher.completion >= 50 ? 'In Progress' : 'Locked'}
+                            </div>
+                        </div>
+                    `).join('');
+                }
+            });
+
+        // Update streak automatically
+        fetch('/api/dashboard/update-streak', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        });
+
+        // Helper functions
+        function getActivityIcon(type) {
+            const icons = {
+                'login': 'sign-in-alt',
+                'quiz': 'question-circle',
+                'challenge': 'flag',
+                'learning': 'graduation-cap',
+                'premium_upgrade': 'crown',
+                'level_up': 'trophy',
+                'default': 'check-circle'
+            };
+            return icons[type] || icons.default;
+        }
+
+        function getActivityBadgeClass(type) {
+            const classes = {
+                'premium_upgrade': 'premium',
+                'level_up': 'warning',
+                'quiz': 'success',
+                'challenge': 'danger',
+                'default': 'primary'
+            };
+            return classes[type] || classes.default;
+        }
+
+        function formatTime(timestamp) {
+            const date = new Date(timestamp);
+            const now = new Date();
+            const diff = now - date;
+            
+            if (diff < 60000) return 'Just now';
+            if (diff < 3600000) return `${Math.floor(diff / 60000)} minutes ago`;
+            if (diff < 86400000) return `${Math.floor(diff / 3600000)} hours ago`;
+            return `${Math.floor(diff / 86400000)} days ago`;
+        }
+
+        function getCipherIcon(code) {
+            const icons = {
+                'caesar': 'exchange-alt',
+                'vigenere': 'key',
+                'rsa': 'shield-alt',
+                'aes': 'lock',
+                'default': 'lock'
+            };
+            return icons[code] || icons.default;
+        }
+    });
+</script>
+{% endblock %}
